@@ -181,6 +181,7 @@ struct ContainerRow: View {
     let onToggle: () async -> Void
 
     @State private var isLoading = false
+    @State private var isHovered = false
 
     var body: some View {
         HStack(spacing: 10) {
@@ -199,7 +200,6 @@ struct ContainerRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            // StatusBadge actúa como botón de toggle
             Button {
                 isLoading = true
                 Task {
@@ -224,10 +224,18 @@ struct ContainerRow: View {
                 }
                 .padding(.horizontal, 7)
                 .padding(.vertical, 3)
-                .glassEffect(.regular, in: Capsule())
+                .background(
+                    Capsule()
+                        .fill(.white.opacity(0.12))
+                        .strokeBorder(.white.opacity(0.18), lineWidth: 0.5)
+                )
+                .opacity(isHovered ? 0.7 : 1.0)
+                .animation(.easeInOut(duration: 0.15), value: isHovered)
             }
             .buttonStyle(.plain)
             .disabled(isLoading)
+            .contentShape(Capsule())
+            .onHover { isHovered = $0 }
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 5)

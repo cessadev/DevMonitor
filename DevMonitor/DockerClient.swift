@@ -80,13 +80,13 @@ class DockerClient {
     }
     
     func startContainer(id: String) async throws {
-        _ = try await sendRequest(
+        _ = try sendRequest(
             "POST /containers/\(id)/start HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
         )
     }
 
     func stopContainer(id: String) async throws {
-        _ = try await sendRequest(
+        _ = try sendRequest(
             "POST /containers/\(id)/stop HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
         )
     }
