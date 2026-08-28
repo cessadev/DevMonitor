@@ -229,7 +229,6 @@ struct ContainerRow: View {
                         .fill(.white.opacity(0.12))
                         .strokeBorder(.white.opacity(0.18), lineWidth: 0.5)
                 )
-                .opacity(isHovered ? 0.7 : 1.0)
                 .animation(.easeInOut(duration: 0.15), value: isHovered)
             }
             .buttonStyle(.plain)
@@ -260,6 +259,10 @@ struct StatusBadge: View {
         }
         .padding(.horizontal, 7)
         .padding(.vertical, 3)
-        .glassEffect(.regular, in: Capsule())
+        .background(
+            Capsule()
+                .fill(.white.opacity(0.12))
+                .strokeBorder(.white.opacity(0.18), lineWidth: 0.5)
+        )
     }
 }
