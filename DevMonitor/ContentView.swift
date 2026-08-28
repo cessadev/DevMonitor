@@ -13,9 +13,6 @@ struct ContentView: View {
 
                 // Header
                 HStack(spacing: 8) {
-                    Image(systemName: "server.rack")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(.primary)
                     Text("DevMonitor")
                         .font(.system(size: 14, weight: .semibold))
                     Spacer()
@@ -68,7 +65,9 @@ struct ContentView: View {
 
                         VStack(spacing: 2) {
                             ForEach(monitor.containers) { container in
-                                ContainerRow(container: container)
+                                ContainerRow(container: container) {
+                                    await monitor.toggleContainer(container)
+                                }
                             }
                         }
                         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
@@ -106,12 +105,14 @@ struct ContentView: View {
                             .foregroundStyle(.tertiary)
                     }
                     Spacer()
-                    Button("Quit") {
+                    Button {
                         NSApplication.shared.terminate(nil)
+                    } label: {
+                        Text("Quit")
+                            .font(.system(size: 13))
                     }
                     .buttonStyle(.glass)
                     .controlSize(.small)
-                    .font(.system(size: 13))
                     .keyboardShortcut("q")
                 }
                 .padding(.horizontal, 16)
@@ -177,6 +178,9 @@ struct ServiceRow: View {
 
 struct ContainerRow: View {
     let container: DockerContainer
+    let onToggle: () async -> Void
+
+    @State private var isLoading = false
 
     var body: some View {
         HStack(spacing: 10) {
@@ -195,7 +199,35 @@ struct ContainerRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            StatusBadge(isRunning: container.isRunning, label: container.state.capitalized)
+            // StatusBadge actúa como botón de toggle
+            Button {
+                isLoading = true
+                Task {
+                    await onToggle()
+                    isLoading = false
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    if isLoading {
+                        ProgressView()
+                            .controlSize(.mini)
+                            .frame(width: 6, height: 6)
+                    } else {
+                        Circle()
+                            .fill(container.isRunning ? Color.green : Color.red.opacity(0.8))
+                            .frame(width: 6, height: 6)
+                            .shadow(color: container.isRunning ? .green.opacity(0.6) : .clear, radius: 3)
+                    }
+                    Text(container.state.capitalized)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 7)
+                .padding(.vertical, 3)
+                .glassEffect(.regular, in: Capsule())
+            }
+            .buttonStyle(.plain)
+            .disabled(isLoading)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 5)

@@ -33,6 +33,22 @@ class ServiceMonitor {
         Task { await refreshContainers() }
     }
     
+    @MainActor
+    func toggleContainer(_ container: DockerContainer) async {
+        do {
+            if container.isRunning {
+                try await DockerClient.shared.stopContainer(id: container.id)
+            } else {
+                try await DockerClient.shared.startContainer(id: container.id)
+            }
+            // Espera un momento para que Docker actualice el estado
+            try? await Task.sleep(nanoseconds: 800_000_000) // 0.8s
+            await refreshContainers()
+        } catch {
+            dockerError = error.localizedDescription
+        }
+    }
+    
     private func refreshServices() {
         let runningApps = NSWorkspace.shared.runningApplications
             .map { $0.localizedName ?? "" }

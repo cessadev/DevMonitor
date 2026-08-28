@@ -78,9 +78,20 @@ class DockerClient {
             throw DockerError.decodingFailed(String(raw.prefix(300)))
         }
     }
+    
+    func startContainer(id: String) async throws {
+        _ = try await sendRequest(
+            "POST /containers/\(id)/start HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
+        )
+    }
+
+    func stopContainer(id: String) async throws {
+        _ = try await sendRequest(
+            "POST /containers/\(id)/stop HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
+        )
+    }
 
     // Decode HTTP chunked transfer encoding
-    // Format per chunk: "<size in hex>\r\n<data>\r\n" ... "0\r\n\r\n"
     private static func decodeChunked(_ data: Data) -> Data {
         var result    = Data()
         var index     = data.startIndex
