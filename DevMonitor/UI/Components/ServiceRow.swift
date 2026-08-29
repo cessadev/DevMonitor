@@ -7,10 +7,18 @@ struct ServiceRow: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: service.icon)
-                .font(.system(size: 13))
-                .foregroundStyle(.secondary)
-                .frame(width: 22)
+            if isExpandable {
+                Image("docker-icon")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .foregroundStyle(.secondary)
+            } else {
+                Image(systemName: service.icon)
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 22)
+            }
 
             Text(service.name)
                 .font(.system(size: 13))

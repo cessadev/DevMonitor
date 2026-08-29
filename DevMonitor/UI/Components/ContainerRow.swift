@@ -22,11 +22,6 @@ struct ContainerRow: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: "cube")
-                .font(.system(size: 13))
-                .foregroundStyle(.secondary)
-                .frame(width: 22)
-
             VStack(alignment: .leading, spacing: 1) {
                 Text(container.displayName)
                     .font(.system(size: 13))

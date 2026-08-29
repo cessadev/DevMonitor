@@ -22,6 +22,7 @@
 		DBD6B50C30428BC800C8E719 /* ServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B4EB3042861700C8E719 /* ServicesView.swift */; };
 		DBD6B5123042944500C8E719 /* ContainersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B4EA3042860400C8E719 /* ContainersViewModel.swift */; };
 		DBD6B5133042944500C8E719 /* ContainersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B50F3042920E00C8E719 /* ContainersView.swift */; };
+		DBD6B51830429AFC00C8E719 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DBD6B51730429AFC00C8E719 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 		DBD6B4FA3042894200C8E719 /* DevMonitorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevMonitorApp.swift; sourceTree = "<group>"; };
 		DBD6B4FE30428A3A00C8E719 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DBD6B50F3042920E00C8E719 /* ContainersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainersView.swift; sourceTree = "<group>"; };
+		DBD6B51730429AFC00C8E719 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = DevMonitor/Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +59,7 @@
 		DBD6B43C304222E900C8E719 = {
 			isa = PBXGroup;
 			children = (
+				DBD6B51730429AFC00C8E719 /* Assets.xcassets */,
 				DBD6B4DD3042849900C8E719 /* DevMonitor */,
 				DBD6B446304222E900C8E719 /* Products */,
 			);
@@ -249,6 +252,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DBD6B51830429AFC00C8E719 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
