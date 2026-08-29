@@ -11,6 +11,8 @@ struct ContentView: View {
     @State private var imagesExpanded  = false
     @State private var pullExpanded    = false
     @State private var pullImageName   = ""
+    @State private var showCreateContainer = false
+    @State private var selectedImage: DockerImage? = nil
     private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -69,7 +71,13 @@ struct ContentView: View {
                     if imagesExpanded && !imagesVM.images.isEmpty {
                         ImagesView(
                             images: imagesVM.images,
-                            onDelete: { image in await imagesVM.delete(image) }
+                            onDelete: { image in await imagesVM.delete(image) },
+                            onCreateContainer: { image in
+                                selectedImage = image
+                                withAnimation(.spring(duration: 0.25)) {
+                                    showCreateContainer = true
+                                }
+                            }
                         )
                     }
                     
@@ -136,6 +144,36 @@ struct ContentView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 8)
+            }
+            
+            if showCreateContainer, let image = selectedImage {
+                ZStack {
+                    CreateContainerSheet(
+                        imageName: image.displayTag,
+                        onCancel: {
+                            withAnimation(.spring(duration: 0.25)) {
+                                showCreateContainer = false
+                                selectedImage       = nil
+                            }
+                        },
+                        onCreate: { name in
+                            let success = await containersVM.createContainer(
+                                name: name,
+                                imageName: image.displayTag
+                            )
+                            if success {
+                                withAnimation(.spring(duration: 0.25)) {
+                                    showCreateContainer = false
+                                    selectedImage       = nil
+                                }
+                            }
+                            return success
+                        }
+                    )
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 14))
+                    .shadow(color: .black.opacity(0.25), radius: 20)
+                    .transition(.scale(scale: 0.92).combined(with: .opacity))
+                }
             }
         }
         .frame(width: 300)

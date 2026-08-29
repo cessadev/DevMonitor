@@ -5,6 +5,7 @@ enum DockerError: Error, LocalizedError {
     case connectionFailed
     case emptyResponse
     case decodingFailed(String)
+    case requestFailed(String)
 
     var errorDescription: String? {
         switch self {
@@ -12,6 +13,7 @@ enum DockerError: Error, LocalizedError {
         case .connectionFailed:      return "Cannot connect to Docker socket"
         case .emptyResponse:         return "Empty response from Docker"
         case .decodingFailed(let m): return "Decode error: \(m)"
+        case .requestFailed(let m):  return m
         }
     }
 }

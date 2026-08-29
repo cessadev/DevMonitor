@@ -27,6 +27,7 @@
 		DBD6B5273043498600C8E719 /* ServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B4EB3042861700C8E719 /* ServicesView.swift */; };
 		DBD6B5283043498600C8E719 /* ImagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B51F304345FC00C8E719 /* ImagesView.swift */; };
 		DBD6B5293043498600C8E719 /* DockerImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5193043452900C8E719 /* DockerImage.swift */; };
+		DBD6B56930437E6600C8E719 /* CreateContainerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B56830437E6600C8E719 /* CreateContainerSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +52,7 @@
 		DBD6B51B304345BF00C8E719 /* ImagesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesViewModel.swift; sourceTree = "<group>"; };
 		DBD6B51D304345D900C8E719 /* ImageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageRow.swift; sourceTree = "<group>"; };
 		DBD6B51F304345FC00C8E719 /* ImagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesView.swift; sourceTree = "<group>"; };
+		DBD6B56830437E6600C8E719 /* CreateContainerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateContainerSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +160,7 @@
 		DBD6B4E2304284DB00C8E719 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				DBD6B56830437E6600C8E719 /* CreateContainerSheet.swift */,
 				DBD6B51D304345D900C8E719 /* ImageRow.swift */,
 				DBD6B4F03042868700C8E719 /* ContainerRow.swift */,
 				DBD6B4EF3042867100C8E719 /* ServiceRow.swift */,
@@ -292,6 +295,7 @@
 				DBD6B50730428BC800C8E719 /* DockerContainer.swift in Sources */,
 				DBD6B50830428BC800C8E719 /* ServicesViewModel.swift in Sources */,
 				DBD6B50930428BC800C8E719 /* DockerClient.swift in Sources */,
+				DBD6B56930437E6600C8E719 /* CreateContainerSheet.swift in Sources */,
 				DBD6B50A30428BC800C8E719 /* SystemProcessService.swift in Sources */,
 				DBD6B50B30428BC800C8E719 /* LocalService.swift in Sources */,
 			);

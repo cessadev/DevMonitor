@@ -56,6 +56,35 @@ class DockerClient {
         )
     }
     
+    func createContainer(name: String, imageName: String) async throws {
+        let containerName = name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? name
+        let bodyJSON      = "{\"Image\":\"\(imageName)\"}"
+        let bodyBytes     = bodyJSON.utf8.count
+
+        let request = "POST /containers/create?name=\(containerName) HTTP/1.1\r\n" +
+                      "Host: localhost\r\n" +
+                      "Content-Type: application/json\r\n" +
+                      "Content-Length: \(bodyBytes)\r\n" +
+                      "Connection: close\r\n\r\n" +
+                      bodyJSON
+
+        let responseData = try sendRequest(request)
+
+        guard let headerEnd = responseData.range(of: Data("\r\n\r\n".utf8)) else {
+            throw DockerError.emptyResponse
+        }
+        let headerString = String(data: responseData[..<headerEnd.lowerBound], encoding: .utf8) ?? ""
+        let statusLine   = headerString.components(separatedBy: "\r\n").first ?? ""
+        let statusCode   = Int(statusLine.components(separatedBy: " ").dropFirst().first ?? "") ?? 0
+
+        switch statusCode {
+        case 201: return
+        case 404: throw DockerError.requestFailed("Image '\(imageName)' not found locally")
+        case 409: throw DockerError.requestFailed("Container name '\(name)' already exists")
+        default:  throw DockerError.requestFailed("Unexpected status: \(statusCode)")
+        }
+    }
+    
     // Images
     func fetchImages() async throws -> [DockerImage] {
         let responseData = try await withCheckedThrowingContinuation { continuation in

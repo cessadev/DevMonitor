@@ -3,6 +3,7 @@ import SwiftUI
 struct ImageRow: View {
     let image: DockerImage
     let onDelete: () async -> Void
+    let onCreateContainer: () -> Void
 
     @State private var isDeleting    = false
     @State private var isHovered     = false
@@ -42,7 +43,7 @@ struct ImageRow: View {
                             isDeleting = true
                             Task {
                                 await onDelete()
-                                isDeleting   = false
+                                isDeleting    = false
                                 confirmDelete = false
                             }
                         } label: {
@@ -65,17 +66,32 @@ struct ImageRow: View {
                     )
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
                 } else {
-                    Button {
-                        withAnimation(.spring(duration: 0.2)) {
-                            confirmDelete = true
+                    HStack(spacing: 8) {
+                        // Trash
+                        Button {
+                            withAnimation(.spring(duration: 0.2)) {
+                                confirmDelete = true
+                            }
+                        } label: {
+                            Image(systemName: "trash")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
                         }
-                    } label: {
-                        Image(systemName: "trash")
-                            .font(.system(size: 11))
-                            .foregroundStyle(.secondary)
+                        .buttonStyle(.plain)
+                        .transition(.scale(scale: 0.85).combined(with: .opacity))
+
+                        // Container icon
+                        Button {
+                            onCreateContainer()
+                        } label: {
+                            Image("container-icon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 15, height: 15)
+                        }
+                        .buttonStyle(.plain)
+                        .transition(.scale(scale: 0.85).combined(with: .opacity))
                     }
-                    .buttonStyle(.plain)
-                    .transition(.scale(scale: 0.85).combined(with: .opacity))
                 }
             }
         }
