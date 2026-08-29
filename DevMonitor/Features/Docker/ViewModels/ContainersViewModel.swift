@@ -33,4 +33,15 @@ class ContainersViewModel {
             self.error = error.localizedDescription
         }
     }
+    
+    @MainActor
+    func delete(_ container: DockerContainer) async {
+        do {
+            try await dockerClient.deleteContainer(id: container.id)
+            try? await Task.sleep(nanoseconds: 400_000_000)
+            await refresh()
+        } catch {
+            self.error = error.localizedDescription
+        }
+    }
 }

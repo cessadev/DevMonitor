@@ -48,6 +48,12 @@ class DockerClient {
             "POST /containers/\(id)/stop HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
         )
     }
+    
+    func deleteContainer(id: String) async throws {
+        _ = try sendRequest(
+            "DELETE /containers/\(id)?force=true HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
+        )
+    }
 
     private static func decodeChunked(_ data: Data) -> Data {
         var result = Data()

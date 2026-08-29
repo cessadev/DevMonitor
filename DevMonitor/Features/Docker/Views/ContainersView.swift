@@ -4,6 +4,7 @@ struct ContainersView: View {
 
     let containers: [DockerContainer]
     let onToggle: (DockerContainer) async -> Void
+    let onDelete: (DockerContainer) async -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -11,9 +12,11 @@ struct ContainersView: View {
 
             VStack(spacing: 2) {
                 ForEach(containers) { container in
-                    ContainerRow(container: container) {
-                        await onToggle(container)
-                    }
+                    ContainerRow(
+                        container: container,
+                        onToggle: { await onToggle(container) },
+                        onDelete: { await onDelete(container) }
+                    )
                 }
             }
             .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))

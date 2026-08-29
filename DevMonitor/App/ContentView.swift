@@ -16,8 +16,6 @@ struct ContentView: View {
 
                 // Header
                 HStack(spacing: 8) {
-                    Image(systemName: "server.rack")
-                        .font(.system(size: 14, weight: .medium))
                     Text("DevMonitor")
                         .font(.system(size: 14, weight: .semibold))
                     Spacer()
@@ -44,9 +42,8 @@ struct ContentView: View {
                 if containersExpanded && !containersVM.containers.isEmpty {
                     ContainersView(
                         containers: containersVM.containers,
-                        onToggle: { container in
-                            await containersVM.toggle(container)
-                        }
+                        onToggle: { container in await containersVM.toggle(container) },
+                        onDelete: { container in await containersVM.delete(container) }
                     )
                 }
 
