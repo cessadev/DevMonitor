@@ -332,10 +332,11 @@ private struct PullImageView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
+
             HStack(spacing: 8) {
                 TextField("e.g. nginx:latest", text: $imageName)
                     .textFieldStyle(.plain)
-                    .font(.system(size: 12))
+                    .font(.system(size: 13))
                     .disabled(isPulling)
                     .onSubmit { onPull() }
 
@@ -343,15 +344,25 @@ private struct PullImageView: View {
                     onPull()
                 } label: {
                     Text(isPulling ? "Pulling..." : "Pull")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.system(size: 12))
                 }
-                .buttonStyle(.glass)
-                .controlSize(.small)
+                .buttonStyle(.plain)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 6)
+                .background(
+                    Capsule()
+                        .fill(.white.opacity(0.22))
+                        .strokeBorder(.white.opacity(0.45), lineWidth: 0.5)
+                )
                 .disabled(isPulling || imageName.trimmingCharacters(in: .whitespaces).isEmpty)
             }
             .padding(.horizontal, 10)
-            .padding(.vertical, 8)
-            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 10))
+            .padding(.vertical, 4)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.white.opacity(0.18))
+                    .strokeBorder(.white.opacity(0.35), lineWidth: 0.5)
+            )
             .padding(.horizontal, 12)
 
             // Progress
