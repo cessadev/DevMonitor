@@ -14,6 +14,14 @@ struct ContentView: View {
     @State private var showCreateContainer = false
     @State private var selectedImage: DockerImage? = nil
     private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
+    
+    private func dismissModal() {
+        guard showCreateContainer else { return }
+        withAnimation(.spring(duration: 0.25)) {
+            showCreateContainer = false
+            selectedImage       = nil
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -144,6 +152,15 @@ struct ContentView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 8)
+            }
+            .disabled(showCreateContainer)
+            
+            if showCreateContainer {
+                Color.clear
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        dismissModal()
+                    }
             }
             
             if showCreateContainer, let image = selectedImage {
