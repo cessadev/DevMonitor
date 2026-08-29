@@ -5,6 +5,7 @@ struct ContentView: View {
 
     @State private var servicesVM    = ServicesViewModel()
     @State private var containersVM  = ContainersViewModel()
+    @State private var isVisible = false
     @State private var containersExpanded = false
     private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
@@ -91,11 +92,18 @@ struct ContentView: View {
         }
         .frame(width: 300)
         .fixedSize(horizontal: false, vertical: true)
-        .onReceive(timer) { _ in refresh() }
-        .task { refresh() }
+        .opacity(isVisible ? 1 : 0)
+        .scaleEffect(isVisible ? 1 : 0.9, anchor: .top)
+        .animation(.spring(duration: 0.4, bounce: 0.35), value: isVisible)
+        .onAppear {
+            isVisible = true
+            refresh()
+        }
         .onDisappear {
+            isVisible = false
             containersExpanded = false
         }
+        .onReceive(timer) { _ in refresh() }
     }
 
     private func refresh() {
