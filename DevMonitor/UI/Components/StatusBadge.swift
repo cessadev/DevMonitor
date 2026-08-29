@@ -5,21 +5,14 @@ struct StatusBadge: View {
     let label: String
 
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 5) {
             Circle()
                 .fill(isRunning ? Color.green : Color.red.opacity(0.8))
-                .frame(width: 6, height: 6)
+                .frame(width: 8, height: 8)
                 .shadow(color: isRunning ? .green.opacity(0.6) : .clear, radius: 3)
             Text(label)
-                .font(.system(size: 11))
+                .font(.system(size: 12))
                 .foregroundStyle(.secondary)
         }
-        .padding(.horizontal, 7)
-        .padding(.vertical, 3)
-        .background(
-            Capsule()
-                .fill(.white.opacity(0.12))
-                .strokeBorder(.white.opacity(0.18), lineWidth: 0.5)
-        )
     }
 }
