@@ -19,10 +19,14 @@
 		DBD6B50930428BC800C8E719 /* DockerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B4E8304285B300C8E719 /* DockerClient.swift */; };
 		DBD6B50A30428BC800C8E719 /* SystemProcessService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B4E7304285A200C8E719 /* SystemProcessService.swift */; };
 		DBD6B50B30428BC800C8E719 /* LocalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B4E53042857400C8E719 /* LocalService.swift */; };
-		DBD6B50C30428BC800C8E719 /* ServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B4EB3042861700C8E719 /* ServicesView.swift */; };
 		DBD6B5123042944500C8E719 /* ContainersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B4EA3042860400C8E719 /* ContainersViewModel.swift */; };
 		DBD6B5133042944500C8E719 /* ContainersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B50F3042920E00C8E719 /* ContainersView.swift */; };
 		DBD6B51830429AFC00C8E719 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DBD6B51730429AFC00C8E719 /* Assets.xcassets */; };
+		DBD6B5253043498600C8E719 /* ImageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B51D304345D900C8E719 /* ImageRow.swift */; };
+		DBD6B5263043498600C8E719 /* ImagesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B51B304345BF00C8E719 /* ImagesViewModel.swift */; };
+		DBD6B5273043498600C8E719 /* ServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B4EB3042861700C8E719 /* ServicesView.swift */; };
+		DBD6B5283043498600C8E719 /* ImagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B51F304345FC00C8E719 /* ImagesView.swift */; };
+		DBD6B5293043498600C8E719 /* DockerImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5193043452900C8E719 /* DockerImage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +47,10 @@
 		DBD6B4FE30428A3A00C8E719 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DBD6B50F3042920E00C8E719 /* ContainersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainersView.swift; sourceTree = "<group>"; };
 		DBD6B51730429AFC00C8E719 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = DevMonitor/Assets.xcassets; sourceTree = "<group>"; };
+		DBD6B5193043452900C8E719 /* DockerImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockerImage.swift; sourceTree = "<group>"; };
+		DBD6B51B304345BF00C8E719 /* ImagesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesViewModel.swift; sourceTree = "<group>"; };
+		DBD6B51D304345D900C8E719 /* ImageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageRow.swift; sourceTree = "<group>"; };
+		DBD6B51F304345FC00C8E719 /* ImagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +92,7 @@
 		DBD6B4DA3042849900C8E719 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				DBD6B5193043452900C8E719 /* DockerImage.swift */,
 				DBD6B4E63042858500C8E719 /* DockerContainer.swift */,
 				DBD6B4E53042857400C8E719 /* LocalService.swift */,
 			);
@@ -149,6 +158,7 @@
 		DBD6B4E2304284DB00C8E719 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				DBD6B51D304345D900C8E719 /* ImageRow.swift */,
 				DBD6B4F03042868700C8E719 /* ContainerRow.swift */,
 				DBD6B4EF3042867100C8E719 /* ServiceRow.swift */,
 				DBD6B4EE3042866300C8E719 /* StatusBadge.swift */,
@@ -178,6 +188,7 @@
 		DBD6B50E304291F600C8E719 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				DBD6B51F304345FC00C8E719 /* ImagesView.swift */,
 				DBD6B50F3042920E00C8E719 /* ContainersView.swift */,
 			);
 			path = Views;
@@ -186,6 +197,7 @@
 		DBD6B5113042933000C8E719 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				DBD6B51B304345BF00C8E719 /* ImagesViewModel.swift */,
 				DBD6B4EA3042860400C8E719 /* ContainersViewModel.swift */,
 			);
 			path = ViewModels;
@@ -264,6 +276,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBD6B4FF30428A3A00C8E719 /* ContentView.swift in Sources */,
+				DBD6B5253043498600C8E719 /* ImageRow.swift in Sources */,
+				DBD6B5263043498600C8E719 /* ImagesViewModel.swift in Sources */,
+				DBD6B5273043498600C8E719 /* ServicesView.swift in Sources */,
+				DBD6B5283043498600C8E719 /* ImagesView.swift in Sources */,
+				DBD6B5293043498600C8E719 /* DockerImage.swift in Sources */,
 				DBD6B4FD3042894200C8E719 /* DevMonitorApp.swift in Sources */,
 				DBD6B50030428BC800C8E719 /* ContainerRow.swift in Sources */,
 				DBD6B50230428BC800C8E719 /* ServiceRow.swift in Sources */,
@@ -277,7 +294,6 @@
 				DBD6B50930428BC800C8E719 /* DockerClient.swift in Sources */,
 				DBD6B50A30428BC800C8E719 /* SystemProcessService.swift in Sources */,
 				DBD6B50B30428BC800C8E719 /* LocalService.swift in Sources */,
-				DBD6B50C30428BC800C8E719 /* ServicesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

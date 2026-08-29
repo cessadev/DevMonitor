@@ -3,10 +3,12 @@ import Combine
 
 struct ContentView: View {
 
-    @State private var servicesVM    = ServicesViewModel()
-    @State private var containersVM  = ContainersViewModel()
-    @State private var isVisible = false
-    @State private var containersExpanded = false
+    @State private var servicesVM      = ServicesViewModel()
+    @State private var containersVM    = ContainersViewModel()
+    @State private var imagesVM        = ImagesViewModel()
+    @State private var isVisible       = false
+    @State private var dockerExpanded  = false
+    @State private var imagesExpanded  = false
     private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -35,21 +37,43 @@ struct ContentView: View {
                 // Local Services
                 ServicesView(
                     services: servicesVM.services,
-                    containersExpanded: containersExpanded,
-                    onDockerTap: { containersExpanded.toggle() }
+                    dockerExpanded: dockerExpanded,
+                    onDockerTap: { dockerExpanded.toggle() }
                 )
 
-                // Docker Containers
-                if containersExpanded && !containersVM.containers.isEmpty {
-                    ContainersView(
-                        containers: containersVM.containers,
-                        onToggle: { container in await containersVM.toggle(container) },
-                        onDelete: { container in await containersVM.delete(container) }
+                // Docker subsections — solo visibles si Docker está expandido
+                if dockerExpanded {
+
+                    // Containers
+                    if !containersVM.containers.isEmpty {
+                        ContainersView(
+                            containers: containersVM.containers,
+                            onToggle: { container in await containersVM.toggle(container) },
+                            onDelete: { container in await containersVM.delete(container) }
+                        )
+                    }
+
+                    // Images header colapsable
+                    ImagesHeader(
+                        count: imagesVM.images.count,
+                        isExpanded: imagesExpanded,
+                        onTap: {
+                            withAnimation(.spring(duration: 0.3)) {
+                                imagesExpanded.toggle()
+                            }
+                        }
                     )
+
+                    if imagesExpanded && !imagesVM.images.isEmpty {
+                        ImagesView(
+                            images: imagesVM.images,
+                            onDelete: { image in await imagesVM.delete(image) }
+                        )
+                    }
                 }
 
                 // Error
-                if let error = containersVM.error {
+                if let error = containersVM.error ?? imagesVM.error {
                     HStack(spacing: 6) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundStyle(.orange)
@@ -100,15 +124,66 @@ struct ContentView: View {
             refresh()
         }
         .onDisappear {
-            isVisible = false
-            containersExpanded = false
+            isVisible      = false
+            dockerExpanded = false
+            imagesExpanded = false
         }
         .onReceive(timer) { _ in refresh() }
     }
 
     private func refresh() {
         servicesVM.refresh()
-        Task { await containersVM.refresh() }
+        Task {
+            await containersVM.refresh()
+            await imagesVM.refresh()
+        }
     }
 }
 
+// MARK: - Images Header
+
+private struct ImagesHeader: View {
+    let count: Int
+    let isExpanded: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 10) {
+                Image(systemName: "photo.stack")
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 22)
+
+                Text("Images")
+                    .font(.system(size: 13))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                HStack(spacing: 6) {
+                    Text("\(count)")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(
+                            Capsule()
+                                .fill(.white.opacity(0.12))
+                                .strokeBorder(.white.opacity(0.18), lineWidth: 0.5)
+                        )
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(.tertiary)
+                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                        .animation(.spring(duration: 0.3), value: isExpanded)
+                }
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, 12)
+        .padding(.bottom, isExpanded ? 0 : 6)
+    }
+}

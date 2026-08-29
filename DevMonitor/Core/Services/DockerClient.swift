@@ -5,6 +5,7 @@ class DockerClient {
     static let shared = DockerClient()
     private let socketPath = "/var/run/docker.sock"
 
+    // Containers
     func fetchContainers() async throws -> [DockerContainer] {
         let responseData = try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
@@ -52,6 +53,45 @@ class DockerClient {
     func deleteContainer(id: String) async throws {
         _ = try sendRequest(
             "DELETE /containers/\(id)?force=true HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
+        )
+    }
+    
+    // Images
+    func fetchImages() async throws -> [DockerImage] {
+        let responseData = try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    let data = try self.sendRequest(
+                        "GET /images/json?dangling=false HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
+                    )
+                    continuation.resume(returning: data)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+
+        guard let separatorRange = responseData.range(of: Data("\r\n\r\n".utf8)) else {
+            throw DockerError.emptyResponse
+        }
+
+        let headerData = responseData[..<separatorRange.lowerBound]
+        let rawBody    = Data(responseData[separatorRange.upperBound...])
+        let headers    = String(data: headerData, encoding: .utf8) ?? ""
+        let isChunked  = headers.lowercased().contains("transfer-encoding: chunked")
+        let body       = isChunked ? Self.decodeChunked(rawBody) : rawBody
+
+        do {
+            return try JSONDecoder().decode([DockerImage].self, from: body)
+        } catch {
+            let raw = String(data: body, encoding: .utf8) ?? "unreadable"
+            throw DockerError.decodingFailed(String(raw.prefix(300)))
+        }
+    }
+
+    func deleteImage(id: String) async throws {
+        _ = try sendRequest(
+            "DELETE /images/\(id)?force=false HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
         )
     }
 

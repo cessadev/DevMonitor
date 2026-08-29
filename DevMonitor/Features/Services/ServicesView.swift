@@ -3,7 +3,7 @@ import SwiftUI
 struct ServicesView: View {
 
     let services: [LocalService]
-    let containersExpanded: Bool
+    let dockerExpanded: Bool
     let onDockerTap: () -> Void
 
     var body: some View {
@@ -21,7 +21,7 @@ struct ServicesView: View {
                             ServiceRow(
                                 service: service,
                                 isExpandable: true,
-                                isExpanded: containersExpanded
+                                isExpanded: dockerExpanded
                             )
                         }
                         .buttonStyle(.plain)
