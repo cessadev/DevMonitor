@@ -4,11 +4,11 @@ struct CreateContainerSheet: View {
 
     let imageName: String
     let onCancel: () -> Void
-    let onCreate: (String) async -> Bool
+    let onCreate: (String) async -> (success: Bool, validationError: String?)
 
-    @State private var containerName = ""
-    @State private var isCreating    = false
-
+    @State private var containerName            = ""
+    @State private var isCreating               = false
+    @State private var validationError: String? = nil
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
 
@@ -51,6 +51,14 @@ struct CreateContainerSheet: View {
                             .strokeBorder(.white.opacity(0.35), lineWidth: 0.5)
                     )
                     .onSubmit { submit() }
+                
+                if let validationError {
+                    Text(validationError)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.red.opacity(0.85))
+                        .padding(.horizontal, 2)
+                        .transition(.opacity)
+                }
             }
 
             // Actions
@@ -105,10 +113,15 @@ struct CreateContainerSheet: View {
 
     private func submit() {
         isCreating = true
+        validationError = nil
         Task {
-            let success = await onCreate(containerName)
-            if success {
+            let result = await onCreate(containerName)
+            if result.success {
                 onCancel()
+            } else if let msg = result.validationError {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    validationError = msg
+                }
             }
             isCreating = false
         }

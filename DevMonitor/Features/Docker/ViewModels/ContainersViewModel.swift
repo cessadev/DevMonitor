@@ -46,30 +46,25 @@ class ContainersViewModel {
     }
     
     @MainActor
-    func createContainer(name: String, imageName: String) async -> Bool {
+    func createContainer(name: String, imageName: String) async -> (success: Bool, validationError: String?) {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
 
-        // Validation: empty or blank
         guard !trimmed.isEmpty else {
-            self.error = "Container name cannot be empty"
-            return false
+            return (false, "Container name cannot be empty")
         }
 
-        // Validation: duplicate name
         guard !containerNameExists(trimmed) else {
-            self.error = "A container named '\(trimmed)' already exists"
-            return false
+            return (false, "A container named '\(trimmed)' already exists")
         }
 
-        // Validation: delegate to DockerClient
         do {
             try await dockerClient.createContainer(name: trimmed, imageName: imageName)
             try? await Task.sleep(nanoseconds: 400_000_000)
             await refresh()
-            return true
+            return (true, nil)
         } catch {
             self.error = error.localizedDescription
-            return false
+            return (false, nil)
         }
     }
     

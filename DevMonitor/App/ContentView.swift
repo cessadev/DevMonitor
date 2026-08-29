@@ -174,17 +174,17 @@ struct ContentView: View {
                             }
                         },
                         onCreate: { name in
-                            let success = await containersVM.createContainer(
+                            let result = await containersVM.createContainer(
                                 name: name,
                                 imageName: image.displayTag
                             )
-                            if success {
+                            if result.success {
                                 withAnimation(.spring(duration: 0.25)) {
                                     showCreateContainer = false
                                     selectedImage       = nil
                                 }
                             }
-                            return success
+                            return result
                         }
                     )
                     .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 14))
