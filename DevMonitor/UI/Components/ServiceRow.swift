@@ -21,7 +21,7 @@ struct ServiceRow: View {
             }
 
             Text(service.name)
-                .font(.system(size: 13))
+                .font(.system(size: 13, weight: .medium))
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             if isExpandable {

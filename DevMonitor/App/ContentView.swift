@@ -256,7 +256,7 @@ private struct ImagesHeader: View {
                     .frame(width: 22)
 
                 Text("Images")
-                    .font(.system(size: 13))
+                    .font(.system(size: 13, weight: .medium))
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 HStack(spacing: 6) {
@@ -303,7 +303,7 @@ private struct PullImageHeader: View {
                     .frame(width: 22)
 
                 Text("Pull Image")
-                    .font(.system(size: 13))
+                    .font(.system(size: 13, weight: .medium))
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Image(systemName: "chevron.right")
