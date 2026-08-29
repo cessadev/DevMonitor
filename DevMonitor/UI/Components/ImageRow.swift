@@ -4,8 +4,8 @@ struct ImageRow: View {
     let image: DockerImage
     let onDelete: () async -> Void
 
-    @State private var isDeleting   = false
-    @State private var isHovered    = false
+    @State private var isDeleting    = false
+    @State private var isHovered     = false
     @State private var confirmDelete = false
 
     var body: some View {
@@ -20,28 +20,21 @@ struct ImageRow: View {
                     .font(.system(size: 13))
                     .lineLimit(1)
                     .truncationMode(.tail)
-                HStack(spacing: 6) {
+                HStack(spacing: 4) {
                     Text(image.shortId)
-                        .font(.system(size: 10))
-                        .foregroundStyle(.tertiary)
                     Text("·")
-                        .font(.system(size: 10))
-                        .foregroundStyle(.tertiary)
                     Text(image.displaySize)
-                        .font(.system(size: 10))
-                        .foregroundStyle(.tertiary)
                     Text("·")
-                        .font(.system(size: 10))
-                        .foregroundStyle(.tertiary)
                     Text(image.displayAge)
-                        .font(.system(size: 10))
-                        .foregroundStyle(.tertiary)
                 }
+                .font(.system(size: 10))
+                .foregroundStyle(.tertiary)
+                .lineLimit(1)
+                .truncationMode(.tail)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(-1)
 
-            // Hover actions
             if isHovered || confirmDelete {
                 if confirmDelete {
                     HStack(spacing: 4) {

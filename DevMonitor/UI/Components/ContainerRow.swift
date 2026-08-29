@@ -22,6 +22,12 @@ struct ContainerRow: View {
 
     var body: some View {
         HStack(spacing: 10) {
+            Image("container-icon")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
+                .foregroundStyle(.secondary)
+
             VStack(alignment: .leading, spacing: 1) {
                 Text(container.displayName)
                     .font(.system(size: 13))
@@ -36,10 +42,9 @@ struct ContainerRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(-1)
 
-            // Trash icon — visible on hover
+            // Trash icon
             if isHovered || confirmDelete {
                 if confirmDelete {
-                    // Confirmation inline
                     HStack(spacing: 4) {
                         Button {
                             isDeleting = true
