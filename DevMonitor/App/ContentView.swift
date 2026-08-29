@@ -184,6 +184,6 @@ private struct ImagesHeader: View {
         }
         .buttonStyle(.plain)
         .padding(.horizontal, 12)
-        .padding(.bottom, isExpanded ? 0 : 6)
+        .padding(.bottom, 6)
     }
 }
