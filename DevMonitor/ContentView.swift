@@ -181,7 +181,13 @@ struct ContainerRow: View {
     let onToggle: () async -> Void
 
     @State private var isLoading = false
-    @State private var isHovered = false
+    @State private var isOn: Bool
+
+    init(container: DockerContainer, onToggle: @escaping () async -> Void) {
+        self.container = container
+        self.onToggle = onToggle
+        self._isOn = State(initialValue: container.isRunning)
+    }
 
     var body: some View {
         HStack(spacing: 10) {
@@ -200,44 +206,25 @@ struct ContainerRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            Button {
-                isLoading = true
-                Task {
-                    await onToggle()
-                    isLoading = false
-                }
-            } label: {
-                HStack(spacing: 4) {
-                    if isLoading {
-                        ProgressView()
-                            .controlSize(.mini)
-                            .frame(width: 6, height: 6)
-                    } else {
-                        Circle()
-                            .fill(container.isRunning ? Color.green : Color.red.opacity(0.8))
-                            .frame(width: 6, height: 6)
-                            .shadow(color: container.isRunning ? .green.opacity(0.6) : .clear, radius: 3)
+            Toggle("", isOn: $isOn)
+                .toggleStyle(.switch)
+                .controlSize(.mini)
+                .disabled(isLoading)
+                .opacity(isLoading ? 0.5 : 1.0)
+                .animation(.easeInOut(duration: 0.2), value: isLoading)
+                .onChange(of: isOn) { _, _ in
+                    isLoading = true
+                    Task {
+                        await onToggle()
+                        isLoading = false
                     }
-                    Text(container.state.capitalized)
-                        .font(.system(size: 11))
-                        .foregroundStyle(.secondary)
                 }
-                .padding(.horizontal, 7)
-                .padding(.vertical, 3)
-                .background(
-                    Capsule()
-                        .fill(.white.opacity(0.12))
-                        .strokeBorder(.white.opacity(0.18), lineWidth: 0.5)
-                )
-                .animation(.easeInOut(duration: 0.15), value: isHovered)
-            }
-            .buttonStyle(.plain)
-            .disabled(isLoading)
-            .contentShape(Capsule())
-            .onHover { isHovered = $0 }
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 5)
+        .onChange(of: container.isRunning) { _, newValue in
+            isOn = newValue
+        }
     }
 }
 
