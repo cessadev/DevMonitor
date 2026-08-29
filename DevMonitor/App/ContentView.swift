@@ -131,23 +131,37 @@ struct ContentView: View {
 
                 // Footer
                 HStack {
-                    HStack(spacing: 4) {
-                        Image(systemName: "clock")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                        Text("Refreshes every 5s")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
+                    Button {
+                        // Preferences — static for now
+                    } label: {
+                        Text("Preferences")
+                            .font(.system(size: 12))
                     }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 6)
+                    .background(
+                        Capsule()
+                            .fill(.white.opacity(0.12))
+                            .strokeBorder(.white.opacity(0.30), lineWidth: 0.5)
+                    )
+
                     Spacer()
+
                     Button {
                         NSApplication.shared.terminate(nil)
                     } label: {
                         Text("Quit")
-                            .font(.system(size: 13))
+                            .font(.system(size: 12))
                     }
-                    .buttonStyle(.glass)
-                    .controlSize(.small)
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 6)
+                    .background(
+                        Capsule()
+                            .fill(.white.opacity(0.12))
+                            .strokeBorder(.white.opacity(0.30), lineWidth: 0.5)
+                    )
                     .keyboardShortcut("q")
                 }
                 .padding(.horizontal, 16)
