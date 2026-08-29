@@ -93,6 +93,9 @@ struct ContentView: View {
         .fixedSize(horizontal: false, vertical: true)
         .onReceive(timer) { _ in refresh() }
         .task { refresh() }
+        .onDisappear {
+            containersExpanded = false
+        }
     }
 
     private func refresh() {
