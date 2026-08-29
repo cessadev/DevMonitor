@@ -94,6 +94,89 @@ class DockerClient {
             "DELETE /images/\(id)?force=false HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
         )
     }
+    
+    func pullImage(name: String, onProgress: @escaping (String) -> Void) async throws {
+        let encoded = name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? name
+        let request = "POST /images/create?fromImage=\(encoded) HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
+
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    guard FileManager.default.fileExists(atPath: self.socketPath) else {
+                        throw DockerError.socketNotFound
+                    }
+
+                    let fd = socket(AF_UNIX, SOCK_STREAM, 0)
+                    guard fd >= 0 else { throw DockerError.connectionFailed }
+                    defer { close(fd) }
+
+                    var addr        = sockaddr_un()
+                    addr.sun_family = sa_family_t(AF_UNIX)
+                    let pathBytes   = self.socketPath.utf8CString
+                    withUnsafeMutablePointer(to: &addr.sun_path) { ptr in
+                        pathBytes.withUnsafeBytes { src in
+                            UnsafeMutableRawPointer(ptr)
+                                .copyMemory(from: src.baseAddress!, byteCount: min(src.count, 104))
+                        }
+                    }
+
+                    let connectResult = withUnsafePointer(to: &addr) { ptr in
+                        ptr.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                            connect(fd, $0, socklen_t(MemoryLayout<sockaddr_un>.size))
+                        }
+                    }
+                    guard connectResult == 0 else { throw DockerError.connectionFailed }
+
+                    var requestBytes = Array(request.utf8)
+                    guard write(fd, &requestBytes, requestBytes.count) >= 0 else {
+                        throw DockerError.connectionFailed
+                    }
+
+                    // Read response headers
+                    var headerBuffer = Data()
+                    var buffer       = [UInt8](repeating: 0, count: 1)
+                    while true {
+                        let n = read(fd, &buffer, 1)
+                        if n <= 0 { break }
+                        headerBuffer.append(buffer[0])
+                        if headerBuffer.suffix(4) == Data("\r\n\r\n".utf8) { break }
+                    }
+
+                    // Stream body line by line
+                    var lineBuffer = ""
+                    var readBuf    = [UInt8](repeating: 0, count: 512)
+                    while true {
+                        let n = read(fd, &readBuf, readBuf.count)
+                        if n <= 0 { break }
+                        let chunk = String(bytes: readBuf[..<n], encoding: .utf8) ?? ""
+                        lineBuffer += chunk
+
+                        // Each JSON event is a separate line
+                        while let newline = lineBuffer.firstIndex(of: "\n") {
+                            let line = String(lineBuffer[..<newline]).trimmingCharacters(in: .whitespaces)
+                            lineBuffer = String(lineBuffer[lineBuffer.index(after: newline)...])
+
+                            // Skip chunked size lines
+                            if !line.isEmpty && line.hasPrefix("{") {
+                                if let data   = line.data(using: .utf8),
+                                   let json   = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                                   let status = json["status"] as? String {
+                                    let detail = (json["progressDetail"] as? [String: Any])
+                                    let prog   = json["progress"] as? String ?? ""
+                                    let msg    = prog.isEmpty ? status : "\(status) \(prog)"
+                                    DispatchQueue.main.async { onProgress(msg) }
+                                }
+                            }
+                        }
+                    }
+
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
 
     private static func decodeChunked(_ data: Data) -> Data {
         var result = Data()

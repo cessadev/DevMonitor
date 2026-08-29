@@ -9,6 +9,8 @@ struct ContentView: View {
     @State private var isVisible       = false
     @State private var dockerExpanded  = false
     @State private var imagesExpanded  = false
+    @State private var pullExpanded    = false
+    @State private var pullImageName   = ""
     private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -70,6 +72,28 @@ struct ContentView: View {
                             onDelete: { image in await imagesVM.delete(image) }
                         )
                     }
+                    
+                    // Pull Image header
+                    PullImageHeader(
+                        isExpanded: pullExpanded,
+                        onTap: {
+                            withAnimation(.spring(duration: 0.3)) {
+                                pullExpanded.toggle()
+                            }
+                        }
+                    )
+
+                    // Pull Image form
+                    if pullExpanded {
+                        PullImageView(
+                            imageName: $pullImageName,
+                            isPulling: imagesVM.isPulling,
+                            progress: imagesVM.pullProgress,
+                            onPull: {
+                                Task { await imagesVM.pull(name: pullImageName) }
+                            }
+                        )
+                    }
                 }
 
                 // Error
@@ -127,6 +151,8 @@ struct ContentView: View {
             isVisible      = false
             dockerExpanded = false
             imagesExpanded = false
+            pullExpanded   = false
+            pullImageName  = ""
         }
         .onReceive(timer) { _ in refresh() }
     }
@@ -185,5 +211,86 @@ private struct ImagesHeader: View {
         .buttonStyle(.plain)
         .padding(.horizontal, 12)
         .padding(.bottom, 6)
+    }
+}
+
+// MARK: - Pull Image Header
+
+private struct PullImageHeader: View {
+    let isExpanded: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 10) {
+                Image(systemName: "arrow.down.circle")
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 22)
+
+                Text("Pull Image")
+                    .font(.system(size: 13))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.tertiary)
+                    .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                    .animation(.spring(duration: 0.3), value: isExpanded)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, 12)
+        .padding(.bottom, 6)
+    }
+}
+
+// MARK: - Pull Image View
+
+private struct PullImageView: View {
+    @Binding var imageName: String
+    let isPulling: Bool
+    let progress: String
+    let onPull: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                TextField("e.g. nginx:latest", text: $imageName)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 12))
+                    .disabled(isPulling)
+                    .onSubmit { onPull() }
+
+                Button {
+                    onPull()
+                } label: {
+                    Text(isPulling ? "Pulling..." : "Pull")
+                        .font(.system(size: 12, weight: .medium))
+                }
+                .buttonStyle(.glass)
+                .controlSize(.small)
+                .disabled(isPulling || imageName.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal, 12)
+
+            // Progress
+            if !progress.isEmpty {
+                Text(progress)
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .padding(.horizontal, 16)
+            }
+        }
+        .padding(.bottom, 6)
+        .transition(.move(edge: .top).combined(with: .opacity))
     }
 }

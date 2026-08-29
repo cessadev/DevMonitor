@@ -5,6 +5,9 @@ class ImagesViewModel {
 
     var images: [DockerImage] = []
     var error: String?
+    
+    var pullProgress: String = ""
+    var isPulling: Bool      = false
 
     private let dockerClient = DockerClient.shared
 
@@ -20,6 +23,29 @@ class ImagesViewModel {
         } catch {
             self.error = error.localizedDescription
             images     = []
+        }
+    }
+    
+    @MainActor
+    func pull(name: String) async {
+        guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+        isPulling    = true
+        pullProgress = "Connecting..."
+        error        = nil
+
+        do {
+            try await dockerClient.pullImage(name: name) { [weak self] message in
+                self?.pullProgress = message
+            }
+            pullProgress = "Done"
+            try? await Task.sleep(nanoseconds: 800_000_000)
+            pullProgress = ""
+            isPulling    = false
+            await refresh()
+        } catch {
+            self.error   = error.localizedDescription
+            pullProgress = ""
+            isPulling    = false
         }
     }
 
