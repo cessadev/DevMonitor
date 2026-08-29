@@ -37,11 +37,17 @@ struct DockerImage: Identifiable, Decodable {
     }
 
     var displaySize: String {
-        let mb = Double(size) / 1_000_000
-        if mb >= 1000 {
-            return String(format: "%.1f GB", mb / 1000)
+        let kb = Double(size) / 1_000
+        let mb = kb / 1_000
+        let gb = mb / 1_000
+
+        if gb >= 1 {
+            return String(format: "%.1f GB", gb)
+        } else if mb >= 1 {
+            return String(format: "%.0f MB", mb)
+        } else {
+            return String(format: "%.1f KB", kb)
         }
-        return String(format: "%.0f MB", mb)
     }
 
     var displayAge: String {

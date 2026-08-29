@@ -140,6 +140,11 @@ struct ContentView: View {
         }
         .frame(width: 300)
         .fixedSize(horizontal: false, vertical: true)
+        .animation(.spring(duration: 0.35, bounce: 0.15), value: containersVM.containers.count)
+        .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesVM.images.count)
+        .animation(.spring(duration: 0.35, bounce: 0.15), value: dockerExpanded)
+        .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesExpanded)
+        .animation(.spring(duration: 0.35, bounce: 0.15), value: pullExpanded)
         .opacity(isVisible ? 1 : 0)
         .scaleEffect(isVisible ? 1 : 0.9, anchor: .top)
         .animation(.spring(duration: 0.4, bounce: 0.35), value: isVisible)
