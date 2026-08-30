@@ -53,7 +53,7 @@ struct ContentView: View {
                     onDockerTap: { dockerExpanded.toggle() }
                 )
 
-                // Docker subsections — solo visibles si Docker está expandido
+                // Docker subsections
                 if dockerExpanded {
 
                     // Containers
@@ -363,7 +363,7 @@ private struct PullImageView: View {
                     .fill(.white.opacity(0.18))
                     .strokeBorder(.white.opacity(0.35), lineWidth: 0.5)
             )
-            .padding(.horizontal, 12)
+            .padding(.horizontal, 16)
 
             // Progress
             if !progress.isEmpty {
