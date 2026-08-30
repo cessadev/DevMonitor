@@ -66,7 +66,7 @@ struct ImageRow: View {
                     )
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
                 } else {
-                    HStack(spacing: 8) {
+                    HStack(spacing: 16) {
                         // Trash
                         Button {
                             withAnimation(.spring(duration: 0.2)) {
