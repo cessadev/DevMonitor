@@ -80,7 +80,7 @@ struct ContainerRow: View {
                         }
                     } label: {
                         Image(systemName: "trash")
-                            .font(.system(size: 11))
+                            .font(.system(size: 13))
                             .foregroundStyle(.secondary)
                     }
                     .buttonStyle(.plain)

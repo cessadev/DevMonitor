@@ -74,7 +74,7 @@ struct ImageRow: View {
                             }
                         } label: {
                             Image(systemName: "trash")
-                                .font(.system(size: 11))
+                                .font(.system(size: 13))
                                 .foregroundStyle(.secondary)
                         }
                         .buttonStyle(.plain)
@@ -87,7 +87,8 @@ struct ImageRow: View {
                             Image("container-icon")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 15, height: 15)
+                                .frame(width: 16, height: 16)
+                                .opacity(0.5)
                         }
                         .buttonStyle(.plain)
                         .transition(.scale(scale: 0.85).combined(with: .opacity))
