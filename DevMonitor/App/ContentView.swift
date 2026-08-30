@@ -283,6 +283,7 @@ private struct ImagesHeader: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .padding(.bottom, 2)
     }
 }
 
@@ -294,15 +295,12 @@ private struct PullImageHeader: View {
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 10) {
-                Image(systemName: "arrow.down.circle")
-                    .font(.system(size: 13))
-                    .foregroundStyle(.secondary)
-                    .frame(width: 22)
+            HStack {
+                Text("PULL IMAGE")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(.tertiary)
 
-                Text("Pull Image")
-                    .font(.system(size: 13, weight: .medium))
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                Spacer()
 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 10, weight: .medium))
@@ -310,13 +308,12 @@ private struct PullImageHeader: View {
                     .rotationEffect(.degrees(isExpanded ? 90 : 0))
                     .animation(.spring(duration: 0.3), value: isExpanded)
             }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 5)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 2)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .padding(.horizontal, 12)
-        .padding(.bottom, 6)
+        .padding(.bottom, 4)
     }
 }
 
@@ -373,7 +370,7 @@ private struct PullImageView: View {
                     .padding(.horizontal, 16)
             }
         }
-        .padding(.bottom, 6)
+        .padding(.bottom, 8)
         .transition(.move(edge: .top).combined(with: .opacity))
     }
 }
