@@ -147,8 +147,8 @@ struct ContentView: View {
                     .padding(.vertical, 6)
                     .background(
                         Capsule()
-                            .fill(.white.opacity(0.12))
-                            .strokeBorder(.white.opacity(0.30), lineWidth: 0.5)
+                            .fill(.white.opacity(0.18))
+                            .strokeBorder(.white.opacity(0.45), lineWidth: 0.5)
                     )
 
                     Spacer()
@@ -164,8 +164,8 @@ struct ContentView: View {
                     .padding(.vertical, 6)
                     .background(
                         Capsule()
-                            .fill(.white.opacity(0.12))
-                            .strokeBorder(.white.opacity(0.30), lineWidth: 0.5)
+                            .fill(.white.opacity(0.18))
+                            .strokeBorder(.white.opacity(0.45), lineWidth: 0.5)
                     )
                     .keyboardShortcut("q")
                 }
@@ -288,7 +288,7 @@ private struct ImagesHeader: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .padding(.bottom, 4)
+        .padding(.bottom, 6)
     }
 }
 
@@ -304,6 +304,7 @@ private struct PullImageHeader: View {
                 Text("PULL IMAGE")
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundStyle(.tertiary)
+                    .padding(.top, 2)
 
                 Spacer()
 
@@ -375,7 +376,7 @@ private struct PullImageView: View {
                     .padding(.horizontal, 16)
             }
         }
-        .padding(.bottom, 8)
+        .padding(.bottom, 10)
         .transition(.move(edge: .top).combined(with: .opacity))
     }
 }

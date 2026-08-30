@@ -9,6 +9,7 @@ struct ContainersView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             SectionLabel(title: "Docker Containers")
+                .padding(.vertical, 4)
 
             VStack(spacing: 2) {
                 ForEach(containers) { container in
