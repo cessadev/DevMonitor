@@ -8,9 +8,6 @@ struct ImagesView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            SectionLabel(title: "Docker Images")
-                .padding(.bottom, 1)
-
             VStack(spacing: 2) {
                 ForEach(images) { image in
                     ImageRow(

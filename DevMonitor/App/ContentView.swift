@@ -252,15 +252,12 @@ private struct ImagesHeader: View {
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 10) {
-                Image(systemName: "photo.stack")
-                    .font(.system(size: 13))
-                    .foregroundStyle(.secondary)
-                    .frame(width: 22)
+            HStack {
+                Text("DOCKER IMAGES")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(.tertiary)
 
-                Text("Images")
-                    .font(.system(size: 13, weight: .medium))
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                Spacer()
 
                 HStack(spacing: 6) {
                     Text("\(count)")
@@ -281,13 +278,11 @@ private struct ImagesHeader: View {
                         .animation(.spring(duration: 0.3), value: isExpanded)
                 }
             }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 5)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 2)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .padding(.horizontal, 12)
-        .padding(.bottom, 6)
     }
 }
 
