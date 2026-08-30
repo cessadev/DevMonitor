@@ -72,43 +72,48 @@ struct ContentView: View {
                         onTap: {
                             withAnimation(.spring(duration: 0.3)) {
                                 imagesExpanded.toggle()
+                                if !imagesExpanded {
+                                    pullExpanded  = false
+                                    pullImageName = ""
+                                }
                             }
                         }
                     )
 
-                    if imagesExpanded && !imagesVM.images.isEmpty {
-                        ImagesView(
-                            images: imagesVM.images,
-                            onDelete: { image in await imagesVM.delete(image) },
-                            onCreateContainer: { image in
-                                selectedImage = image
-                                withAnimation(.spring(duration: 0.25)) {
-                                    showCreateContainer = true
+                    if imagesExpanded {
+                        if !imagesVM.images.isEmpty {
+                            ImagesView(
+                                images: imagesVM.images,
+                                onDelete: { image in await imagesVM.delete(image) },
+                                onCreateContainer: { image in
+                                    selectedImage = image
+                                    withAnimation(.spring(duration: 0.25)) {
+                                        showCreateContainer = true
+                                    }
+                                }
+                            )
+                        }
+
+                        // Pull Image — dentro de Images
+                        PullImageHeader(
+                            isExpanded: pullExpanded,
+                            onTap: {
+                                withAnimation(.spring(duration: 0.3)) {
+                                    pullExpanded.toggle()
                                 }
                             }
                         )
-                    }
-                    
-                    // Pull Image header
-                    PullImageHeader(
-                        isExpanded: pullExpanded,
-                        onTap: {
-                            withAnimation(.spring(duration: 0.3)) {
-                                pullExpanded.toggle()
-                            }
-                        }
-                    )
 
-                    // Pull Image form
-                    if pullExpanded {
-                        PullImageView(
-                            imageName: $pullImageName,
-                            isPulling: imagesVM.isPulling,
-                            progress: imagesVM.pullProgress,
-                            onPull: {
-                                Task { await imagesVM.pull(name: pullImageName) }
-                            }
-                        )
+                        if pullExpanded {
+                            PullImageView(
+                                imageName: $pullImageName,
+                                isPulling: imagesVM.isPulling,
+                                progress: imagesVM.pullProgress,
+                                onPull: {
+                                    Task { await imagesVM.pull(name: pullImageName) }
+                                }
+                            )
+                        }
                     }
                 }
 
@@ -283,7 +288,7 @@ private struct ImagesHeader: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .padding(.bottom, 2)
+        .padding(.bottom, 4)
     }
 }
 
@@ -313,7 +318,7 @@ private struct PullImageHeader: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .padding(.bottom, 4)
+        .padding(.bottom, 8)
     }
 }
 
