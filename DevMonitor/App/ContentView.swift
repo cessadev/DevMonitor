@@ -201,8 +201,11 @@ struct ContentView: View {
                             return result
                         }
                     )
-                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 14))
-                    .shadow(color: .black.opacity(0.25), radius: 20)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(.regularMaterial)
+                    )
+                    .shadow(color: .black.opacity(0.15), radius: 12)
                     .transition(.scale(scale: 0.92).combined(with: .opacity))
                 }
             }
