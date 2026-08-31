@@ -4,11 +4,18 @@ struct CreateContainerSheet: View {
 
     let imageName: String
     let onCancel: () -> Void
-    let onCreate: (String) async -> (success: Bool, validationError: String?)
+    let onCreate: (String, [String], [String], String) async -> (success: Bool, validationError: String?)
 
+    // MARK: - Form state
     @State private var containerName            = ""
+    @State private var portBindings: [String]   = [""]
+    @State private var envVars: [String]        = [""]
+    @State private var restartPolicy            = "no"
     @State private var isCreating               = false
     @State private var validationError: String? = nil
+
+    private let restartOptions = ["no", "always", "unless-stopped", "on-failure"]
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
 
@@ -33,32 +40,70 @@ struct CreateContainerSheet: View {
                     .truncationMode(.middle)
             }
 
-            // Name input
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Container name")
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-
+            // Container name
+            FormField(label: "Container name") {
                 TextField("e.g. my-nginx", text: $containerName)
                     .textFieldStyle(.plain)
                     .font(.system(size: 13))
                     .disabled(isCreating)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 7)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(.white.opacity(0.18))
-                            .strokeBorder(.white.opacity(0.35), lineWidth: 0.5)
-                    )
+                    .background(fieldBackground)
                     .onSubmit { submit() }
-                
-                if let validationError {
-                    Text(validationError)
-                        .font(.system(size: 11))
-                        .foregroundStyle(.red.opacity(0.85))
-                        .padding(.horizontal, 2)
-                        .transition(.opacity)
+            }
+
+            // Port bindings
+            FormField(label: "Ports (host:container)") {
+                DynamicFieldList(
+                    entries: $portBindings,
+                    placeholder: "e.g. 8080:80",
+                    isDisabled: isCreating
+                )
+            }
+
+            // Environment variables
+            FormField(label: "Environment variables") {
+                DynamicFieldList(
+                    entries: $envVars,
+                    placeholder: "e.g. DEBUG=true",
+                    isDisabled: isCreating
+                )
+            }
+
+            // Restart policy
+            FormField(label: "Restart policy") {
+                HStack(spacing: 6) {
+                    ForEach(restartOptions, id: \.self) { option in
+                        Button {
+                            restartPolicy = option
+                        } label: {
+                            Text(option)
+                                .font(.system(size: 11))
+                                .foregroundStyle(restartPolicy == option ? .primary : .secondary)
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule()
+                                .fill(restartPolicy == option ? .white.opacity(0.22) : .white.opacity(0.08))
+                                .strokeBorder(
+                                    restartPolicy == option ? .white.opacity(0.45) : .white.opacity(0.15),
+                                    lineWidth: 0.5
+                                )
+                        )
+                        .animation(.easeInOut(duration: 0.15), value: restartPolicy)
+                    }
                 }
+            }
+
+            // Validation error
+            if let validationError {
+                Text(validationError)
+                    .font(.system(size: 11))
+                    .foregroundStyle(.red.opacity(0.85))
+                    .padding(.horizontal, 2)
+                    .transition(.opacity)
             }
 
             // Actions
@@ -111,11 +156,24 @@ struct CreateContainerSheet: View {
         .frame(width: 280)
     }
 
+    // MARK: - Helpers
+
+    private var fieldBackground: some View {
+        RoundedRectangle(cornerRadius: 8)
+            .fill(.white.opacity(0.18))
+            .strokeBorder(.white.opacity(0.35), lineWidth: 0.5)
+    }
+
     private func submit() {
-        isCreating = true
+        isCreating      = true
         validationError = nil
         Task {
-            let result = await onCreate(containerName)
+            let result = await onCreate(
+                containerName,
+                portBindings,
+                envVars,
+                restartPolicy
+            )
             if result.success {
                 onCancel()
             } else if let msg = result.validationError {
@@ -124,6 +182,84 @@ struct CreateContainerSheet: View {
                 }
             }
             isCreating = false
+        }
+    }
+}
+
+// MARK: - FormField wrapper
+
+private struct FormField<Content: View>: View {
+    let label: String
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(label)
+                .font(.system(size: 11))
+                .foregroundStyle(.secondary)
+            content()
+        }
+    }
+}
+
+// MARK: - Dynamic field list (ports / env vars)
+
+private struct DynamicFieldList: View {
+    @Binding var entries: [String]
+    let placeholder: String
+    let isDisabled: Bool
+
+    var body: some View {
+        VStack(spacing: 4) {
+            ForEach(entries.indices, id: \.self) { index in
+                HStack(spacing: 6) {
+                    TextField(placeholder, text: $entries[index])
+                        .textFieldStyle(.plain)
+                        .font(.system(size: 12))
+                        .disabled(isDisabled)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(.white.opacity(0.18))
+                                .strokeBorder(.white.opacity(0.35), lineWidth: 0.5)
+                        )
+
+                    // Remove row — only show when more than one entry
+                    if entries.count > 1 {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                var updated = entries
+                                updated.remove(at: index)
+                                entries = updated
+                            }
+                        } label: {
+                            Image(systemName: "minus.circle")
+                                .font(.system(size: 13))
+                                .foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(isDisabled)
+                    }
+                }
+            }
+
+            // Add row
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    entries.append("")
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "plus.circle")
+                        .font(.system(size: 11))
+                    Text("Add")
+                        .font(.system(size: 11))
+                }
+                .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .disabled(isDisabled)
         }
     }
 }

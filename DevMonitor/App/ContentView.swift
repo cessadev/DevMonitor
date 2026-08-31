@@ -192,10 +192,13 @@ struct ContentView: View {
                                 selectedImage       = nil
                             }
                         },
-                        onCreate: { name in
+                        onCreate: { name, ports, envVars, restartPolicy in
                             let result = await containersVM.createContainer(
                                 name: name,
-                                imageName: image.displayTag
+                                imageName: image.displayTag,
+                                portBindings: ports,
+                                envVars: envVars,
+                                restartPolicy: restartPolicy
                             )
                             if result.success {
                                 withAnimation(.spring(duration: 0.25)) {
