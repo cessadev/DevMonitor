@@ -46,7 +46,13 @@ class ContainersViewModel {
     }
     
     @MainActor
-    func createContainer(name: String, imageName: String) async -> (success: Bool, validationError: String?) {
+    func createContainer(
+        name: String,
+        imageName: String,
+        portBindings: [String],
+        envVars: [String],
+        restartPolicy: String
+    ) async -> (success: Bool, validationError: String?) {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
 
         guard !trimmed.isEmpty else {
@@ -58,7 +64,13 @@ class ContainersViewModel {
         }
 
         do {
-            try await dockerClient.createContainer(name: trimmed, imageName: imageName)
+            try await dockerClient.createContainer(
+                name: trimmed,
+                imageName: imageName,
+                portBindings: portBindings,
+                envVars: envVars,
+                restartPolicy: restartPolicy
+            )
             try? await Task.sleep(nanoseconds: 400_000_000)
             await refresh()
             return (true, nil)
