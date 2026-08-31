@@ -233,11 +233,13 @@ struct ContentView: View {
             refresh()
         }
         .onDisappear {
-            isVisible      = false
-            dockerExpanded = false
-            imagesExpanded = false
-            pullExpanded   = false
-            pullImageName  = ""
+            isVisible           = false
+            dockerExpanded      = false
+            imagesExpanded      = false
+            pullExpanded        = false
+            pullImageName       = ""
+            showCreateContainer = false
+            selectedImage       = nil
         }
         .onReceive(timer) { _ in refresh() }
     }

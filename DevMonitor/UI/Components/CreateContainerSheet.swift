@@ -14,7 +14,7 @@ struct CreateContainerSheet: View {
     @State private var isCreating               = false
     @State private var validationError: String? = nil
 
-    private let restartOptions = ["no", "always", "unless-stopped", "on-failure"]
+    private let restartOptions = ["no", "always", "unless-stop", "on-failure"]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -50,6 +50,13 @@ struct CreateContainerSheet: View {
                     .padding(.vertical, 7)
                     .background(fieldBackground)
                     .onSubmit { submit() }
+                    .onChange(of: containerName) {
+                        if validationError != nil {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                validationError = nil
+                            }
+                        }
+                    }
             }
 
             // Port bindings
@@ -72,29 +79,34 @@ struct CreateContainerSheet: View {
 
             // Restart policy
             FormField(label: "Restart policy") {
-                HStack(spacing: 6) {
+                HStack(spacing: 0) {
                     ForEach(restartOptions, id: \.self) { option in
                         Button {
                             restartPolicy = option
                         } label: {
                             Text(option)
-                                .font(.system(size: 11))
-                                .foregroundStyle(restartPolicy == option ? .primary : .secondary)
+                                .font(.system(size: 10))
+                                .foregroundStyle(restartPolicy == option ? .white : .secondary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 5)
+                                .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
                         .background(
-                            Capsule()
-                                .fill(restartPolicy == option ? .white.opacity(0.22) : .white.opacity(0.08))
-                                .strokeBorder(
-                                    restartPolicy == option ? .white.opacity(0.45) : .white.opacity(0.15),
-                                    lineWidth: 0.5
-                                )
+                            restartPolicy == option
+                                ? RoundedRectangle(cornerRadius: 6)
+                                    .fill(Color.accentColor.opacity(0.8))
+                                : nil
                         )
-                        .animation(.easeInOut(duration: 0.15), value: restartPolicy)
                     }
                 }
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(.white.opacity(0.10))
+                        .strokeBorder(.white.opacity(0.25), lineWidth: 0.5)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .animation(.easeInOut(duration: 0.15), value: restartPolicy)
             }
 
             // Validation error
@@ -245,21 +257,24 @@ private struct DynamicFieldList: View {
             }
 
             // Add row
-            Button {
-                withAnimation(.easeInOut(duration: 0.15)) {
-                    entries.append("")
+            HStack {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        entries.append("")
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "plus.circle")
+                            .font(.system(size: 11))
+                        Text("Add")
+                            .font(.system(size: 11))
+                    }
+                    .foregroundStyle(.secondary)
                 }
-            } label: {
-                HStack(spacing: 4) {
-                    Image(systemName: "plus.circle")
-                        .font(.system(size: 11))
-                    Text("Add")
-                        .font(.system(size: 11))
-                }
-                .foregroundStyle(.secondary)
+                .buttonStyle(.plain)
+                .disabled(isDisabled)
+                Spacer()
             }
-            .buttonStyle(.plain)
-            .disabled(isDisabled)
         }
     }
 }
