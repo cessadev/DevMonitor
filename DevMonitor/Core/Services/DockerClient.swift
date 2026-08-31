@@ -56,10 +56,43 @@ class DockerClient {
         )
     }
     
-    func createContainer(name: String, imageName: String) async throws {
+    func createContainer(
+        name: String,
+        imageName: String,
+        portBindings: [String],       // ["8080:80", "5432:5432"]
+        envVars: [String],            // ["KEY=VALUE", "DEBUG=true"]
+        restartPolicy: String         // "no", "always", "unless-stopped"
+    ) async throws {
         let containerName = name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? name
-        let bodyJSON      = "{\"Image\":\"\(imageName)\"}"
-        let bodyBytes     = bodyJSON.utf8.count
+
+        // Build PortBindings dict: {"80/tcp": [{"HostPort": "8080"}]}
+        var portBindingsDict: [String: Any] = [:]
+        var exposedPorts: [String: Any]     = [:]
+        for binding in portBindings where !binding.trimmingCharacters(in: .whitespaces).isEmpty {
+            let parts = binding.components(separatedBy: ":")
+            guard parts.count == 2 else { continue }
+            let hostPort      = parts[0].trimmingCharacters(in: .whitespaces)
+            let containerPort = parts[1].trimmingCharacters(in: .whitespaces)
+            let key           = "\(containerPort)/tcp"
+            portBindingsDict[key] = [["HostPort": hostPort]]
+            exposedPorts[key]     = [:]
+        }
+
+        let filteredEnv = envVars.filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+
+        let body: [String: Any] = [
+            "Image": imageName,
+            "Env": filteredEnv,
+            "ExposedPorts": exposedPorts,
+            "HostConfig": [
+                "PortBindings": portBindingsDict,
+                "RestartPolicy": ["Name": restartPolicy]
+            ]
+        ]
+
+        let bodyData  = try JSONSerialization.data(withJSONObject: body)
+        let bodyJSON  = String(data: bodyData, encoding: .utf8) ?? "{}"
+        let bodyBytes = bodyJSON.utf8.count
 
         let request = "POST /containers/create?name=\(containerName) HTTP/1.1\r\n" +
                       "Host: localhost\r\n" +
