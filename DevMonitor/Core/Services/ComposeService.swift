@@ -5,7 +5,13 @@ class ComposeService {
 
     static let shared = ComposeService()
 
-    // Common directories to scan for compose files
+    private let composeFileNames = [
+        "docker-compose.yml",
+        "docker-compose.yaml",
+        "compose.yml",
+        "compose.yaml",
+    ]
+
     private let searchDirectories: [String] = {
         let home = FileManager.default.homeDirectoryForCurrentUser.path
         return [
@@ -19,14 +25,6 @@ class ComposeService {
         ]
     }()
 
-    private let composeFileNames = [
-        "docker-compose.yml",
-        "docker-compose.yaml",
-        "compose.yml",
-        "compose.yaml",
-    ]
-
-    // Scan known directories for compose files (non-recursive, one level deep)
     func scanProjects() -> [DockerComposeProject] {
         var found: [DockerComposeProject] = []
         var seenPaths = Set<String>()
@@ -35,13 +33,9 @@ class ComposeService {
             guard let contents = try? FileManager.default.contentsOfDirectory(atPath: dir) else {
                 continue
             }
-
             for entry in contents {
-                let entryPath = "\(dir)/\(entry)"
-
-                // Check directly in the directory
                 for fileName in composeFileNames {
-                    let filePath = "\(entryPath)/\(fileName)"
+                    let filePath = "\(dir)/\(entry)/\(fileName)"
                     if FileManager.default.fileExists(atPath: filePath),
                        !seenPaths.contains(filePath) {
                         seenPaths.insert(filePath)
@@ -49,8 +43,6 @@ class ComposeService {
                     }
                 }
             }
-
-            // Also check the root of each search directory itself
             for fileName in composeFileNames {
                 let filePath = "\(dir)/\(fileName)"
                 if FileManager.default.fileExists(atPath: filePath),
@@ -65,40 +57,58 @@ class ComposeService {
         return found.sorted { $0.displayName.lowercased() < $1.displayName.lowercased() }
     }
 
-    // Run docker compose up -d
     func up(project: DockerComposeProject) throws {
-        try runCompose(args: ["-f", project.filePath, "up", "-d"])
+        let projectDir = URL(fileURLWithPath: project.filePath)
+            .deletingLastPathComponent().path
+        try runCompose(args: ["compose", "up", "-d"], workingDirectory: projectDir)
     }
 
-    // Run docker compose down
     func down(project: DockerComposeProject) throws {
-        try runCompose(args: ["-f", project.filePath, "down"])
+        let projectDir = URL(fileURLWithPath: project.filePath)
+            .deletingLastPathComponent().path
+        try runCompose(args: ["compose", "down"], workingDirectory: projectDir)
     }
 
-    // Query status of each service in the project
     func refreshStatus(for project: DockerComposeProject) -> [String: DockerComposeProject.ComposeServiceStatus] {
-        guard let output = runComposeOutput(args: ["-f", project.filePath, "ps", "--format", "json"]),
-              !output.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        let projectDir = URL(fileURLWithPath: project.filePath)
+            .deletingLastPathComponent().path
+
+        guard let output = runComposeOutput(
+            args: ["compose", "ps", "--format", "json"],
+            workingDirectory: projectDir
+        ), !output.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return [:]
         }
 
         var statuses: [String: DockerComposeProject.ComposeServiceStatus] = [:]
+        let trimmed = output.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // docker compose ps --format json returns one JSON object per line
-        let lines = output.components(separatedBy: "\n").filter { $0.hasPrefix("{") }
+        // Try JSON array first (Docker Compose v2.21+)
+        if trimmed.hasPrefix("["),
+           let data   = trimmed.data(using: .utf8),
+           let array  = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
+            for item in array {
+                if let service = item["Service"] as? String,
+                   let state   = item["State"] as? String {
+                    statuses[service] = state == "running" ? .running : .stopped
+                }
+            }
+            return statuses
+        }
+
+        // Fallback: one JSON object per line (older versions)
+        let lines = trimmed.components(separatedBy: "\n").filter { $0.hasPrefix("{") }
         for line in lines {
-            guard let data = line.data(using: .utf8),
-                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+            guard let data    = line.data(using: .utf8),
+                  let json    = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let service = json["Service"] as? String,
                   let state   = json["State"] as? String else { continue }
-
             statuses[service] = state == "running" ? .running : .stopped
         }
 
         return statuses
     }
 
-    // Locate the docker binary
     private var dockerPath: String {
         let candidates = [
             "/usr/local/bin/docker",
@@ -111,23 +121,50 @@ class ComposeService {
     }
 
     @discardableResult
-    private func runCompose(args: [String]) throws -> Data {
+    private func runCompose(args: [String], workingDirectory: String) throws -> Data {
         let process = Process()
-        let pipe    = Pipe()
+        let outPipe = Pipe()
+        let errPipe = Pipe()
 
-        process.executableURL  = URL(fileURLWithPath: dockerPath)
-        process.arguments      = ["compose"] + args
-        process.standardOutput = pipe
-        process.standardError  = pipe
+        process.executableURL       = URL(fileURLWithPath: dockerPath)
+        process.arguments           = args
+        process.currentDirectoryURL = URL(fileURLWithPath: workingDirectory)
+        process.standardOutput      = outPipe
+        process.standardError       = errPipe
+
+        // Provide a clean environment with required PATH
+        process.environment = [
+            "PATH": "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin",
+            "HOME": FileManager.default.homeDirectoryForCurrentUser.path,
+        ]
 
         try process.run()
         process.waitUntilExit()
 
-        return pipe.fileHandleForReading.readDataToEndOfFile()
+        // If exit code is non-zero, surface the stderr message
+        if process.terminationStatus != 0 {
+            let errData = errPipe.fileHandleForReading.readDataToEndOfFile()
+            let errMsg  = String(data: errData, encoding: .utf8) ?? "Unknown error"
+            throw ComposeError.commandFailed(errMsg.trimmingCharacters(in: .whitespacesAndNewlines))
+        }
+
+        return outPipe.fileHandleForReading.readDataToEndOfFile()
     }
 
-    private func runComposeOutput(args: [String]) -> String? {
-        guard let data = try? runCompose(args: args) else { return nil }
+    private func runComposeOutput(args: [String], workingDirectory: String) -> String? {
+        guard let data = try? runCompose(args: args, workingDirectory: workingDirectory) else {
+            return nil
+        }
         return String(data: data, encoding: .utf8)
+    }
+}
+
+enum ComposeError: Error, LocalizedError {
+    case commandFailed(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .commandFailed(let msg): return msg
+        }
     }
 }
