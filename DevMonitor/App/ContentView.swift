@@ -73,6 +73,7 @@ struct ContentView: View {
                             loadingProjectId: composeVM.isLoadingProjectId,
                             onUp:        { project in await composeVM.up(project) },
                             onDown:      { project in await composeVM.down(project) },
+                            onRemove:    { project in composeVM.remove(project) },
                             onAddManual: { composeVM.addManualProject() }
                         )
                     } else {
@@ -81,6 +82,7 @@ struct ContentView: View {
                             loadingProjectId: nil,
                             onUp:        { _ in },
                             onDown:      { _ in },
+                            onRemove:    { _ in },
                             onAddManual: { composeVM.addManualProject() }
                         )
                     }

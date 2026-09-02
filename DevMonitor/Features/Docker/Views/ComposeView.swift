@@ -5,6 +5,7 @@ struct ComposeView: View {
     let loadingProjectId: UUID?
     let onUp: (DockerComposeProject) async -> Void
     let onDown: (DockerComposeProject) async -> Void
+    let onRemove: (DockerComposeProject) -> Void
     let onAddManual: () -> Void
 
     var body: some View {
@@ -20,7 +21,8 @@ struct ComposeView: View {
                             project: project,
                             isLoading: loadingProjectId == project.id,
                             onUp:   { await onUp(project) },
-                            onDown: { await onDown(project) }
+                            onDown: { await onDown(project) },
+                            onRemove: { onRemove(project) }
                         )
                     }
                 }

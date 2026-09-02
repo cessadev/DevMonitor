@@ -86,6 +86,12 @@ class ComposeViewModel {
         await refresh()
         isLoadingProjectId = nil
     }
+    
+    @MainActor
+    func remove(_ project: DockerComposeProject) {
+        projects.removeAll { $0.id == project.id }
+        manualPaths.remove(project.filePath)
+    }
 
     // Add a project manually via file picker
     @MainActor

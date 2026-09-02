@@ -5,19 +5,18 @@ struct ComposeProjectRow: View {
     let isLoading: Bool
     let onUp: () async -> Void
     let onDown: () async -> Void
+    let onRemove: () -> Void
 
     @State private var isHovered = false
 
     var body: some View {
         HStack(spacing: 10) {
 
-            // Icon
             Image(systemName: "square.stack.3d.up")
                 .font(.system(size: 13))
                 .foregroundStyle(.secondary)
                 .frame(width: 22)
 
-            // Name
             Text(project.displayName)
                 .font(.system(size: 13))
                 .lineLimit(1)
@@ -25,15 +24,19 @@ struct ComposeProjectRow: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .layoutPriority(-1)
 
-            // Actions on hover
-            if isHovered && !isLoading {
-                HStack(spacing: 8) {
-                    // Up button
+            if isLoading {
+                ProgressView()
+                    .controlSize(.small)
+                    .frame(width: 32)
+            } else if isHovered {
+                // On hover: show up, down, remove actions
+                HStack(spacing: 6) {
+                    // Up
                     Button {
                         Task { await onUp() }
                     } label: {
                         Image(systemName: "play.fill")
-                            .font(.system(size: 9, weight: .medium))
+                            .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(.green)
                     }
                     .buttonStyle(.plain)
@@ -44,14 +47,13 @@ struct ComposeProjectRow: View {
                             .fill(.green.opacity(0.12))
                             .strokeBorder(.green.opacity(0.25), lineWidth: 0.5)
                     )
-                    .transition(.scale(scale: 0.85).combined(with: .opacity))
 
-                    // Down button
+                    // Down
                     Button {
                         Task { await onDown() }
                     } label: {
                         Image(systemName: "stop.fill")
-                            .font(.system(size: 9, weight: .medium))
+                            .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(.red)
                     }
                     .buttonStyle(.plain)
@@ -62,17 +64,26 @@ struct ComposeProjectRow: View {
                             .fill(.red.opacity(0.08))
                             .strokeBorder(.red.opacity(0.25), lineWidth: 0.5)
                     )
-                    .transition(.scale(scale: 0.85).combined(with: .opacity))
-                }
-            }
 
-            // Status badge / loading
-            if isLoading {
-                ProgressView()
-                    .controlSize(.small)
-                    .frame(width: 32)
+                    // Remove
+                    Button(action: onRemove) {
+                        Image(systemName: "trash")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 3)
+                    .background(
+                        Capsule()
+                            .fill(.white.opacity(0.08))
+                            .strokeBorder(.white.opacity(0.18), lineWidth: 0.5)
+                    )
+                }
+                .transition(.scale(scale: 0.85).combined(with: .opacity))
             } else {
                 ComposeBadge(status: project.overallStatus)
+                    .transition(.scale(scale: 0.85).combined(with: .opacity))
             }
         }
         .padding(.horizontal, 10)
