@@ -9,6 +9,8 @@ struct ComposeView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
+            SectionLabel(title: "Compose Projects")
+            
             VStack(spacing: 2) {
                 ForEach(projects) { project in
                     ComposeProjectRow(

@@ -14,7 +14,6 @@ struct ContentView: View {
     @State private var showCreateContainer         = false
     @State private var selectedImage: DockerImage? = nil
     @State private var composeVM                   = ComposeViewModel()
-    @State private var composeExpanded             = false
     private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
     
     private func dismissModal() {
@@ -67,7 +66,26 @@ struct ContentView: View {
                         )
                     }
 
-                    // Images header colapsable
+                    // Compose Projects
+                    if !composeVM.projects.isEmpty {
+                        ComposeView(
+                            projects: composeVM.projects,
+                            loadingProjectId: composeVM.isLoadingProjectId,
+                            onUp:        { project in await composeVM.up(project) },
+                            onDown:      { project in await composeVM.down(project) },
+                            onAddManual: { composeVM.addManualProject() }
+                        )
+                    } else {
+                        ComposeView(
+                            projects: [],
+                            loadingProjectId: nil,
+                            onUp:        { _ in },
+                            onDown:      { _ in },
+                            onAddManual: { composeVM.addManualProject() }
+                        )
+                    }
+
+                    // Images header collapsible
                     ImagesHeader(
                         count: imagesVM.images.count,
                         isExpanded: imagesExpanded,
@@ -81,28 +99,6 @@ struct ContentView: View {
                             }
                         }
                     )
-                    
-                    // Compose header
-                    CollapsibleHeader(
-                        title: "Compose Projects",
-                        count: composeVM.projects.count,
-                        isExpanded: composeExpanded,
-                        onTap: {
-                            withAnimation(.spring(duration: 0.3)) {
-                                composeExpanded.toggle()
-                            }
-                        }
-                    )
-
-                    if composeExpanded {
-                        ComposeView(
-                            projects: composeVM.projects,
-                            loadingProjectId: composeVM.isLoadingProjectId,
-                            onUp:   { project in await composeVM.up(project) },
-                            onDown: { project in await composeVM.down(project) },
-                            onAddManual: { composeVM.addManualProject() }
-                        )
-                    }
 
                     if imagesExpanded {
                         if !imagesVM.images.isEmpty {
@@ -118,7 +114,6 @@ struct ContentView: View {
                             )
                         }
 
-                        // Pull Image — dentro de Images
                         PullImageHeader(
                             isExpanded: pullExpanded,
                             onTap: {
@@ -249,7 +244,6 @@ struct ContentView: View {
         .animation(.spring(duration: 0.35, bounce: 0.15), value: dockerExpanded)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesExpanded)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: pullExpanded)
-        .animation(.spring(duration: 0.35, bounce: 0.15), value: composeExpanded)
         .opacity(isVisible ? 1 : 0)
         .scaleEffect(isVisible ? 1 : 0.9, anchor: .top)
         .animation(.spring(duration: 0.4, bounce: 0.35), value: isVisible)
@@ -265,7 +259,6 @@ struct ContentView: View {
             pullImageName       = ""
             showCreateContainer = false
             selectedImage       = nil
-            composeExpanded     = false
         }
         .onReceive(timer) { _ in refresh() }
     }
