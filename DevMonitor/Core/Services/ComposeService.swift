@@ -15,13 +15,13 @@ class ComposeService {
     private let searchDirectories: [String] = {
         let home = FileManager.default.homeDirectoryForCurrentUser.path
         return [
-            home,
             "\(home)/Projects",
             "\(home)/Developer",
             "\(home)/Development",
             "\(home)/Code",
-            "\(home)/Documents",
-            "\(home)/Desktop",
+            "\(home)/Workspace",
+            "\(home)/repos",
+            "\(home)/src",
         ]
     }()
 

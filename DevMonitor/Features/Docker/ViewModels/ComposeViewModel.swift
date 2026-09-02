@@ -50,6 +50,9 @@ class ComposeViewModel {
         isLoadingProjectId = project.id
         error = nil
 
+        // Temporarily allow app to hold focus during potential TCC dialog
+        NSApp.setActivationPolicy(.regular)
+
         await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
                 do {
@@ -62,6 +65,7 @@ class ComposeViewModel {
             }
         }
 
+        NSApp.setActivationPolicy(.accessory)
         await refresh()
         isLoadingProjectId = nil
     }
