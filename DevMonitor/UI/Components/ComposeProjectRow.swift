@@ -36,7 +36,7 @@ struct ComposeProjectRow: View {
                         Task { await onUp() }
                     } label: {
                         Image(systemName: "play.fill")
-                            .font(.system(size: 11, weight: .medium))
+                            .font(.system(size: 10, weight: .medium))
                             .foregroundStyle(.green)
                     }
                     .buttonStyle(.plain)
@@ -54,7 +54,7 @@ struct ComposeProjectRow: View {
                         Task { await onDown() }
                     } label: {
                         Image(systemName: "stop.fill")
-                            .font(.system(size: 11, weight: .medium))
+                            .font(.system(size: 10, weight: .medium))
                             .foregroundStyle(.red)
                     }
                     .buttonStyle(.plain)
@@ -70,7 +70,7 @@ struct ComposeProjectRow: View {
                     // Remove
                     Button(action: onRemove) {
                         Image(systemName: "trash")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(.secondary)
                     }
                     .buttonStyle(.plain)
