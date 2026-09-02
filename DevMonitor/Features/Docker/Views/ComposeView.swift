@@ -10,35 +10,39 @@ struct ComposeView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             SectionLabel(title: "Compose Projects")
-            
-            VStack(spacing: 2) {
-                ForEach(projects) { project in
-                    ComposeProjectRow(
-                        project: project,
-                        isLoading: loadingProjectId == project.id,
-                        onUp:   { await onUp(project) },
-                        onDown: { await onDown(project) }
-                    )
-                }
+                .padding(.vertical, 4)
 
-                // Add manually
-                Button(action: onAddManual) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "plus.circle")
-                            .font(.system(size: 11))
-                            .foregroundStyle(.tertiary)
-                        Text("Add compose file...")
-                            .font(.system(size: 12))
-                            .foregroundStyle(.tertiary)
+            // Lista con fondo glass
+            if !projects.isEmpty {
+                VStack(spacing: 2) {
+                    ForEach(projects) { project in
+                        ComposeProjectRow(
+                            project: project,
+                            isLoading: loadingProjectId == project.id,
+                            onUp:   { await onUp(project) },
+                            onDown: { await onDown(project) }
+                        )
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
             }
-            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
+
+            // Button
+            Button(action: onAddManual) {
+                HStack(spacing: 6) {
+                    Image(systemName: "plus.circle")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.tertiary)
+                    Text("Add compose file...")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.tertiary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 4)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
         }
         .padding(.horizontal, 12)
         .padding(.bottom, 6)
