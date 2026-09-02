@@ -171,6 +171,7 @@ struct ContentView: View {
                             .fill(.white.opacity(0.18))
                             .strokeBorder(.white.opacity(0.45), lineWidth: 0.5)
                     )
+                    .contentShape(Capsule())
 
                     Spacer()
 
@@ -188,6 +189,7 @@ struct ContentView: View {
                             .fill(.white.opacity(0.18))
                             .strokeBorder(.white.opacity(0.45), lineWidth: 0.5)
                     )
+                    .contentShape(Capsule())
                     .keyboardShortcut("q")
                 }
                 .padding(.horizontal, 16)

@@ -63,6 +63,7 @@ struct ContainerRow: View {
                             }
                         }
                         .buttonStyle(.plain)
+                        .contentShape(Capsule())
                     }
                     .padding(.horizontal, 7)
                     .padding(.vertical, 3)
@@ -84,6 +85,7 @@ struct ContainerRow: View {
                             .foregroundStyle(.secondary)
                     }
                     .buttonStyle(.plain)
+                    .contentShape(Rectangle())
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
                 }
             }

@@ -47,6 +47,7 @@ struct ComposeProjectRow: View {
                             .fill(.green.opacity(0.12))
                             .strokeBorder(.green.opacity(0.25), lineWidth: 0.5)
                     )
+                    .contentShape(Capsule())
 
                     // Down
                     Button {
@@ -64,6 +65,7 @@ struct ComposeProjectRow: View {
                             .fill(.red.opacity(0.08))
                             .strokeBorder(.red.opacity(0.25), lineWidth: 0.5)
                     )
+                    .contentShape(Capsule())
 
                     // Remove
                     Button(action: onRemove) {
@@ -79,6 +81,7 @@ struct ComposeProjectRow: View {
                             .fill(.white.opacity(0.08))
                             .strokeBorder(.white.opacity(0.18), lineWidth: 0.5)
                     )
+                    .contentShape(Capsule())
                 }
                 .transition(.scale(scale: 0.85).combined(with: .opacity))
             } else {

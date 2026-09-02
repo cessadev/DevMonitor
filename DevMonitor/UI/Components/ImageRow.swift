@@ -56,6 +56,7 @@ struct ImageRow: View {
                             }
                         }
                         .buttonStyle(.plain)
+                        .contentShape(Capsule())
                     }
                     .padding(.horizontal, 7)
                     .padding(.vertical, 3)
@@ -78,6 +79,7 @@ struct ImageRow: View {
                                 .foregroundStyle(.secondary)
                         }
                         .buttonStyle(.plain)
+                        .contentShape(Rectangle())
                         .transition(.scale(scale: 0.85).combined(with: .opacity))
 
                         // Container icon
@@ -91,6 +93,7 @@ struct ImageRow: View {
                                 .opacity(0.5)
                         }
                         .buttonStyle(.plain)
+                        .contentShape(Rectangle())
                         .transition(.scale(scale: 0.85).combined(with: .opacity))
                     }
                 }
