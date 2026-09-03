@@ -67,25 +67,14 @@ struct ContentView: View {
                     }
 
                     // Compose Projects
-                    if !composeVM.projects.isEmpty {
-                        ComposeView(
-                            projects: composeVM.projects,
-                            loadingProjectId: composeVM.isLoadingProjectId,
-                            onUp:        { project in await composeVM.up(project) },
-                            onDown:      { project in await composeVM.down(project) },
-                            onRemove:    { project in composeVM.remove(project) },
-                            onAddManual: { composeVM.addManualProject() }
-                        )
-                    } else {
-                        ComposeView(
-                            projects: [],
-                            loadingProjectId: nil,
-                            onUp:        { _ in },
-                            onDown:      { _ in },
-                            onRemove:    { _ in },
-                            onAddManual: { composeVM.addManualProject() }
-                        )
-                    }
+                    ComposeView(
+                        projects: composeVM.projects,
+                        loadingProjectId: composeVM.isLoadingProjectId,
+                        onUp:        { project in await composeVM.up(project) },
+                        onDown:      { project in await composeVM.down(project) },
+                        onRemove:    { project in composeVM.remove(project) },
+                        onAddManual: { composeVM.addManualProject() }
+                    )
 
                     // Images header collapsible
                     ImagesHeader(
@@ -248,15 +237,10 @@ struct ContentView: View {
         .animation(.spring(duration: 0.35, bounce: 0.15), value: dockerExpanded)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesExpanded)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: pullExpanded)
-//        .opacity(isVisible ? 1 : 0)
-//        .offset(y: isVisible ? 0 : -6)
-//        .animation(.easeOut(duration: 0.18), value: isVisible)
         .onAppear {
-            isVisible = true
             refresh()
         }
         .onDisappear {
-            isVisible           = false
             pullImageName       = ""
             showCreateContainer = false
             selectedImage       = nil
