@@ -14,7 +14,7 @@ struct CreateContainerSheet: View {
     @State private var isCreating               = false
     @State private var validationError: String? = nil
 
-    private let restartOptions = ["no", "always", "unless-stop", "on-failure"]
+    private let restartOptions = ["no", "always", "unless-stopped", "on-failure"]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
