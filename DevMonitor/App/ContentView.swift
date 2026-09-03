@@ -267,9 +267,12 @@ struct ContentView: View {
     private func refresh() {
         servicesVM.refresh()
         Task {
-            await containersVM.refresh()
-            await imagesVM.refresh()
-            await composeVM.refresh()
+            async let containers: () = containersVM.refresh()
+            async let images: ()     = imagesVM.refresh()
+            async let compose: ()    = composeVM.refresh()
+            await containers
+            await images
+            await compose
         }
     }
 }
