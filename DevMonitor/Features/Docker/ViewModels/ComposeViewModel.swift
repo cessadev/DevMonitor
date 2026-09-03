@@ -14,27 +14,22 @@ class ComposeViewModel {
 
     @MainActor
     func refresh() async {
-        await withCheckedContinuation { continuation in
+        let snapshot = projects
+        
+        let updated: [DockerComposeProject] = await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
-                // Refresh statuses of manually added projects
-                var updated = self.projects
-                for index in updated.indices {
-                    updated[index].serviceStatuses = self.composeService.refreshStatus(
-                        for: updated[index]
-                    )
+                var result = snapshot
+                for index in result.indices {
+                    result[index].serviceStatuses = self.composeService.refreshStatus(for: result[index])
                 }
-
-                DispatchQueue.main.async {
-                    // Update statuses in place to preserve row identity and hover state
-                    for index in self.projects.indices {
-                        if let refreshed = updated.first(where: {
-                            $0.filePath == self.projects[index].filePath
-                        }) {
-                            self.projects[index].serviceStatuses = refreshed.serviceStatuses
-                        }
-                    }
-                    continuation.resume()
-                }
+                continuation.resume(returning: result)
+            }
+        }
+        
+        // Merge back on main thread
+        for index in projects.indices {
+            if let refreshed = updated.first(where: { $0.filePath == projects[index].filePath }) {
+                projects[index].serviceStatuses = refreshed.serviceStatuses
             }
         }
     }
