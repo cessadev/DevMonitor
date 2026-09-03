@@ -7,13 +7,13 @@ struct ContentView: View {
     @State private var containersVM                = ContainersViewModel()
     @State private var imagesVM                    = ImagesViewModel()
     @State private var isVisible                   = false
-    @State private var dockerExpanded              = false
-    @State private var imagesExpanded              = false
-    @State private var pullExpanded                = false
     @State private var pullImageName               = ""
     @State private var showCreateContainer         = false
     @State private var selectedImage: DockerImage? = nil
     @State private var composeVM                   = ComposeViewModel()
+    @AppStorage("dockerExpanded") private var dockerExpanded = false
+    @AppStorage("imagesExpanded") private var imagesExpanded = false
+    @AppStorage("pullExpanded")   private var pullExpanded   = false
     private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
     
     private func dismissModal() {
@@ -257,9 +257,6 @@ struct ContentView: View {
         }
         .onDisappear {
             isVisible           = false
-            dockerExpanded      = false
-            imagesExpanded      = false
-            pullExpanded        = false
             pullImageName       = ""
             showCreateContainer = false
             selectedImage       = nil

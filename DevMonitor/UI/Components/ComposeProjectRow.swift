@@ -70,7 +70,7 @@ struct ComposeProjectRow: View {
                     // Remove
                     Button(action: onRemove) {
                         Image(systemName: "trash")
-                            .font(.system(size: 11, weight: .medium))
+                            .font(.system(size: 10, weight: .medium))
                             .foregroundStyle(.secondary)
                     }
                     .buttonStyle(.plain)
