@@ -10,7 +10,7 @@ struct ComposeProjectRow: View {
     @State private var isHovered = false
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 8) {
 
             Image(systemName: "square.stack.3d.up")
                 .font(.system(size: 13))
@@ -29,7 +29,7 @@ struct ComposeProjectRow: View {
                     .controlSize(.small)
                     .frame(width: 32, height: 24)
             } else if isHovered {
-                // On hover: show up, down, remove actions
+                // On hover
                 HStack(spacing: 6) {
                     // Up
                     Button {
@@ -91,7 +91,7 @@ struct ComposeProjectRow: View {
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
             }
         }
-        .padding(.horizontal, 10)
+        .padding(.horizontal, 7)
         .padding(.vertical, 5)
         .onHover { hovered in
             withAnimation(.easeInOut(duration: 0.15)) {
