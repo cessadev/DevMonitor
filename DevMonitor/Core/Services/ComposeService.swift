@@ -5,58 +5,6 @@ class ComposeService {
 
     static let shared = ComposeService()
 
-    private let composeFileNames = [
-        "docker-compose.yml",
-        "docker-compose.yaml",
-        "compose.yml",
-        "compose.yaml",
-    ]
-
-    private let searchDirectories: [String] = {
-        let home = FileManager.default.homeDirectoryForCurrentUser.path
-        return [
-            "\(home)/Projects",
-            "\(home)/Developer",
-            "\(home)/Development",
-            "\(home)/Code",
-            "\(home)/Workspace",
-            "\(home)/repos",
-            "\(home)/src",
-        ]
-    }()
-
-    func scanProjects() -> [DockerComposeProject] {
-        var found: [DockerComposeProject] = []
-        var seenPaths = Set<String>()
-
-        for dir in searchDirectories {
-            guard let contents = try? FileManager.default.contentsOfDirectory(atPath: dir) else {
-                continue
-            }
-            for entry in contents {
-                for fileName in composeFileNames {
-                    let filePath = "\(dir)/\(entry)/\(fileName)"
-                    if FileManager.default.fileExists(atPath: filePath),
-                       !seenPaths.contains(filePath) {
-                        seenPaths.insert(filePath)
-                        found.append(DockerComposeProject(name: entry, filePath: filePath))
-                    }
-                }
-            }
-            for fileName in composeFileNames {
-                let filePath = "\(dir)/\(fileName)"
-                if FileManager.default.fileExists(atPath: filePath),
-                   !seenPaths.contains(filePath) {
-                    seenPaths.insert(filePath)
-                    let name = URL(fileURLWithPath: dir).lastPathComponent
-                    found.append(DockerComposeProject(name: name, filePath: filePath))
-                }
-            }
-        }
-
-        return found.sorted { $0.displayName.lowercased() < $1.displayName.lowercased() }
-    }
-
     func up(project: DockerComposeProject) throws {
         let projectDir = URL(fileURLWithPath: project.filePath)
             .deletingLastPathComponent().path

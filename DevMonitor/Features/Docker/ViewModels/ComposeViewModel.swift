@@ -16,51 +16,23 @@ class ComposeViewModel {
     func refresh() async {
         await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
-                var scanned = self.composeService.scanProjects()
-
-                // Merge manual projects not found by auto-scan
-                let scannedPaths = Set(scanned.map { $0.filePath })
-                for path in self.manualPaths where !scannedPaths.contains(path) {
-                    let url = URL(fileURLWithPath: path)
-                    scanned.append(DockerComposeProject(
-                        name: url.deletingLastPathComponent().lastPathComponent,
-                        filePath: path
-                    ))
-                }
-
-                // Enrich with live statuses
-                for index in scanned.indices {
-                    scanned[index].serviceStatuses = self.composeService.refreshStatus(
-                        for: scanned[index]
+                // Refresh statuses of manually added projects
+                var updated = self.projects
+                for index in updated.indices {
+                    updated[index].serviceStatuses = self.composeService.refreshStatus(
+                        for: updated[index]
                     )
                 }
 
-                let sorted = scanned.sorted { $0.displayName.lowercased() < $1.displayName.lowercased() }
-
                 DispatchQueue.main.async {
-                    // Merge instead of replace — preserves SwiftUI row identity
-                    let existingPaths = Set(self.projects.map { $0.filePath })
-                    let newPaths      = Set(sorted.map { $0.filePath })
-
-                    // Update statuses of existing projects in place
+                    // Update statuses in place to preserve row identity and hover state
                     for index in self.projects.indices {
-                        if let updated = sorted.first(where: { $0.filePath == self.projects[index].filePath }) {
-                            self.projects[index].serviceStatuses = updated.serviceStatuses
+                        if let refreshed = updated.first(where: {
+                            $0.filePath == self.projects[index].filePath
+                        }) {
+                            self.projects[index].serviceStatuses = refreshed.serviceStatuses
                         }
                     }
-
-                    // Add new projects not yet in the list
-                    for project in sorted where !existingPaths.contains(project.filePath) {
-                        self.projects.append(project)
-                        self.projects.sort { $0.displayName.lowercased() < $1.displayName.lowercased() }
-                    }
-
-                    // Remove projects that no longer exist
-                    self.projects.removeAll { project in
-                        !newPaths.contains(project.filePath) &&
-                        !self.manualPaths.contains(project.filePath)
-                    }
-
                     continuation.resume()
                 }
             }

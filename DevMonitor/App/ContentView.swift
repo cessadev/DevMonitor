@@ -248,9 +248,9 @@ struct ContentView: View {
         .animation(.spring(duration: 0.35, bounce: 0.15), value: dockerExpanded)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesExpanded)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: pullExpanded)
-        .opacity(isVisible ? 1 : 0)
-        .offset(y: isVisible ? 0 : -6)
-        .animation(.easeOut(duration: 0.18), value: isVisible)
+//        .opacity(isVisible ? 1 : 0)
+//        .offset(y: isVisible ? 0 : -6)
+//        .animation(.easeOut(duration: 0.18), value: isVisible)
         .onAppear {
             isVisible = true
             refresh()
