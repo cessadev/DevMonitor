@@ -110,7 +110,7 @@ struct ContainerRow: View {
         .onHover { hovered in
             withAnimation(.easeInOut(duration: 0.15)) {
                 isHovered = hovered
-                if !hovered { confirmDelete = false }
+                if !hovered && !isDeleting { confirmDelete = false }
             }
         }
         .onChange(of: container.isRunning) { _, newValue in

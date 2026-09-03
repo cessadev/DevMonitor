@@ -104,7 +104,7 @@ struct ImageRow: View {
         .onHover { hovered in
             withAnimation(.easeInOut(duration: 0.15)) {
                 isHovered = hovered
-                if !hovered { confirmDelete = false }
+                if !hovered && !isDeleting { confirmDelete = false }
             }
         }
     }
