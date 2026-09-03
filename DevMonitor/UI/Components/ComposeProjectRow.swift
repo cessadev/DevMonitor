@@ -27,7 +27,7 @@ struct ComposeProjectRow: View {
             if isLoading {
                 ProgressView()
                     .controlSize(.small)
-                    .frame(width: 32)
+                    .frame(width: 32, height: 24)
             } else if isHovered {
                 // On hover: show up, down, remove actions
                 HStack(spacing: 6) {
@@ -83,9 +83,11 @@ struct ComposeProjectRow: View {
                     )
                     .contentShape(Capsule())
                 }
+                .frame(height: 24)
                 .transition(.scale(scale: 0.85).combined(with: .opacity))
             } else {
                 ComposeBadge(status: project.overallStatus)
+                    .frame(height: 24)
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
             }
         }
