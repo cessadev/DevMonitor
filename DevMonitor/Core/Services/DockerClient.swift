@@ -39,29 +39,50 @@ class DockerClient {
     }
 
     func startContainer(id: String) async throws {
-        _ = try sendRequest(
-            "POST /containers/\(id)/start HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
-        )
+        try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    _ = try self.sendRequest("POST /containers/\(id)/start HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
     }
 
     func stopContainer(id: String) async throws {
-        _ = try sendRequest(
-            "POST /containers/\(id)/stop HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
-        )
+        try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    _ = try self.sendRequest("POST /containers/\(id)/stop HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
     }
     
     func deleteContainer(id: String) async throws {
-        _ = try sendRequest(
-            "DELETE /containers/\(id)?force=true HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
-        )
+        try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    _ = try self.sendRequest("DELETE /containers/\(id)?force=true HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n")
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
     }
     
     func createContainer(
         name: String,
         imageName: String,
-        portBindings: [String],       // ["8080:80", "5432:5432"]
-        envVars: [String],            // ["KEY=VALUE", "DEBUG=true"]
-        restartPolicy: String         // "no", "always", "unless-stopped"
+        portBindings: [String],
+        envVars: [String],
+        restartPolicy: String
     ) async throws {
         let containerName = name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? name
 
@@ -69,11 +90,11 @@ class DockerClient {
         var portBindingsDict: [String: Any] = [:]
         var exposedPorts: [String: Any]     = [:]
         for binding in portBindings where !binding.trimmingCharacters(in: .whitespaces).isEmpty {
-            let parts = binding.components(separatedBy: ":")
-            guard parts.count == 2 else { continue }
-            let hostPort      = parts[0].trimmingCharacters(in: .whitespaces)
-            let containerPort = parts[1].trimmingCharacters(in: .whitespaces)
-            let key           = "\(containerPort)/tcp"
+            let parts             = binding.components(separatedBy: ":")
+            guard parts.count     == 2 else { continue }
+            let hostPort          = parts[0].trimmingCharacters(in: .whitespaces)
+            let containerPort     = parts[1].trimmingCharacters(in: .whitespaces)
+            let key               = "\(containerPort)/tcp"
             portBindingsDict[key] = [["HostPort": hostPort]]
             exposedPorts[key]     = [:]
         }
@@ -152,9 +173,16 @@ class DockerClient {
     }
 
     func deleteImage(id: String) async throws {
-        _ = try sendRequest(
-            "DELETE /images/\(id)?force=false HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
-        )
+        try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    _ = try self.sendRequest("DELETE /images/\(id)?force=false HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n")
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
     }
     
     func pullImage(name: String, onProgress: @escaping (String) -> Void) async throws {
