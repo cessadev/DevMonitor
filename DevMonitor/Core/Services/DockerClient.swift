@@ -122,7 +122,16 @@ class DockerClient {
                       "Connection: close\r\n\r\n" +
                       bodyJSON
 
-        let responseData = try sendRequest(request)
+        let responseData = try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    let data = try self.sendRequest(request)
+                    continuation.resume(returning: data)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
 
         guard let headerEnd = responseData.range(of: Data("\r\n\r\n".utf8)) else {
             throw DockerError.emptyResponse

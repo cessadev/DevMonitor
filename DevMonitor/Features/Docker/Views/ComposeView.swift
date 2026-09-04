@@ -13,7 +13,7 @@ struct ComposeView: View {
             SectionLabel(title: "Compose Projects")
                 .padding(.vertical, 4)
 
-            // Lista con fondo glass
+            // Project list with glass background
             if !projects.isEmpty {
                 VStack(spacing: 2) {
                     ForEach(projects) { project in

@@ -177,8 +177,7 @@ struct CreateContainerSheet: View {
     }
 
     private func submit() {
-        isCreating      = true
-        validationError = nil
+        isCreating = true
         Task {
             let result = await onCreate(
                 containerName,
@@ -186,6 +185,7 @@ struct CreateContainerSheet: View {
                 envVars,
                 restartPolicy
             )
+            isCreating = false
             if result.success {
                 onCancel()
             } else if let msg = result.validationError {
@@ -193,7 +193,6 @@ struct CreateContainerSheet: View {
                     validationError = msg
                 }
             }
-            isCreating = false
         }
     }
 }
