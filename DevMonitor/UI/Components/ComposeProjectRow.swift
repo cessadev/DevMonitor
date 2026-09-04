@@ -38,16 +38,16 @@ struct ComposeProjectRow: View {
                         Image(systemName: "play.fill")
                             .font(.system(size: 10, weight: .medium))
                             .foregroundStyle(.green)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 3)
                     .background(
                         Capsule()
                             .fill(.green.opacity(0.12))
                             .strokeBorder(.green.opacity(0.25), lineWidth: 0.5)
                     )
-                    .contentShape(Capsule())
 
                     // Down
                     Button {
@@ -56,32 +56,32 @@ struct ComposeProjectRow: View {
                         Image(systemName: "stop.fill")
                             .font(.system(size: 10, weight: .medium))
                             .foregroundStyle(.red)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 3)
                     .background(
                         Capsule()
                             .fill(.red.opacity(0.08))
                             .strokeBorder(.red.opacity(0.25), lineWidth: 0.5)
                     )
-                    .contentShape(Capsule())
 
                     // Remove
                     Button(action: onRemove) {
                         Image(systemName: "trash")
                             .font(.system(size: 10, weight: .medium))
                             .foregroundStyle(.secondary)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 3)
                     .background(
                         Capsule()
                             .fill(.white.opacity(0.08))
                             .strokeBorder(.white.opacity(0.18), lineWidth: 0.5)
                     )
-                    .contentShape(Capsule())
                 }
                 .frame(height: 24)
                 .transition(.scale(scale: 0.85).combined(with: .opacity))

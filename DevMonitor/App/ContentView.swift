@@ -151,16 +151,16 @@ struct ContentView: View {
                     } label: {
                         Text("Preferences")
                             .font(.system(size: 12))
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 6)
+                            .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 6)
                     .background(
                         Capsule()
                             .fill(.white.opacity(0.18))
                             .strokeBorder(.white.opacity(0.45), lineWidth: 0.5)
                     )
-                    .contentShape(Capsule())
 
                     Spacer()
 
@@ -169,16 +169,16 @@ struct ContentView: View {
                     } label: {
                         Text("Quit")
                             .font(.system(size: 12))
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 6)
+                            .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 6)
                     .background(
                         Capsule()
                             .fill(.white.opacity(0.18))
                             .strokeBorder(.white.opacity(0.45), lineWidth: 0.5)
                     )
-                    .contentShape(Capsule())
                     .keyboardShortcut("q")
                 }
                 .padding(.horizontal, 16)
