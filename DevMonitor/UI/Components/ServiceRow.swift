@@ -26,19 +26,25 @@ struct ServiceRow: View {
 
             if isExpandable {
                 HStack(spacing: 6) {
-                    StatusBadge(isRunning: service.isRunning, label: service.isRunning ? "Running" : "Stopped")
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundStyle(.tertiary)
-                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
-                        .animation(.spring(duration: 0.3), value: isExpanded)
+                    StatusDot(isRunning: service.isRunning)
                 }
-            } else {
-                StatusBadge(isRunning: service.isRunning, label: service.isRunning ? "Running" : "Stopped")
             }
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 5)
         .contentShape(Rectangle())
+    }
+}
+
+// MARK: - Status Dot
+
+private struct StatusDot: View {
+    let isRunning: Bool
+
+    var body: some View {
+        Circle()
+            .fill(isRunning ? Color.green : Color.red)
+            .frame(width: 8, height: 8)
+            .shadow(color: isRunning ? .green.opacity(0.7) : .red.opacity(0.7), radius: 2)
     }
 }
