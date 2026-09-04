@@ -21,6 +21,6 @@ struct ImagesView: View {
         }
         .padding(.horizontal, 12)
         .padding(.bottom, 6)
-        .transition(.move(edge: .top).combined(with: .opacity))
+        .transition(.opacity)
     }
 }

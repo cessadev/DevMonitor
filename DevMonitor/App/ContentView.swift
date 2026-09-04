@@ -393,6 +393,6 @@ private struct PullImageView: View {
             }
         }
         .padding(.bottom, 10)
-        .transition(.move(edge: .top).combined(with: .opacity))
+        .transition(.opacity)
     }
 }
