@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var showCreateContainer         = false
     @State private var selectedImage: DockerImage? = nil
     @State private var composeVM                   = ComposeViewModel()
+    @State private var isComposeBusy               = false
     @AppStorage("imagesExpanded") private var imagesExpanded = false
     @AppStorage("pullExpanded")   private var pullExpanded   = false
     private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
@@ -62,8 +63,18 @@ struct ContentView: View {
                 ComposeView(
                     projects: composeVM.projects,
                     loadingProjectId: composeVM.isLoadingProjectId,
-                    onUp:        { project in await composeVM.up(project) },
-                    onDown:      { project in await composeVM.down(project) },
+                    onUp: { project in
+                        isComposeBusy = true
+                        await composeVM.up(project)
+                        await containersVM.refresh()
+                        isComposeBusy = false
+                    },
+                    onDown: { project in
+                        isComposeBusy = true
+                        await composeVM.down(project)
+                        await containersVM.refresh()
+                        isComposeBusy = false
+                    },
                     onRemove:    { project in composeVM.remove(project) },
                     onAddManual: { composeVM.addManualProject() }
                 )
@@ -221,9 +232,8 @@ struct ContentView: View {
                 }
             }
         }
-        .frame(width: 300)
+        .frame(width: 280)
         .fixedSize(horizontal: false, vertical: true)
-        .animation(.spring(duration: 0.35, bounce: 0.15), value: containersVM.containers.count)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesVM.images.count)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesExpanded)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: pullExpanded)
@@ -235,7 +245,10 @@ struct ContentView: View {
             showCreateContainer = false
             selectedImage       = nil
         }
-        .onReceive(timer) { _ in refresh() }
+        .onReceive(timer) { _ in
+            guard !isComposeBusy else { return }
+            refresh()
+        }
     }
 
     private func refresh() {

@@ -68,7 +68,7 @@ class ComposeViewModel {
             DispatchQueue.global(qos: .userInitiated).async {
                 do {
                     try self.composeService.down(project: project)
-                    Thread.sleep(forTimeInterval: 1.0)
+                    Thread.sleep(forTimeInterval: 2.5)
                 } catch {
                     DispatchQueue.main.async { self.error = error.localizedDescription }
                 }

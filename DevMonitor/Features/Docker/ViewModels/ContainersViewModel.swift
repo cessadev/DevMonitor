@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 @Observable
 class ContainersViewModel {
@@ -11,11 +12,16 @@ class ContainersViewModel {
     @MainActor
     func refresh() async {
         do {
-            containers = try await dockerClient.fetchContainers()
-            error      = nil
+            let fetched = try await dockerClient.fetchContainers()
+            withAnimation(.spring(duration: 0.35, bounce: 0.15)) {
+                containers = fetched
+            }
+            error = nil
         } catch {
-            self.error  = error.localizedDescription
-            containers  = []
+            self.error = error.localizedDescription
+            withAnimation(.spring(duration: 0.35, bounce: 0.15)) {
+                containers = []
+            }
         }
     }
 
