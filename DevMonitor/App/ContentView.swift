@@ -11,7 +11,6 @@ struct ContentView: View {
     @State private var showCreateContainer         = false
     @State private var selectedImage: DockerImage? = nil
     @State private var composeVM                   = ComposeViewModel()
-    @AppStorage("dockerExpanded") private var dockerExpanded = false
     @AppStorage("imagesExpanded") private var imagesExpanded = false
     @AppStorage("pullExpanded")   private var pullExpanded   = false
     private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
@@ -32,7 +31,7 @@ struct ContentView: View {
 
                 // Header
                 HStack(spacing: 8) {
-                    Text("DevMonitor")
+                    Text("DocMonitor")
                         .font(.system(size: 14, weight: .semibold))
                     Spacer()
                     Button {
@@ -48,82 +47,74 @@ struct ContentView: View {
                 .padding(.vertical, 8)
 
                 // Local Services
-                ServicesView(
-                    services: servicesVM.services,
-                    dockerExpanded: dockerExpanded,
-                    onDockerTap: { dockerExpanded.toggle() }
+                ServicesView(services: servicesVM.services)
+
+                // Containers
+                if !containersVM.containers.isEmpty {
+                    ContainersView(
+                        containers: containersVM.containers,
+                        onToggle: { container in await containersVM.toggle(container) },
+                        onDelete: { container in await containersVM.delete(container) }
+                    )
+                }
+
+                // Compose Projects
+                ComposeView(
+                    projects: composeVM.projects,
+                    loadingProjectId: composeVM.isLoadingProjectId,
+                    onUp:        { project in await composeVM.up(project) },
+                    onDown:      { project in await composeVM.down(project) },
+                    onRemove:    { project in composeVM.remove(project) },
+                    onAddManual: { composeVM.addManualProject() }
                 )
 
-                // Docker subsections
-                if dockerExpanded {
+                // Images header collapsible
+                ImagesHeader(
+                    count: imagesVM.images.count,
+                    isExpanded: imagesExpanded,
+                    onTap: {
+                        withAnimation(.spring(duration: 0.3)) {
+                            imagesExpanded.toggle()
+                            if !imagesExpanded {
+                                pullExpanded  = false
+                                pullImageName = ""
+                            }
+                        }
+                    }
+                )
 
-                    // Containers
-                    if !containersVM.containers.isEmpty {
-                        ContainersView(
-                            containers: containersVM.containers,
-                            onToggle: { container in await containersVM.toggle(container) },
-                            onDelete: { container in await containersVM.delete(container) }
+                if imagesExpanded {
+                    if !imagesVM.images.isEmpty {
+                        ImagesView(
+                            images: imagesVM.images,
+                            onDelete: { image in await imagesVM.delete(image) },
+                            onCreateContainer: { image in
+                                selectedImage = image
+                                withAnimation(.spring(duration: 0.25)) {
+                                    showCreateContainer = true
+                                }
+                            }
                         )
                     }
-
-                    // Compose Projects
-                    ComposeView(
-                        projects: composeVM.projects,
-                        loadingProjectId: composeVM.isLoadingProjectId,
-                        onUp:        { project in await composeVM.up(project) },
-                        onDown:      { project in await composeVM.down(project) },
-                        onRemove:    { project in composeVM.remove(project) },
-                        onAddManual: { composeVM.addManualProject() }
-                    )
-
-                    // Images header collapsible
-                    ImagesHeader(
-                        count: imagesVM.images.count,
-                        isExpanded: imagesExpanded,
+                    
+                    PullImageHeader(
+                        isExpanded: pullExpanded,
                         onTap: {
                             withAnimation(.spring(duration: 0.3)) {
-                                imagesExpanded.toggle()
-                                if !imagesExpanded {
-                                    pullExpanded  = false
-                                    pullImageName = ""
-                                }
+                                pullExpanded.toggle()
                             }
                         }
                     )
-
-                    if imagesExpanded {
-                        if !imagesVM.images.isEmpty {
-                            ImagesView(
-                                images: imagesVM.images,
-                                onDelete: { image in await imagesVM.delete(image) },
-                                onCreateContainer: { image in
-                                    selectedImage = image
-                                    withAnimation(.spring(duration: 0.25)) {
-                                        showCreateContainer = true
-                                    }
-                                }
-                            )
-                        }
-
-                        PullImageHeader(
-                            isExpanded: pullExpanded,
-                            onTap: {
-                                withAnimation(.spring(duration: 0.3)) {
-                                    pullExpanded.toggle()
-                                }
+                    
+                    if pullExpanded {
+                        PullImageView(
+                            imageName: $pullImageName,
+                            isPulling: imagesVM.isPulling,
+                            progress: imagesVM.pullProgress,
+                            onPull: {
+                                Task { await imagesVM.pull(name: pullImageName) }
                             }
                         )
-
-                        if pullExpanded {
-                            PullImageView(
-                                imageName: $pullImageName,
-                                isPulling: imagesVM.isPulling,
-                                progress: imagesVM.pullProgress,
-                                onPull: {
-                                    Task { await imagesVM.pull(name: pullImageName) }
-                                }
-                            )
-                        }
                     }
                 }
 
@@ -234,7 +225,6 @@ struct ContentView: View {
         .fixedSize(horizontal: false, vertical: true)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: containersVM.containers.count)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesVM.images.count)
-        .animation(.spring(duration: 0.35, bounce: 0.15), value: dockerExpanded)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesExpanded)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: pullExpanded)
         .onAppear {
