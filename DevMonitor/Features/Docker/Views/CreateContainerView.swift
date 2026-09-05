@@ -12,13 +12,11 @@ struct CreateContainerView: View {
     @State private var isCreating               = false
     @State private var validationError: String? = nil
 
-    @Environment(\.dismiss) private var dismiss
-
     enum RestartPolicy: String, CaseIterable, Identifiable {
-        case no             = "no"
-        case always         = "always"
-        case unlessStopped  = "unless-stopped"
-        case onFailure      = "on-failure"
+        case no            = "no"
+        case always        = "always"
+        case unlessStopped = "unless-stopped"
+        case onFailure     = "on-failure"
 
         var id: String { rawValue }
 
@@ -34,11 +32,8 @@ struct CreateContainerView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-
-            // Form
             Form {
-
-                // Image
+                // Image reference
                 Section {
                     LabeledContent("Image") {
                         Text(imageName)
@@ -50,28 +45,36 @@ struct CreateContainerView: View {
 
                 // Container name
                 Section {
-                    TextField("e.g. my-nginx", text: $containerName)
-                        .disabled(isCreating)
-                        .onChange(of: containerName) {
-                            if validationError != nil {
-                                validationError = nil
-                            }
-                        }
+                    TextField(
+                        "",
+                        text: $containerName,
+                        prompt: Text("e.g. my-nginx").foregroundStyle(.tertiary)
+                    )
+                    .multilineTextAlignment(.leading)
+                    .disabled(isCreating)
+                    .onChange(of: containerName) {
+                        if validationError != nil { validationError = nil }
+                    }
                 } header: {
                     Text("Container Name")
                 } footer: {
                     if let error = validationError {
-                        Text(error)
-                            .foregroundStyle(.red)
+                        Text(error).foregroundStyle(.red)
                     }
                 }
 
-                // Ports
+                // Port bindings
                 Section("Port Bindings (host:container)") {
                     ForEach(portBindings.indices, id: \.self) { index in
-                        HStack {
-                            TextField("e.g. 8080:80", text: $portBindings[index])
-                                .disabled(isCreating)
+                        HStack(spacing: 6) {
+                            TextField(
+                                "",
+                                text: $portBindings[index],
+                                prompt: Text("e.g. 8080:80").foregroundStyle(.tertiary)
+                            )
+                            .multilineTextAlignment(.leading)
+                            .disabled(isCreating)
+
                             if portBindings.count > 1 {
                                 Button {
                                     portBindings.remove(at: index)
@@ -95,9 +98,15 @@ struct CreateContainerView: View {
                 // Environment variables
                 Section("Environment Variables") {
                     ForEach(envVars.indices, id: \.self) { index in
-                        HStack {
-                            TextField("e.g. DEBUG=true", text: $envVars[index])
-                                .disabled(isCreating)
+                        HStack(spacing: 6) {
+                            TextField(
+                                "",
+                                text: $envVars[index],
+                                prompt: Text("e.g. DEBUG=true").foregroundStyle(.tertiary)
+                            )
+                            .multilineTextAlignment(.leading)
+                            .disabled(isCreating)
+
                             if envVars.count > 1 {
                                 Button {
                                     envVars.remove(at: index)
@@ -120,21 +129,21 @@ struct CreateContainerView: View {
 
                 // Restart policy
                 Section("Restart Policy") {
-                    Picker("Policy", selection: $restartPolicy) {
+                    Picker("", selection: $restartPolicy) {
                         ForEach(RestartPolicy.allCases) { policy in
                             Text(policy.label).tag(policy)
                         }
                     }
-                    .pickerStyle(.radioGroup)
+                    .pickerStyle(.segmented)
                     .disabled(isCreating)
+                    .labelsHidden()
                 }
             }
             .formStyle(.grouped)
-            .scrollContentBackground(.visible)
 
             Divider()
 
-            // Footer actions
+            // Footer
             HStack {
                 Spacer()
                 Button("Cancel") {
@@ -163,8 +172,6 @@ struct CreateContainerView: View {
             .padding(.vertical, 14)
         }
     }
-
-    // MARK: - Actions
 
     private func submit() {
         isCreating = true

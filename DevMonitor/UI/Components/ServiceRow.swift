@@ -31,6 +31,6 @@ private struct StatusDot: View {
         Circle()
             .fill(isRunning ? Color.green : Color.red)
             .frame(width: 8, height: 8)
-            .shadow(color: isRunning ? .green.opacity(0.7) : .red.opacity(0.7), radius: 2)
+            .shadow(color: isRunning ? .green.opacity(0.7) : .red.opacity(0.7), radius: 0.5)
     }
 }

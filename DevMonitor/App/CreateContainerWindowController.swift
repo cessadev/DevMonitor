@@ -16,8 +16,8 @@ class CreateContainerWindowController: NSWindowController {
         window.titlebarAppearsTransparent    = false
         window.isMovableByWindowBackground   = true
         window.center()
-        window.setContentSize(NSSize(width: 460, height: 520))
-        window.minSize                       = NSSize(width: 460, height: 400)
+        window.setContentSize(NSSize(width: 320, height: 480))
+        window.minSize                       = NSSize(width: 320, height: 380)
 
         let controller = CreateContainerWindowController(window: window)
         controller.showWindow(nil)
