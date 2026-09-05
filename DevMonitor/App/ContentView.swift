@@ -55,6 +55,7 @@ struct ContentView: View {
                     ContainersView(
                         containers: containersVM.containers,
                         lockedComposeProject: composeVM.lockedComposeProject,
+                        activeComposeProjects: composeVM.activeComposeProjects,
                         onToggle: { container in await containersVM.toggle(container) },
                         onDelete: { container in await containersVM.delete(container) }
                     )

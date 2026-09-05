@@ -18,6 +18,15 @@ class ComposeViewModel {
         return project.displayName.lowercased()
     }
     
+    // Project names currently running — containers belonging to these should not be deleted
+    var activeComposeProjects: Set<String> {
+        Set(
+            projects
+                .filter { $0.overallStatus == .running || $0.overallStatus == .partial }
+                .map { $0.displayName.lowercased() }
+        )
+    }
+    
     private var manualPaths = Set<String>()
 
     private let composeService = ComposeService.shared

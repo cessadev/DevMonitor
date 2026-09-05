@@ -4,6 +4,7 @@ struct ContainersView: View {
 
     let containers: [DockerContainer]
     let lockedComposeProject: String?
+    let activeComposeProjects: Set<String>
     let onToggle: (DockerContainer) async -> Void
     let onDelete: (DockerContainer) async -> Void
 
@@ -21,9 +22,19 @@ struct ContainersView: View {
                         }
                         return containerProject.lowercased() == locked
                     }()
+                    
+                    // Trash locked when container belongs to an active compose project
+                    let isDeleteLocked: Bool = {
+                        guard let containerProject = container.composeProject else {
+                            return false
+                        }
+                        return activeComposeProjects.contains(containerProject.lowercased())
+                    }()
+                    
                     ContainerRow(
                         container: container,
                         isLocked: isLocked,
+                        isDeleteLocked: isDeleteLocked,
                         onToggle: { await onToggle(container) },
                         onDelete: { await onDelete(container) }
                     )

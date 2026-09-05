@@ -3,6 +3,7 @@ import SwiftUI
 struct ContainerRow: View {
     let container: DockerContainer
     let isLocked: Bool
+    let isDeleteLocked: Bool
     let onToggle: () async -> Void
     let onDelete: () async -> Void
 
@@ -14,13 +15,15 @@ struct ContainerRow: View {
 
     init(container: DockerContainer,
          isLocked: Bool,
+         isDeleteLocked: Bool,
          onToggle: @escaping () async -> Void,
          onDelete: @escaping () async -> Void) {
-        self.container = container
-        self.isLocked  = isLocked
-        self.onToggle  = onToggle
-        self.onDelete  = onDelete
-        self._isOn     = State(initialValue: container.isRunning)
+        self.container      = container
+        self.isLocked       = isLocked
+        self.isDeleteLocked = isDeleteLocked
+        self.onToggle       = onToggle
+        self.onDelete       = onDelete
+        self._isOn          = State(initialValue: container.isRunning)
     }
 
     var body: some View {
@@ -45,8 +48,8 @@ struct ContainerRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(-1)
 
-            // Trash icon - hidden and blocked when compose is stopping
-            if !isLocked && (isHovered || confirmDelete) {
+            // Trash icon - hidden and blocked when compose is up and stopping
+            if !isLocked && !isDeleteLocked && (isHovered || confirmDelete) {
                 if confirmDelete {
                     HStack(spacing: 4) {
                         Button {
