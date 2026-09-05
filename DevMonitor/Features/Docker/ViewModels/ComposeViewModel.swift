@@ -9,13 +9,13 @@ class ComposeViewModel {
     var error: String?
     var isLoadingProjectId: UUID?
     
-    // Names of containers belonging to the project currently being stopped
-    var lockedContainerNames: Set<String> {
+    // Internal Compose project name being stopped — matches com.docker.compose.project label
+    var lockedComposeProject: String? {
         guard let loadingId = isLoadingProjectId,
-              let project = projects.first(where: { $0.id == loadingId }) else {
-            return []
+              let project   = projects.first(where: { $0.id == loadingId }) else {
+            return nil
         }
-        return Set(project.serviceStatuses.keys.map { "\(project.displayName)-\($0)" })
+        return project.displayName.lowercased()
     }
     
     private var manualPaths = Set<String>()

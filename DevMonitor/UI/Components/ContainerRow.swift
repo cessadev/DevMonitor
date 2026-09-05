@@ -46,7 +46,7 @@ struct ContainerRow: View {
             .layoutPriority(-1)
 
             // Trash icon - hidden and blocked when compose is stopping
-            if isHovered || confirmDelete {
+            if !isLocked && (isHovered || confirmDelete) {
                 if confirmDelete {
                     HStack(spacing: 4) {
                         Button {

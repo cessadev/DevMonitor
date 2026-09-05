@@ -6,6 +6,7 @@ struct DockerContainer: Identifiable, Decodable {
     let image: String
     let state: String
     let status: String
+    let labels: [String: String]
 
     enum CodingKeys: String, CodingKey {
         case id     = "Id"
@@ -13,6 +14,7 @@ struct DockerContainer: Identifiable, Decodable {
         case image  = "Image"
         case state  = "State"
         case status = "Status"
+        case labels = "Labels"
     }
 
     var displayName: String {
@@ -20,4 +22,9 @@ struct DockerContainer: Identifiable, Decodable {
     }
 
     var isRunning: Bool { state == "running" }
+    
+    // Docker Compose project name as assigned internally by Compose
+    var composeProject: String? {
+        labels["com.docker.compose.project"]
+    }
 }
