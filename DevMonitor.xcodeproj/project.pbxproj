@@ -27,13 +27,14 @@
 		DBD6B5273043498600C8E719 /* ServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B4EB3042861700C8E719 /* ServicesView.swift */; };
 		DBD6B5283043498600C8E719 /* ImagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B51F304345FC00C8E719 /* ImagesView.swift */; };
 		DBD6B5293043498600C8E719 /* DockerImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5193043452900C8E719 /* DockerImage.swift */; };
-		DBD6B56930437E6600C8E719 /* CreateContainerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B56830437E6600C8E719 /* CreateContainerSheet.swift */; };
 		DBD6B56B3046711700C8E719 /* DockerCompose.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B56A3046711700C8E719 /* DockerCompose.swift */; };
 		DBD6B56D3046714D00C8E719 /* ComposeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B56C3046714D00C8E719 /* ComposeService.swift */; };
 		DBD6B56F3046718D00C8E719 /* ComposeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B56E3046718D00C8E719 /* ComposeViewModel.swift */; };
 		DBD6B571304671AB00C8E719 /* ComposeProjectRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B570304671AB00C8E719 /* ComposeProjectRow.swift */; };
 		DBD6B573304671C700C8E719 /* ComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B572304671C700C8E719 /* ComposeView.swift */; };
 		DBD6B575304673ED00C8E719 /* CollapsibleHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B574304673ED00C8E719 /* CollapsibleHeader.swift */; };
+		DBD6B577304C887800C8E719 /* CreateContainerWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B576304C887800C8E719 /* CreateContainerWindowController.swift */; };
+		DBD6B579304C88AD00C8E719 /* CreateContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B578304C88AD00C8E719 /* CreateContainerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,13 +59,14 @@
 		DBD6B51B304345BF00C8E719 /* ImagesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesViewModel.swift; sourceTree = "<group>"; };
 		DBD6B51D304345D900C8E719 /* ImageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageRow.swift; sourceTree = "<group>"; };
 		DBD6B51F304345FC00C8E719 /* ImagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesView.swift; sourceTree = "<group>"; };
-		DBD6B56830437E6600C8E719 /* CreateContainerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateContainerSheet.swift; sourceTree = "<group>"; };
 		DBD6B56A3046711700C8E719 /* DockerCompose.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockerCompose.swift; sourceTree = "<group>"; };
 		DBD6B56C3046714D00C8E719 /* ComposeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeService.swift; sourceTree = "<group>"; };
 		DBD6B56E3046718D00C8E719 /* ComposeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewModel.swift; sourceTree = "<group>"; };
 		DBD6B570304671AB00C8E719 /* ComposeProjectRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeProjectRow.swift; sourceTree = "<group>"; };
 		DBD6B572304671C700C8E719 /* ComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeView.swift; sourceTree = "<group>"; };
 		DBD6B574304673ED00C8E719 /* CollapsibleHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsibleHeader.swift; sourceTree = "<group>"; };
+		DBD6B576304C887800C8E719 /* CreateContainerWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateContainerWindowController.swift; sourceTree = "<group>"; };
+		DBD6B578304C88AD00C8E719 /* CreateContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateContainerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,7 +178,6 @@
 			children = (
 				DBD6B574304673ED00C8E719 /* CollapsibleHeader.swift */,
 				DBD6B570304671AB00C8E719 /* ComposeProjectRow.swift */,
-				DBD6B56830437E6600C8E719 /* CreateContainerSheet.swift */,
 				DBD6B51D304345D900C8E719 /* ImageRow.swift */,
 				DBD6B4F03042868700C8E719 /* ContainerRow.swift */,
 				DBD6B4EF3042867100C8E719 /* ServiceRow.swift */,
@@ -189,6 +190,7 @@
 		DBD6B4FB3042894200C8E719 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				DBD6B576304C887800C8E719 /* CreateContainerWindowController.swift */,
 				DBD6B4FE30428A3A00C8E719 /* ContentView.swift */,
 				DBD6B4FA3042894200C8E719 /* DevMonitorApp.swift */,
 			);
@@ -207,6 +209,7 @@
 		DBD6B50E304291F600C8E719 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				DBD6B578304C88AD00C8E719 /* CreateContainerView.swift */,
 				DBD6B572304671C700C8E719 /* ComposeView.swift */,
 				DBD6B51F304345FC00C8E719 /* ImagesView.swift */,
 				DBD6B50F3042920E00C8E719 /* ContainersView.swift */,
@@ -302,6 +305,8 @@
 				DBD6B56D3046714D00C8E719 /* ComposeService.swift in Sources */,
 				DBD6B5263043498600C8E719 /* ImagesViewModel.swift in Sources */,
 				DBD6B56F3046718D00C8E719 /* ComposeViewModel.swift in Sources */,
+				DBD6B579304C88AD00C8E719 /* CreateContainerView.swift in Sources */,
+				DBD6B577304C887800C8E719 /* CreateContainerWindowController.swift in Sources */,
 				DBD6B5273043498600C8E719 /* ServicesView.swift in Sources */,
 				DBD6B5283043498600C8E719 /* ImagesView.swift in Sources */,
 				DBD6B571304671AB00C8E719 /* ComposeProjectRow.swift in Sources */,
@@ -319,7 +324,6 @@
 				DBD6B50730428BC800C8E719 /* DockerContainer.swift in Sources */,
 				DBD6B50830428BC800C8E719 /* ServicesViewModel.swift in Sources */,
 				DBD6B50930428BC800C8E719 /* DockerClient.swift in Sources */,
-				DBD6B56930437E6600C8E719 /* CreateContainerSheet.swift in Sources */,
 				DBD6B50A30428BC800C8E719 /* SystemProcessService.swift in Sources */,
 				DBD6B50B30428BC800C8E719 /* LocalService.swift in Sources */,
 			);

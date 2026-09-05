@@ -99,7 +99,7 @@ struct ImageRow: View {
                 }
             }
         }
-        .padding(.horizontal, 10)
+        .padding(.horizontal, 7)
         .padding(.vertical, 5)
         .onHover { hovered in
             withAnimation(.easeInOut(duration: 0.15)) {

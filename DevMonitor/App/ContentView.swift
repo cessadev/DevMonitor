@@ -8,21 +8,13 @@ struct ContentView: View {
     @State private var imagesVM                    = ImagesViewModel()
     @State private var isVisible                   = false
     @State private var pullImageName               = ""
-    @State private var showCreateContainer         = false
-    @State private var selectedImage: DockerImage? = nil
     @State private var composeVM                   = ComposeViewModel()
     @State private var isComposeBusy               = false
+    
     @AppStorage("imagesExpanded") private var imagesExpanded = false
     @AppStorage("pullExpanded")   private var pullExpanded   = false
-    private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
     
-    private func dismissModal() {
-        guard showCreateContainer else { return }
-        withAnimation(.spring(duration: 0.25)) {
-            showCreateContainer = false
-            selectedImage       = nil
-        }
-    }
+    private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
     var body: some View {
         ZStack {
@@ -102,9 +94,14 @@ struct ContentView: View {
                             images: imagesVM.images,
                             onDelete: { image in await imagesVM.delete(image) },
                             onCreateContainer: { image in
-                                selectedImage = image
-                                withAnimation(.spring(duration: 0.25)) {
-                                    showCreateContainer = true
+                                CreateContainerWindowController.open(imageName: image.displayTag) { name, ports, envVars, restartPolicy in
+                                    return await containersVM.createContainer(
+                                        name: name,
+                                        imageName: image.displayTag,
+                                        portBindings: ports,
+                                        envVars: envVars,
+                                        restartPolicy: restartPolicy
+                                    )
                                 }
                             }
                         )
@@ -188,51 +185,6 @@ struct ContentView: View {
                 .padding(.horizontal, 16)
                 .padding(.bottom, 8)
             }
-            .disabled(showCreateContainer)
-            
-            if showCreateContainer {
-                Color.clear
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        dismissModal()
-                    }
-            }
-            
-            if showCreateContainer, let image = selectedImage {
-                ZStack {
-                    CreateContainerSheet(
-                        imageName: image.displayTag,
-                        onCancel: {
-                            withAnimation(.spring(duration: 0.25)) {
-                                showCreateContainer = false
-                                selectedImage       = nil
-                            }
-                        },
-                        onCreate: { name, ports, envVars, restartPolicy in
-                            let result = await containersVM.createContainer(
-                                name: name,
-                                imageName: image.displayTag,
-                                portBindings: ports,
-                                envVars: envVars,
-                                restartPolicy: restartPolicy
-                            )
-                            if result.success {
-                                withAnimation(.spring(duration: 0.25)) {
-                                    showCreateContainer = false
-                                    selectedImage       = nil
-                                }
-                            }
-                            return result
-                        }
-                    )
-                    .background(
-                        RoundedRectangle(cornerRadius: 14)
-                            .fill(.regularMaterial)
-                    )
-                    .shadow(color: .black.opacity(0.15), radius: 12)
-                    .transition(.scale(scale: 0.92).combined(with: .opacity))
-                }
-            }
         }
         .frame(width: 280)
         .fixedSize(horizontal: false, vertical: true)
@@ -243,9 +195,7 @@ struct ContentView: View {
             refresh()
         }
         .onDisappear {
-            pullImageName       = ""
-            showCreateContainer = false
-            selectedImage       = nil
+            pullImageName = ""
         }
         .onReceive(timer) { _ in
             guard !isComposeBusy else { return }
