@@ -3,6 +3,7 @@ import SwiftUI
 struct ContainersView: View {
 
     let containers: [DockerContainer]
+    let lockedContainersNames: Set<String>
     let onToggle: (DockerContainer) async -> Void
     let onDelete: (DockerContainer) async -> Void
 
@@ -13,8 +14,12 @@ struct ContainersView: View {
 
             VStack(spacing: 2) {
                 ForEach(containers) { container in
+                    let isLocked = lockedContainersNames.contains(where: {
+                        container.displayName.hasPrefix($0) || container.displayName == $0
+                    })
                     ContainerRow(
                         container: container,
+                        isLocked: isLocked,
                         onToggle: { await onToggle(container) },
                         onDelete: { await onDelete(container) }
                     )

@@ -54,6 +54,7 @@ struct ContentView: View {
                 if !containersVM.containers.isEmpty {
                     ContainersView(
                         containers: containersVM.containers,
+                        lockedContainersNames: composeVM.lockedContainerNames,
                         onToggle: { container in await containersVM.toggle(container) },
                         onDelete: { container in await containersVM.delete(container) }
                     )

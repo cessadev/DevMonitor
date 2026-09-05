@@ -8,7 +8,17 @@ class ComposeViewModel {
     var projects: [DockerComposeProject] = []
     var error: String?
     var isLoadingProjectId: UUID?
-    private var manualPaths              = Set<String>()
+    
+    // Names of containers belonging to the project currently being stopped
+    var lockedContainerNames: Set<String> {
+        guard let loadingId = isLoadingProjectId,
+              let project = projects.first(where: { $0.id == loadingId }) else {
+            return []
+        }
+        return Set(project.serviceStatuses.keys.map { "\(project.displayName)-\($0)" })
+    }
+    
+    private var manualPaths = Set<String>()
 
     private let composeService = ComposeService.shared
 

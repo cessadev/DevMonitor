@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContainerRow: View {
     let container: DockerContainer
+    let isLocked: Bool
     let onToggle: () async -> Void
     let onDelete: () async -> Void
 
@@ -12,9 +13,11 @@ struct ContainerRow: View {
     @State private var isOn: Bool
 
     init(container: DockerContainer,
+         isLocked: Bool,
          onToggle: @escaping () async -> Void,
          onDelete: @escaping () async -> Void) {
         self.container = container
+        self.isLocked  = isLocked
         self.onToggle  = onToggle
         self.onDelete  = onDelete
         self._isOn     = State(initialValue: container.isRunning)
@@ -42,7 +45,7 @@ struct ContainerRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(-1)
 
-            // Trash icon
+            // Trash icon - hidden and blocked when compose is stopping
             if isHovered || confirmDelete {
                 if confirmDelete {
                     HStack(spacing: 4) {
@@ -50,7 +53,7 @@ struct ContainerRow: View {
                             isDeleting = true
                             Task {
                                 await onDelete()
-                                isDeleting = false
+                                isDeleting    = false
                                 confirmDelete = false
                             }
                         } label: {
@@ -90,14 +93,16 @@ struct ContainerRow: View {
                 }
             }
 
-            // Toggle switch
+            // Toggle switch - disabled and dimmed when compose is stopping
             Toggle("", isOn: $isOn)
                 .toggleStyle(.switch)
                 .controlSize(.mini)
-                .disabled(isLoading || isDeleting)
-                .opacity(isLoading ? 0.5 : 1.0)
+                .disabled(isLoading || isDeleting || isLocked)
+                .opacity(isLoading || isLocked ? 0.4 : 1.0)
                 .animation(.easeInOut(duration: 0.2), value: isLoading)
+                .animation(.easeInOut(duration: 0.2), value: isLocked)
                 .onChange(of: isOn) { _, _ in
+                    guard !isLocked else { return }
                     isLoading = true
                     Task {
                         await onToggle()
