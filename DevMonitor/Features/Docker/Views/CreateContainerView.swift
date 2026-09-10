@@ -203,12 +203,21 @@ struct CreateContainerView: View {
 
             // Footer
             HStack {
-                Button("Cancel") {
+                Button {
                     onDismiss()
+                } label: {
+                    Text("Cancel")
+                        .font(.system(size: 12))
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 6)
+                        .contentShape(Capsule())
                 }
                 .buttonStyle(.plain)
-                .font(.system(size: 12))
-                .foregroundStyle(.secondary)
+                .background(
+                    Capsule()
+                        .fill(.white.opacity(0.18))
+                        .strokeBorder(.white.opacity(0.45), lineWidth: 0.5)
+                )
                 .keyboardShortcut(.escape)
                 .disabled(isCreating)
 
@@ -217,18 +226,27 @@ struct CreateContainerView: View {
                 Button {
                     submit()
                 } label: {
-                    if isCreating {
-                        HStack(spacing: 6) {
-                            ProgressView().controlSize(.mini)
-                            Text("Creating...")
-                                .font(.system(size: 12))
+                    Group {
+                        if isCreating {
+                            HStack(spacing: 6) {
+                                ProgressView().controlSize(.mini)
+                                Text("Creating...")
+                            }
+                        } else {
+                            Text("Create Container")
                         }
-                    } else {
-                        Text("Create Container")
-                            .font(.system(size: 12))
                     }
+                    .font(.system(size: 12))
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 6)
+                    .contentShape(Capsule())
                 }
-                .buttonStyle(.glass)
+                .buttonStyle(.plain)
+                .background(
+                    Capsule()
+                        .fill(.white.opacity(isCreating || containerName.trimmingCharacters(in: .whitespaces).isEmpty ? 0.08 : 0.18))
+                        .strokeBorder(.white.opacity(isCreating || containerName.trimmingCharacters(in: .whitespaces).isEmpty ? 0.2 : 0.45), lineWidth: 0.5)
+                )
                 .keyboardShortcut(.return)
                 .disabled(isCreating || containerName.trimmingCharacters(in: .whitespaces).isEmpty)
             }

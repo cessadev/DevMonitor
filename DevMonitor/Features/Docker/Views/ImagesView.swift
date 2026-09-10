@@ -58,7 +58,6 @@ struct ImagesView: View {
                         ForEach(images) { image in
                             let isSelected = selectedImage?.id == image.id
 
-                            // Oculta las demás filas cuando hay una seleccionada
                             if selectedImage == nil || isSelected {
                                 ImageRow(
                                     image: image,
@@ -67,7 +66,7 @@ struct ImagesView: View {
                                         await onDelete(image)
                                     },
                                     onSelect: {
-                                        withAnimation(.spring(duration: 0.3)) {
+                                        withAnimation(.easeOut(duration: 0.2)) {
                                             if isSelected {
                                                 selectedImage = nil
                                             } else {
@@ -76,9 +75,8 @@ struct ImagesView: View {
                                         }
                                     }
                                 )
-                                .transition(.opacity.combined(with: .move(edge: .top)))
+                                .transition(.opacity)
 
-                                // Formulario inline debajo de la fila seleccionada
                                 if isSelected {
                                     Divider()
                                         .padding(.horizontal, 8)
@@ -89,14 +87,14 @@ struct ImagesView: View {
                                             await onCreateContainer(image, name, ports, envVars, restartPolicy)
                                         },
                                         onDismiss: {
-                                            withAnimation(.spring(duration: 0.3)) {
+                                            withAnimation(.easeOut(duration: 0.2)) {
                                                 selectedImage = nil
                                             }
                                         }
                                     )
                                     .padding(.horizontal, 4)
                                     .padding(.bottom, 6)
-                                    .transition(.opacity.combined(with: .move(edge: .top)))
+                                    .transition(.opacity)
                                 }
                             }
                         }
