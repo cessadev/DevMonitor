@@ -27,7 +27,7 @@ struct ContainerRow: View {
     }
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 6) {
             Image("container-icon")
                 .resizable()
                 .scaledToFit()
@@ -87,11 +87,18 @@ struct ContainerRow: View {
                         }
                     } label: {
                         Image(systemName: "trash")
-                            .font(.system(size: 13))
+                            .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(.secondary)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)
-                    .contentShape(Rectangle())
+                    .background(
+                        Capsule()
+                            .fill(.white.opacity(0.08))
+                            .strokeBorder(.white.opacity(0.18), lineWidth: 0.5)
+                    )
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
                 }
             }

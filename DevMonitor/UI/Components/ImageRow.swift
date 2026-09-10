@@ -70,20 +70,29 @@ struct ImageRow: View {
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
                 } else {
                     HStack(spacing: 16) {
-                        // Trash
-                        Button {
-                            withAnimation(.spring(duration: 0.2)) {
-                                confirmDelete = true
+                        if !isSelected {
+                            // Trash
+                            Button {
+                                withAnimation(.spring(duration: 0.2)) {
+                                    confirmDelete = true
+                                }
+                            } label: {
+                                Image(systemName: "trash")
+                                    .font(.system(size: 13, weight: .medium))
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 7)
+                                    .padding(.vertical, 3)
+                                    .contentShape(Capsule())
                             }
-                        } label: {
-                            Image(systemName: "trash")
-                                .font(.system(size: 13))
-                                .foregroundStyle(.secondary)
+                            .buttonStyle(.plain)
+                            .background(
+                                Capsule()
+                                    .fill(.white.opacity(0.08))
+                                    .strokeBorder(.white.opacity(0.18), lineWidth: 0.5)
+                            )
+                            .transition(.scale(scale: 0.85).combined(with: .opacity))
+                            .padding(.horizontal, 3)
                         }
-                        .buttonStyle(.plain)
-                        .contentShape(Rectangle())
-                        .transition(.scale(scale: 0.85).combined(with: .opacity))
-                        .padding(.horizontal, 7)
                     }
                 }
             }
