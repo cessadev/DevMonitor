@@ -166,14 +166,31 @@ struct CreateContainerView: View {
 
                     // Restart policy
                     FormSection(title: "Restart Policy") {
-                        Picker("", selection: $restartPolicy) {
+                        HStack(spacing: 6) {
                             ForEach(RestartPolicy.allCases) { policy in
-                                Text(policy.label).tag(policy)
+                                let isActive = restartPolicy == policy
+                                Button {
+                                    restartPolicy = policy
+                                } label: {
+                                    Text(policy.label)
+                                        .font(.system(size: 11, weight: isActive ? .semibold : .regular))
+                                        .foregroundStyle(isActive ? .primary : .secondary)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 5)
+                                        .frame(maxWidth: .infinity)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 6)
+                                                .fill(isActive ? .white.opacity(0.2) : .clear)
+                                                .strokeBorder(
+                                                    isActive ? .white.opacity(0.35) : .white.opacity(0.1),
+                                                    lineWidth: 0.5
+                                                )
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(isCreating)
                             }
                         }
-                        .pickerStyle(.segmented)
-                        .labelsHidden()
-                        .disabled(isCreating)
                     }
                 }
                 .padding(.horizontal, 4)
