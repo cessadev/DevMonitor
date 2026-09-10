@@ -138,27 +138,15 @@ private struct PullImageView: View {
                     .disabled(isPulling)
                     .onSubmit { onPull() }
 
-                Button {
-                    onPull()
-                } label: {
-                    Text(isPulling ? "Pulling..." : "Pull")
-                        .font(.system(size: 12))
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 6)
-                .background(
-                    Capsule()
-                        .fill(.white.opacity(0.22))
-                        .strokeBorder(.white.opacity(0.45), lineWidth: 0.5)
-                )
-                .disabled(isPulling || imageName.trimmingCharacters(in: .whitespaces).isEmpty)
+                Text(isPulling ? "Pulling..." : "Enter")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.tertiary)
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, 10)
             .padding(.horizontal, 8)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(.white.opacity(0.45))
+                    .fill(.white.opacity(0.30))
                     .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
             )
             .padding(.horizontal, 4)
