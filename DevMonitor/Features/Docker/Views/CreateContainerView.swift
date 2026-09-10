@@ -32,114 +32,152 @@ struct CreateContainerView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Form {
-                // Image reference
-                Section {
-                    LabeledContent("Image") {
-                        Text(imageName)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                    }
-                }
 
-                // Container name
-                Section {
-                    TextField(
-                        "",
-                        text: $containerName,
-                        prompt: Text("e.g. my-nginx").foregroundStyle(.tertiary)
-                    )
-                    .multilineTextAlignment(.leading)
-                    .disabled(isCreating)
-                    .onChange(of: containerName) {
-                        if validationError != nil { validationError = nil }
-                    }
-                } header: {
-                    Text("Container Name")
-                } footer: {
-                    if let error = validationError {
-                        Text(error).foregroundStyle(.red)
-                    }
-                }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
 
-                // Port bindings
-                Section("Port Bindings (host:container)") {
-                    ForEach(portBindings.indices, id: \.self) { index in
-                        HStack(spacing: 6) {
+                    // Image
+                    FormSection(title: "Image") {
+                        HStack {
+                            Text(imageName)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                            Spacer()
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 7)
+                        .background(Color(nsColor: .controlBackgroundColor))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                    }
+
+                    // Container name
+                    FormSection(title: "Container Name") {
+                        VStack(alignment: .leading, spacing: 4) {
                             TextField(
                                 "",
-                                text: $portBindings[index],
-                                prompt: Text("e.g. 8080:80").foregroundStyle(.tertiary)
+                                text: $containerName,
+                                prompt: Text("e.g. my-nginx").foregroundStyle(.tertiary)
                             )
-                            .multilineTextAlignment(.leading)
+                            .textFieldStyle(.plain)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 7)
+                            .background(Color(nsColor: .controlBackgroundColor))
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
                             .disabled(isCreating)
+                            .onChange(of: containerName) {
+                                if validationError != nil { validationError = nil }
+                            }
 
-                            if portBindings.count > 1 {
-                                Button {
-                                    portBindings.remove(at: index)
-                                } label: {
-                                    Image(systemName: "minus.circle.fill")
-                                        .foregroundStyle(.red)
-                                }
-                                .buttonStyle(.plain)
-                                .disabled(isCreating)
+                            if let error = validationError {
+                                Text(error)
+                                    .font(.caption)
+                                    .foregroundStyle(.red)
+                                    .padding(.horizontal, 2)
                             }
                         }
                     }
-                    Button {
-                        portBindings.append("")
-                    } label: {
-                        Label("Add Port", systemImage: "plus.circle")
-                    }
-                    .disabled(isCreating)
-                }
 
-                // Environment variables
-                Section("Environment Variables") {
-                    ForEach(envVars.indices, id: \.self) { index in
-                        HStack(spacing: 6) {
-                            TextField(
-                                "",
-                                text: $envVars[index],
-                                prompt: Text("e.g. DEBUG=true").foregroundStyle(.tertiary)
-                            )
-                            .multilineTextAlignment(.leading)
-                            .disabled(isCreating)
+                    // Port bindings
+                    FormSection(title: "Port Bindings (host:container)") {
+                        VStack(spacing: 6) {
+                            ForEach(portBindings.indices, id: \.self) { index in
+                                HStack(spacing: 6) {
+                                    TextField(
+                                        "",
+                                        text: $portBindings[index],
+                                        prompt: Text("e.g. 8080:80").foregroundStyle(.tertiary)
+                                    )
+                                    .textFieldStyle(.plain)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 7)
+                                    .background(Color(nsColor: .controlBackgroundColor))
+                                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                                    .disabled(isCreating)
 
-                            if envVars.count > 1 {
-                                Button {
-                                    envVars.remove(at: index)
-                                } label: {
-                                    Image(systemName: "minus.circle.fill")
-                                        .foregroundStyle(.red)
+                                    if portBindings.count > 1 {
+                                        Button {
+                                            portBindings.remove(at: index)
+                                        } label: {
+                                            Image(systemName: "minus.circle.fill")
+                                                .foregroundStyle(.red)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .disabled(isCreating)
+                                    }
                                 }
-                                .buttonStyle(.plain)
-                                .disabled(isCreating)
+                            }
+
+                            Button {
+                                portBindings.append("")
+                            } label: {
+                                Label("Add Port", systemImage: "plus.circle")
+                                    .font(.callout)
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundColor(.accentColor)
+                            .disabled(isCreating)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+
+                    // Environment variables
+                    FormSection(title: "Environment Variables") {
+                        VStack(spacing: 6) {
+                            ForEach(envVars.indices, id: \.self) { index in
+                                HStack(spacing: 6) {
+                                    TextField(
+                                        "",
+                                        text: $envVars[index],
+                                        prompt: Text("e.g. DEBUG=true").foregroundStyle(.tertiary)
+                                    )
+                                    .textFieldStyle(.plain)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 7)
+                                    .background(Color(nsColor: .controlBackgroundColor))
+                                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                                    .disabled(isCreating)
+
+                                    if envVars.count > 1 {
+                                        Button {
+                                            envVars.remove(at: index)
+                                        } label: {
+                                            Image(systemName: "minus.circle.fill")
+                                                .foregroundStyle(.red)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .disabled(isCreating)
+                                    }
+                                }
+                            }
+
+                            Button {
+                                envVars.append("")
+                            } label: {
+                                Label("Add Variable", systemImage: "plus.circle")
+                                    .font(.callout)
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundColor(.accentColor)
+                            .disabled(isCreating)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+
+                    // Restart policy
+                    FormSection(title: "Restart Policy") {
+                        Picker("", selection: $restartPolicy) {
+                            ForEach(RestartPolicy.allCases) { policy in
+                                Text(policy.label).tag(policy)
                             }
                         }
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
+                        .disabled(isCreating)
                     }
-                    Button {
-                        envVars.append("")
-                    } label: {
-                        Label("Add Variable", systemImage: "plus.circle")
-                    }
-                    .disabled(isCreating)
                 }
-
-                // Restart policy
-                Section("Restart Policy") {
-                    Picker("", selection: $restartPolicy) {
-                        ForEach(RestartPolicy.allCases) { policy in
-                            Text(policy.label).tag(policy)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .disabled(isCreating)
-                    .labelsHidden()
-                }
+                .padding(20)
             }
-            .formStyle(.grouped)
 
             Divider()
 
@@ -193,5 +231,21 @@ struct CreateContainerView: View {
 
     private func closeWindow() {
         NSApplication.shared.keyWindow?.close()
+    }
+}
+
+// MARK: - FormSection
+
+private struct FormSection<Content: View>: View {
+    let title: String
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title.uppercased())
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(.tertiary)
+            content()
+        }
     }
 }

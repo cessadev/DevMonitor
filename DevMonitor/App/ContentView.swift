@@ -329,8 +329,8 @@ private struct PullImageView: View {
             .padding(.vertical, 4)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(.white.opacity(0.18))
-                    .strokeBorder(.white.opacity(0.35), lineWidth: 0.5)
+                    .fill(.white.opacity(0.45))
+                    .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
             )
             .padding(.horizontal, 16)
 
