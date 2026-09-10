@@ -51,8 +51,8 @@ struct CreateContainerView: View {
                             .padding(.vertical, 6)
                             .background(
                                 RoundedRectangle(cornerRadius: 6)
-                                    .fill(.white.opacity(0.12))
-                                    .strokeBorder(.white.opacity(0.2), lineWidth: 0.5)
+                                    .fill(.white.opacity(0.30))
+                                    .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
                             )
                             .disabled(isCreating)
                             .onChange(of: containerName) {
@@ -84,8 +84,8 @@ struct CreateContainerView: View {
                                     .padding(.vertical, 6)
                                     .background(
                                         RoundedRectangle(cornerRadius: 6)
-                                            .fill(.white.opacity(0.12))
-                                            .strokeBorder(.white.opacity(0.2), lineWidth: 0.5)
+                                            .fill(.white.opacity(0.30))
+                                            .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
                                     )
                                     .disabled(isCreating)
 
@@ -132,8 +132,8 @@ struct CreateContainerView: View {
                                     .padding(.vertical, 6)
                                     .background(
                                         RoundedRectangle(cornerRadius: 6)
-                                            .fill(.white.opacity(0.12))
-                                            .strokeBorder(.white.opacity(0.2), lineWidth: 0.5)
+                                            .fill(.white.opacity(0.30))
+                                            .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
                                     )
                                     .disabled(isCreating)
 

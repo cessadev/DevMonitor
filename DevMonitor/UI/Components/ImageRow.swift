@@ -83,6 +83,7 @@ struct ImageRow: View {
                         .buttonStyle(.plain)
                         .contentShape(Rectangle())
                         .transition(.scale(scale: 0.85).combined(with: .opacity))
+                        .padding(.horizontal, 7)
                     }
                 }
             }
@@ -91,7 +92,6 @@ struct ImageRow: View {
         .padding(.vertical, 5)
         .contentShape(Rectangle())
         .onTapGesture {
-            // Solo selecciona si no está en modo confirmDelete
             guard !confirmDelete else { return }
             withAnimation(.spring(duration: 0.3)) {
                 onSelect()

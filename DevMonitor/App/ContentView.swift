@@ -167,15 +167,24 @@ struct ContentView: View {
                 .padding(.bottom, 8)
             }
         }
-        .frame(width: 280)
+        .frame(width: 308)
         .fixedSize(horizontal: false, vertical: true)
+        .scaleEffect(isVisible ? 1.0 : 0.92)
+        .opacity(isVisible ? 1.0 : 0)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesVM.images.count)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesExpanded)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: pullExpanded)
+        .animation(isVisible
+            ? .spring(duration: 0.3, bounce: 0.2)
+            : .easeIn(duration: 0.15),
+            value: isVisible
+        )
         .onAppear {
+            isVisible = true
             refresh()
         }
         .onDisappear {
+            isVisible = false
             pullImageName = ""
         }
         .onReceive(timer) { _ in
