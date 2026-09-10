@@ -13,11 +13,13 @@ struct ImagesView: View {
     let onPullHeaderTap: () -> Void
     let onPull: () -> Void
     let onDelete: (DockerImage) async -> Void
-    let onCreateContainer: (DockerImage) -> Void
+    let onCreateContainer: (DockerImage, String, [String], [String], String) async -> (success: Bool, validationError: String?)
+
+    @State private var selectedImage: DockerImage? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            
+
             // Header
             Button(action: onHeaderTap) {
                 HStack {
@@ -48,39 +50,82 @@ struct ImagesView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .transition(.opacity)
 
             if isExpanded {
                 if !images.isEmpty {
                     VStack(spacing: 2) {
                         ForEach(images) { image in
-                            ImageRow(
-                                image: image,
-                                onDelete: { await onDelete(image) },
-                                onCreateContainer: { onCreateContainer(image) }
-                            )
+                            let isSelected = selectedImage?.id == image.id
+
+                            // Oculta las demás filas cuando hay una seleccionada
+                            if selectedImage == nil || isSelected {
+                                ImageRow(
+                                    image: image,
+                                    isSelected: isSelected,
+                                    onDelete: {
+                                        await onDelete(image)
+                                    },
+                                    onSelect: {
+                                        withAnimation(.spring(duration: 0.3)) {
+                                            if isSelected {
+                                                selectedImage = nil
+                                            } else {
+                                                selectedImage = image
+                                            }
+                                        }
+                                    }
+                                )
+                                .transition(.opacity.combined(with: .move(edge: .top)))
+
+                                // Formulario inline debajo de la fila seleccionada
+                                if isSelected {
+                                    Divider()
+                                        .padding(.horizontal, 8)
+
+                                    CreateContainerView(
+                                        imageName: image.displayTag,
+                                        onCreate: { name, ports, envVars, restartPolicy in
+                                            await onCreateContainer(image, name, ports, envVars, restartPolicy)
+                                        },
+                                        onDismiss: {
+                                            withAnimation(.spring(duration: 0.3)) {
+                                                selectedImage = nil
+                                            }
+                                        }
+                                    )
+                                    .padding(.horizontal, 4)
+                                    .padding(.bottom, 6)
+                                    .transition(.opacity.combined(with: .move(edge: .top)))
+                                }
+                            }
                         }
                     }
                     .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
                     .transition(.opacity)
                 }
 
-                // Pull Image section
-                PullImageHeader(
-                    isExpanded: pullExpanded,
-                    onTap: {
-                        withAnimation(.spring(duration: 0.3)) {
-                            onPullHeaderTap()
+                // Pull Image
+                if selectedImage == nil {
+                    PullImageHeader(
+                        isExpanded: pullExpanded,
+                        onTap: {
+                            withAnimation(.spring(duration: 0.3)) {
+                                onPullHeaderTap()
+                            }
                         }
-                    }
-                )
-
-                if pullExpanded {
-                    PullImageView(
-                        imageName: pullImageName,
-                        isPulling: isPulling,
-                        progress: pullProgress,
-                        onPull: onPull
                     )
+                    .transition(.opacity)
+
+                    if pullExpanded {
+                        PullImageView(
+                            imageName: pullImageName,
+                            isPulling: isPulling,
+                            progress: pullProgress,
+                            onPull: onPull
+                        )
+                        .transition(.opacity)
+                    }
                 }
             }
         }
@@ -151,7 +196,6 @@ private struct PullImageView: View {
             )
             .padding(.horizontal, 4)
 
-            // Progress
             if !progress.isEmpty {
                 Text(progress)
                     .font(.system(size: 10))

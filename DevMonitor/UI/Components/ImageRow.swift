@@ -2,8 +2,9 @@ import SwiftUI
 
 struct ImageRow: View {
     let image: DockerImage
+    let isSelected: Bool
     let onDelete: () async -> Void
-    let onCreateContainer: () -> Void
+    let onSelect: () -> Void
 
     @State private var isDeleting    = false
     @State private var isHovered     = false
@@ -13,7 +14,7 @@ struct ImageRow: View {
         HStack(spacing: 10) {
             Image(systemName: "photo.stack")
                 .font(.system(size: 13))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(isSelected ? .primary : .secondary)
                 .frame(width: 22)
 
             VStack(alignment: .leading, spacing: 1) {
@@ -36,6 +37,7 @@ struct ImageRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(-1)
 
+            // Action area
             if isHovered || confirmDelete {
                 if confirmDelete {
                     HStack(spacing: 4) {
@@ -81,26 +83,20 @@ struct ImageRow: View {
                         .buttonStyle(.plain)
                         .contentShape(Rectangle())
                         .transition(.scale(scale: 0.85).combined(with: .opacity))
-
-                        // Container icon
-                        Button {
-                            onCreateContainer()
-                        } label: {
-                            Image("container-icon")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 16, height: 16)
-                                .opacity(0.5)
-                        }
-                        .buttonStyle(.plain)
-                        .contentShape(Rectangle())
-                        .transition(.scale(scale: 0.85).combined(with: .opacity))
                     }
                 }
             }
         }
         .padding(.horizontal, 7)
         .padding(.vertical, 5)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            // Solo selecciona si no está en modo confirmDelete
+            guard !confirmDelete else { return }
+            withAnimation(.spring(duration: 0.3)) {
+                onSelect()
+            }
+        }
         .onHover { hovered in
             withAnimation(.easeInOut(duration: 0.15)) {
                 isHovered = hovered

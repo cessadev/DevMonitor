@@ -33,7 +33,6 @@
 		DBD6B571304671AB00C8E719 /* ComposeProjectRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B570304671AB00C8E719 /* ComposeProjectRow.swift */; };
 		DBD6B573304671C700C8E719 /* ComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B572304671C700C8E719 /* ComposeView.swift */; };
 		DBD6B575304673ED00C8E719 /* CollapsibleHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B574304673ED00C8E719 /* CollapsibleHeader.swift */; };
-		DBD6B577304C887800C8E719 /* CreateContainerWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B576304C887800C8E719 /* CreateContainerWindowController.swift */; };
 		DBD6B579304C88AD00C8E719 /* CreateContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B578304C88AD00C8E719 /* CreateContainerView.swift */; };
 /* End PBXBuildFile section */
 
@@ -65,7 +64,6 @@
 		DBD6B570304671AB00C8E719 /* ComposeProjectRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeProjectRow.swift; sourceTree = "<group>"; };
 		DBD6B572304671C700C8E719 /* ComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeView.swift; sourceTree = "<group>"; };
 		DBD6B574304673ED00C8E719 /* CollapsibleHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsibleHeader.swift; sourceTree = "<group>"; };
-		DBD6B576304C887800C8E719 /* CreateContainerWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateContainerWindowController.swift; sourceTree = "<group>"; };
 		DBD6B578304C88AD00C8E719 /* CreateContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateContainerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -190,7 +188,6 @@
 		DBD6B4FB3042894200C8E719 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				DBD6B576304C887800C8E719 /* CreateContainerWindowController.swift */,
 				DBD6B4FE30428A3A00C8E719 /* ContentView.swift */,
 				DBD6B4FA3042894200C8E719 /* DevMonitorApp.swift */,
 			);
@@ -306,7 +303,6 @@
 				DBD6B5263043498600C8E719 /* ImagesViewModel.swift in Sources */,
 				DBD6B56F3046718D00C8E719 /* ComposeViewModel.swift in Sources */,
 				DBD6B579304C88AD00C8E719 /* CreateContainerView.swift in Sources */,
-				DBD6B577304C887800C8E719 /* CreateContainerWindowController.swift in Sources */,
 				DBD6B5273043498600C8E719 /* ServicesView.swift in Sources */,
 				DBD6B5283043498600C8E719 /* ImagesView.swift in Sources */,
 				DBD6B571304671AB00C8E719 /* ComposeProjectRow.swift in Sources */,

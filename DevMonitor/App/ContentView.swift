@@ -98,16 +98,14 @@ struct ContentView: View {
                         Task { await imagesVM.pull(name: pullImageName) }
                     },
                     onDelete: { image in await imagesVM.delete(image) },
-                    onCreateContainer: { image in
-                        CreateContainerWindowController.open(imageName: image.displayTag) { name, ports, envVars, restartPolicy in
-                            return await containersVM.createContainer(
-                                name: name,
-                                imageName: image.displayTag,
-                                portBindings: ports,
-                                envVars: envVars,
-                                restartPolicy: restartPolicy
-                            )
-                        }
+                    onCreateContainer: { image, name, ports, envVars, restartPolicy in
+                        return await containersVM.createContainer(
+                            name: name,
+                            imageName: image.displayTag,
+                            portBindings: ports,
+                            envVars: envVars,
+                            restartPolicy: restartPolicy
+                        )
                     }
                 )
 

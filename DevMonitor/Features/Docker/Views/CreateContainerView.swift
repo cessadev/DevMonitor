@@ -4,6 +4,7 @@ struct CreateContainerView: View {
 
     let imageName: String
     let onCreate: (String, [String], [String], String) async -> (success: Bool, validationError: String?)
+    let onDismiss: () -> Void
 
     @State private var containerName            = ""
     @State private var portBindings: [String]   = [""]
@@ -34,22 +35,7 @@ struct CreateContainerView: View {
         VStack(spacing: 0) {
 
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-
-                    // Image
-                    FormSection(title: "Image") {
-                        HStack {
-                            Text(imageName)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(1)
-                                .truncationMode(.middle)
-                            Spacer()
-                        }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 7)
-                        .background(Color(nsColor: .controlBackgroundColor))
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                    }
+                VStack(alignment: .leading, spacing: 16) {
 
                     // Container name
                     FormSection(title: "Container Name") {
@@ -60,10 +46,14 @@ struct CreateContainerView: View {
                                 prompt: Text("e.g. my-nginx").foregroundStyle(.tertiary)
                             )
                             .textFieldStyle(.plain)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 7)
-                            .background(Color(nsColor: .controlBackgroundColor))
-                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                            .font(.system(size: 12))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 6)
+                            .background(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .fill(.white.opacity(0.12))
+                                    .strokeBorder(.white.opacity(0.2), lineWidth: 0.5)
+                            )
                             .disabled(isCreating)
                             .onChange(of: containerName) {
                                 if validationError != nil { validationError = nil }
@@ -80,7 +70,7 @@ struct CreateContainerView: View {
 
                     // Port bindings
                     FormSection(title: "Port Bindings (host:container)") {
-                        VStack(spacing: 6) {
+                        VStack(spacing: 4) {
                             ForEach(portBindings.indices, id: \.self) { index in
                                 HStack(spacing: 6) {
                                     TextField(
@@ -89,10 +79,14 @@ struct CreateContainerView: View {
                                         prompt: Text("e.g. 8080:80").foregroundStyle(.tertiary)
                                     )
                                     .textFieldStyle(.plain)
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 7)
-                                    .background(Color(nsColor: .controlBackgroundColor))
-                                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                                    .font(.system(size: 12))
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 6)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .fill(.white.opacity(0.12))
+                                            .strokeBorder(.white.opacity(0.2), lineWidth: 0.5)
+                                    )
                                     .disabled(isCreating)
 
                                     if portBindings.count > 1 {
@@ -100,7 +94,8 @@ struct CreateContainerView: View {
                                             portBindings.remove(at: index)
                                         } label: {
                                             Image(systemName: "minus.circle.fill")
-                                                .foregroundStyle(.red)
+                                                .foregroundStyle(.red.opacity(0.7))
+                                                .font(.system(size: 12))
                                         }
                                         .buttonStyle(.plain)
                                         .disabled(isCreating)
@@ -112,10 +107,10 @@ struct CreateContainerView: View {
                                 portBindings.append("")
                             } label: {
                                 Label("Add Port", systemImage: "plus.circle")
-                                    .font(.callout)
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(.secondary)
                             }
                             .buttonStyle(.plain)
-                            .foregroundColor(.accentColor)
                             .disabled(isCreating)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
@@ -123,7 +118,7 @@ struct CreateContainerView: View {
 
                     // Environment variables
                     FormSection(title: "Environment Variables") {
-                        VStack(spacing: 6) {
+                        VStack(spacing: 4) {
                             ForEach(envVars.indices, id: \.self) { index in
                                 HStack(spacing: 6) {
                                     TextField(
@@ -132,10 +127,14 @@ struct CreateContainerView: View {
                                         prompt: Text("e.g. DEBUG=true").foregroundStyle(.tertiary)
                                     )
                                     .textFieldStyle(.plain)
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 7)
-                                    .background(Color(nsColor: .controlBackgroundColor))
-                                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                                    .font(.system(size: 12))
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 6)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .fill(.white.opacity(0.12))
+                                            .strokeBorder(.white.opacity(0.2), lineWidth: 0.5)
+                                    )
                                     .disabled(isCreating)
 
                                     if envVars.count > 1 {
@@ -143,7 +142,8 @@ struct CreateContainerView: View {
                                             envVars.remove(at: index)
                                         } label: {
                                             Image(systemName: "minus.circle.fill")
-                                                .foregroundStyle(.red)
+                                                .foregroundStyle(.red.opacity(0.7))
+                                                .font(.system(size: 12))
                                         }
                                         .buttonStyle(.plain)
                                         .disabled(isCreating)
@@ -155,10 +155,10 @@ struct CreateContainerView: View {
                                 envVars.append("")
                             } label: {
                                 Label("Add Variable", systemImage: "plus.circle")
-                                    .font(.callout)
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(.secondary)
                             }
                             .buttonStyle(.plain)
-                            .foregroundColor(.accentColor)
                             .disabled(isCreating)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
@@ -176,38 +176,47 @@ struct CreateContainerView: View {
                         .disabled(isCreating)
                     }
                 }
-                .padding(20)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 12)
             }
+            .frame(maxHeight: 320)
 
             Divider()
+                .padding(.top, 4)
 
             // Footer
             HStack {
-                Spacer()
                 Button("Cancel") {
-                    closeWindow()
+                    onDismiss()
                 }
+                .buttonStyle(.plain)
+                .font(.system(size: 12))
+                .foregroundStyle(.secondary)
                 .keyboardShortcut(.escape)
                 .disabled(isCreating)
+
+                Spacer()
 
                 Button {
                     submit()
                 } label: {
                     if isCreating {
                         HStack(spacing: 6) {
-                            ProgressView().controlSize(.small)
+                            ProgressView().controlSize(.mini)
                             Text("Creating...")
+                                .font(.system(size: 12))
                         }
                     } else {
                         Text("Create Container")
+                            .font(.system(size: 12))
                     }
                 }
+                .buttonStyle(.glass)
                 .keyboardShortcut(.return)
-                .buttonStyle(.borderedProminent)
                 .disabled(isCreating || containerName.trimmingCharacters(in: .whitespaces).isEmpty)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 14)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 10)
         }
     }
 
@@ -222,15 +231,11 @@ struct CreateContainerView: View {
             )
             isCreating = false
             if result.success {
-                closeWindow()
+                onDismiss()
             } else if let msg = result.validationError {
                 validationError = msg
             }
         }
-    }
-
-    private func closeWindow() {
-        NSApplication.shared.keyWindow?.close()
     }
 }
 
