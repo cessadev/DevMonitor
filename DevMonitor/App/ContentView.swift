@@ -74,10 +74,11 @@ struct ContentView: View {
                 )
 
                 // Images header collapsible
-                ImagesHeader(
+                ImagesView(
+                    images: imagesVM.images,
                     count: imagesVM.images.count,
                     isExpanded: imagesExpanded,
-                    onTap: {
+                    onHeaderTap: {
                         withAnimation(.spring(duration: 0.3)) {
                             imagesExpanded.toggle()
                             if !imagesExpanded {
@@ -85,47 +86,39 @@ struct ContentView: View {
                                 pullImageName = ""
                             }
                         }
+                    },
+                    onDelete: { image in await imagesVM.delete(image) },
+                    onCreateContainer: { image in
+                        CreateContainerWindowController.open(imageName: image.displayTag) { name, ports, envVars, restartPolicy in
+                            return await containersVM.createContainer(
+                                name: name,
+                                imageName: image.displayTag,
+                                portBindings: ports,
+                                envVars: envVars,
+                                restartPolicy: restartPolicy
+                            )
+                        }
                     }
                 )
-
-                if imagesExpanded {
-                    if !imagesVM.images.isEmpty {
-                        ImagesView(
-                            images: imagesVM.images,
-                            onDelete: { image in await imagesVM.delete(image) },
-                            onCreateContainer: { image in
-                                CreateContainerWindowController.open(imageName: image.displayTag) { name, ports, envVars, restartPolicy in
-                                    return await containersVM.createContainer(
-                                        name: name,
-                                        imageName: image.displayTag,
-                                        portBindings: ports,
-                                        envVars: envVars,
-                                        restartPolicy: restartPolicy
-                                    )
-                                }
-                            }
-                        )
-                    }
                     
-                    PullImageHeader(
-                        isExpanded: pullExpanded,
-                        onTap: {
-                            withAnimation(.spring(duration: 0.3)) {
-                                pullExpanded.toggle()
-                            }
+                PullImageHeader(
+                    isExpanded: pullExpanded,
+                    onTap: {
+                        withAnimation(.spring(duration: 0.3)) {
+                            pullExpanded.toggle()
+                        }
+                    }
+                )
+                
+                if pullExpanded {
+                    PullImageView(
+                        imageName: $pullImageName,
+                        isPulling: imagesVM.isPulling,
+                        progress: imagesVM.pullProgress,
+                        onPull: {
+                            Task { await imagesVM.pull(name: pullImageName) }
                         }
                     )
-                    
-                    if pullExpanded {
-                        PullImageView(
-                            imageName: $pullImageName,
-                            isPulling: imagesVM.isPulling,
-                            progress: imagesVM.pullProgress,
-                            onPull: {
-                                Task { await imagesVM.pull(name: pullImageName) }
-                            }
-                        )
-                    }
                 }
 
                 // Error
@@ -213,50 +206,6 @@ struct ContentView: View {
             await images
             await compose
         }
-    }
-}
-
-// MARK: - Images Header
-
-private struct ImagesHeader: View {
-    let count: Int
-    let isExpanded: Bool
-    let onTap: () -> Void
-
-    var body: some View {
-        Button(action: onTap) {
-            HStack {
-                Text("DOCKER IMAGES")
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(.tertiary)
-
-                Spacer()
-
-                HStack(spacing: 6) {
-                    Text("\(count)")
-                        .font(.system(size: 11))
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(
-                            Capsule()
-                                .fill(.white.opacity(0.12))
-                                .strokeBorder(.white.opacity(0.18), lineWidth: 0.5)
-                        )
-
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundStyle(.tertiary)
-                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
-                        .animation(.spring(duration: 0.3), value: isExpanded)
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 2)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .padding(.bottom, 6)
     }
 }
 
