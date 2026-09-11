@@ -101,7 +101,7 @@ struct ImagesView: View {
                         }
                         Spacer().frame(height: 4)
                     }
-                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
+                    .glassEffect(.clear, in: RoundedRectangle(cornerRadius: 12))
                     .transition(.opacity)
                 }
 

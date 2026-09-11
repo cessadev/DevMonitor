@@ -90,7 +90,10 @@ struct CreateContainerView: View {
 
                                 if portBindings.count > 1 {
                                     Button {
-                                        portBindings.remove(at: index)
+                                        let i = index
+                                        _ = withAnimation(.easeOut(duration: 0.2)) {
+                                            portBindings.remove(at: i)
+                                        }
                                     } label: {
                                         Image(systemName: "minus.circle.fill")
                                             .foregroundStyle(.red.opacity(0.7))
@@ -98,12 +101,16 @@ struct CreateContainerView: View {
                                     }
                                     .buttonStyle(.plain)
                                     .disabled(isCreating)
+                                    .transition(.scale(scale: 0.8).combined(with: .opacity))
                                 }
                             }
+                            .transition(.opacity.combined(with: .move(edge: .top)))
                         }
 
                         Button {
-                            portBindings.append("")
+                            withAnimation(.spring(duration: 0.3, bounce: 0.2)) {
+                                portBindings.append("")
+                            }
                         } label: {
                             Label("Add Port", systemImage: "plus.circle")
                                 .font(.system(size: 11))
@@ -112,6 +119,7 @@ struct CreateContainerView: View {
                         .buttonStyle(.plain)
                         .disabled(isCreating)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 4)
                     }
                 }
 
@@ -138,7 +146,10 @@ struct CreateContainerView: View {
 
                                 if envVars.count > 1 {
                                     Button {
-                                        envVars.remove(at: index)
+                                        let i = index
+                                        _ = withAnimation(.easeOut(duration: 0.2)) {
+                                            envVars.remove(at: i)
+                                        }
                                     } label: {
                                         Image(systemName: "minus.circle.fill")
                                             .foregroundStyle(.red.opacity(0.7))
@@ -146,12 +157,16 @@ struct CreateContainerView: View {
                                     }
                                     .buttonStyle(.plain)
                                     .disabled(isCreating)
+                                    .transition(.scale(scale: 0.8).combined(with: .opacity))
                                 }
                             }
+                            .transition(.opacity.combined(with: .move(edge: .top)))
                         }
 
                         Button {
-                            envVars.append("")
+                            withAnimation(.spring(duration: 0.3, bounce: 0.2)) {
+                                envVars.append("")
+                            }
                         } label: {
                             Label("Add Variable", systemImage: "plus.circle")
                                 .font(.system(size: 11))
@@ -160,6 +175,7 @@ struct CreateContainerView: View {
                         .buttonStyle(.plain)
                         .disabled(isCreating)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 4)
                     }
                 }
 
