@@ -51,37 +51,27 @@ struct ContainerRow: View {
             // Trash icon - hidden and blocked when compose is up and stopping
             if !isLocked && !isDeleteLocked && (isHovered || confirmDelete) {
                 if confirmDelete {
-                    HStack(spacing: 4) {
-                        Button {
-                            isDeleting = true
-                            Task {
-                                await onDelete()
-                                isDeleting    = false
-                                confirmDelete = false
-                            }
-                        } label: {
-                            if isDeleting {
-                                ProgressView().controlSize(.mini)
-                                    .padding(.horizontal, 7)
-                                    .padding(.vertical, 3)
-                            } else {
-                                Text("Delete")
-                                    .font(.system(size: 10, weight: .medium))
-                                    .foregroundStyle(.red)
-                                    .padding(.horizontal, 7)
-                                    .padding(.vertical, 3)
-                            }
+                    Button {
+                        isDeleting = true
+                        Task {
+                            await onDelete()
+                            isDeleting    = false
+                            confirmDelete = false
                         }
-                        .buttonStyle(CapsuleButtonStyle(tint: .destructive))
-                        .transition(.scale(scale: 0.85).combined(with: .opacity))
+                    } label: {
+                        if isDeleting {
+                            ProgressView().controlSize(.mini)
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 3)
+                        } else {
+                            Text("Delete")
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundStyle(.red)
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 3)
+                        }
                     }
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 3)
-                    .background(
-                        Capsule()
-                            .fill(.red.opacity(0.08))
-                            .strokeBorder(.red.opacity(0.25), lineWidth: 0.5)
-                    )
+                    .buttonStyle(CapsuleButtonStyle(tint: .destructive))
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
                 } else {
                     // Trash button
