@@ -34,6 +34,7 @@
 		DBD6B573304671C700C8E719 /* ComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B572304671C700C8E719 /* ComposeView.swift */; };
 		DBD6B575304673ED00C8E719 /* CollapsibleHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B574304673ED00C8E719 /* CollapsibleHeader.swift */; };
 		DBD6B579304C88AD00C8E719 /* CreateContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B578304C88AD00C8E719 /* CreateContainerView.swift */; };
+		DBD6B57B3053A27A00C8E719 /* CapsuleButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B57A3053A27A00C8E719 /* CapsuleButtonStyle.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,6 +66,7 @@
 		DBD6B572304671C700C8E719 /* ComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeView.swift; sourceTree = "<group>"; };
 		DBD6B574304673ED00C8E719 /* CollapsibleHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsibleHeader.swift; sourceTree = "<group>"; };
 		DBD6B578304C88AD00C8E719 /* CreateContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateContainerView.swift; sourceTree = "<group>"; };
+		DBD6B57A3053A27A00C8E719 /* CapsuleButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapsuleButtonStyle.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,6 +176,7 @@
 		DBD6B4E2304284DB00C8E719 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				DBD6B57A3053A27A00C8E719 /* CapsuleButtonStyle.swift */,
 				DBD6B574304673ED00C8E719 /* CollapsibleHeader.swift */,
 				DBD6B570304671AB00C8E719 /* ComposeProjectRow.swift */,
 				DBD6B51D304345D900C8E719 /* ImageRow.swift */,
@@ -306,6 +309,7 @@
 				DBD6B5273043498600C8E719 /* ServicesView.swift in Sources */,
 				DBD6B5283043498600C8E719 /* ImagesView.swift in Sources */,
 				DBD6B571304671AB00C8E719 /* ComposeProjectRow.swift in Sources */,
+				DBD6B57B3053A27A00C8E719 /* CapsuleButtonStyle.swift in Sources */,
 				DBD6B5293043498600C8E719 /* DockerImage.swift in Sources */,
 				DBD6B4FD3042894200C8E719 /* DevMonitorApp.swift in Sources */,
 				DBD6B50030428BC800C8E719 /* ContainerRow.swift in Sources */,

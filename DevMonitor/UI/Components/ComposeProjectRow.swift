@@ -16,6 +16,7 @@ struct ComposeProjectRow: View {
                 .font(.system(size: 13))
                 .foregroundStyle(.secondary)
                 .frame(width: 22)
+                .padding(.bottom, 1.8)
 
             Text(project.displayName)
                 .font(.system(size: 13))
@@ -70,10 +71,11 @@ struct ComposeProjectRow: View {
                     // Remove
                     Button(action: onRemove) {
                         Image(systemName: "trash")
-                            .font(.system(size: 10, weight: .medium))
+                            .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 7)
-                            .padding(.vertical, 3)
+                            .padding(.top, 3)
+                            .padding(.bottom, 4)
                             .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)

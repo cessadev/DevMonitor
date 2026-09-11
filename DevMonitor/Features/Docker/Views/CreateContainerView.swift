@@ -223,14 +223,8 @@ struct CreateContainerView: View {
                         .font(.system(size: 12))
                         .padding(.horizontal, 14)
                         .padding(.vertical, 6)
-                        .contentShape(Capsule())
                 }
-                .buttonStyle(.plain)
-                .background(
-                    Capsule()
-                        .fill(.white.opacity(0.18))
-                        .strokeBorder(.white.opacity(0.45), lineWidth: 0.5)
-                )
+                .buttonStyle(CapsuleButtonStyle())
                 .keyboardShortcut(.escape)
                 .disabled(isCreating)
 
@@ -252,14 +246,10 @@ struct CreateContainerView: View {
                     .font(.system(size: 12))
                     .padding(.horizontal, 14)
                     .padding(.vertical, 6)
-                    .contentShape(Capsule())
                 }
-                .buttonStyle(.plain)
-                .background(
-                    Capsule()
-                        .fill(.white.opacity(isCreating || containerName.trimmingCharacters(in: .whitespaces).isEmpty ? 0.08 : 0.18))
-                        .strokeBorder(.white.opacity(isCreating || containerName.trimmingCharacters(in: .whitespaces).isEmpty ? 0.2 : 0.45), lineWidth: 0.5)
-                )
+                .buttonStyle(CapsuleButtonStyle(
+                    isDisabled: isCreating || containerName.trimmingCharacters(in: .whitespaces).isEmpty
+                ))
                 .keyboardShortcut(.return)
                 .disabled(isCreating || containerName.trimmingCharacters(in: .whitespaces).isEmpty)
             }

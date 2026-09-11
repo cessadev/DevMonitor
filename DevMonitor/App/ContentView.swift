@@ -135,14 +135,8 @@ struct ContentView: View {
                             .font(.system(size: 12))
                             .padding(.horizontal, 14)
                             .padding(.vertical, 6)
-                            .contentShape(Capsule())
                     }
-                    .buttonStyle(.plain)
-                    .background(
-                        Capsule()
-                            .fill(.white.opacity(0.18))
-                            .strokeBorder(.white.opacity(0.45), lineWidth: 0.5)
-                    )
+                    .buttonStyle(CapsuleButtonStyle())
 
                     Spacer()
 
@@ -153,14 +147,8 @@ struct ContentView: View {
                             .font(.system(size: 12))
                             .padding(.horizontal, 14)
                             .padding(.vertical, 6)
-                            .contentShape(Capsule())
                     }
-                    .buttonStyle(.plain)
-                    .background(
-                        Capsule()
-                            .fill(.white.opacity(0.18))
-                            .strokeBorder(.white.opacity(0.45), lineWidth: 0.5)
-                    )
+                    .buttonStyle(CapsuleButtonStyle())
                     .keyboardShortcut("q")
                 }
                 .padding(.horizontal, 16)

@@ -90,7 +90,8 @@ struct ContainerRow: View {
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 7)
-                            .padding(.vertical, 3)
+                            .padding(.top, 3)
+                            .padding(.bottom, 4)
                             .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)
