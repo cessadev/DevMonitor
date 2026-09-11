@@ -39,11 +39,7 @@ struct ComposeProjectRow: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .layoutPriority(-1)
 
-            if isLoading {
-                ProgressView()
-                    .controlSize(.small)
-                    .frame(width: 32, height: 24)
-            } else if isHovered {
+            if isHovered {
                 HStack(spacing: 6) {
                     // Remove
                     Button(action: onRemove) {
@@ -60,6 +56,8 @@ struct ComposeProjectRow: View {
                         .toggleStyle(.switch)
                         .controlSize(.mini)
                         .disabled(isLoading)
+                        .opacity(isLoading ? 0.4 : 1.0)
+                        .animation(.easeInOut(duration: 0.2), value: isLoading)
                         .onChange(of: isOn) { _, newValue in
                             Task {
                                 if newValue {
