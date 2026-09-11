@@ -18,21 +18,28 @@ class ServicesViewModel {
 
         for index in services.indices {
             let name = services[index].processName.lowercased()
-            
+
             let processRunning =
                 runningApps.contains(where: { $0.contains(name) }) ||
                 processNames.contains(where: { $0.lowercased().contains(name) })
 
-            // Docker Desktop can be running but with the engine stopped
-            if name == "docker" {
-                services[index].isRunning = processRunning && isDockerSocketReachable()
-            } else {
-                services[index].isRunning = processRunning
+            services[index].isRunning = processRunning
+        }
+
+        // Socket check off main thread
+        Task.detached(priority: .utility) {
+            let socketReachable = self.isDockerSocketReachable()
+            await MainActor.run {
+                if let index = self.services.indices.first(where: {
+                    self.services[$0].processName.lowercased() == "docker"
+                }) {
+                    self.services[index].isRunning = self.services[index].isRunning && socketReachable
+                }
             }
         }
     }
 
-    private func isDockerSocketReachable() -> Bool {
+    private nonisolated func isDockerSocketReachable() -> Bool {
         guard FileManager.default.fileExists(atPath: dockerSocketPath) else {
             return false
         }
