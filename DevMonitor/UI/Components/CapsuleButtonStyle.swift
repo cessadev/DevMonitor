@@ -1,14 +1,20 @@
 import SwiftUI
 
+enum CapsuleButtonTint {
+    case neutral
+    case destructive
+    case positive
+}
+
 struct CapsuleButtonStyle: ButtonStyle {
     var isDisabled: Bool = false
-
-    @State private var isHovered = false
+    var tint: CapsuleButtonTint = .neutral
 
     func makeBody(configuration: Configuration) -> some View {
         CapsuleButtonBody(
             configuration: configuration,
-            isDisabled: isDisabled
+            isDisabled: isDisabled,
+            tint: tint
         )
     }
 }
@@ -16,6 +22,7 @@ struct CapsuleButtonStyle: ButtonStyle {
 private struct CapsuleButtonBody: View {
     let configuration: ButtonStyleConfiguration
     let isDisabled: Bool
+    let tint: CapsuleButtonTint
 
     @State private var isHovered = false
 
@@ -30,31 +37,67 @@ private struct CapsuleButtonBody: View {
             .brightness(isHovered && !isDisabled ? 0.06 : 0.0)
             .animation(.spring(duration: 0.2, bounce: 0.3), value: configuration.isPressed)
             .animation(.easeOut(duration: 0.15), value: isHovered)
-            .onHover { hovered in
-                isHovered = hovered
-            }
+            .onHover { isHovered = $0 }
     }
 
     private var backgroundColor: Color {
-        if isDisabled {
-            return .white.opacity(0.06)
-        }
-        if configuration.isPressed {
-            return .white.opacity(0.28)
-        }
-        if isHovered {
-            return .white.opacity(0.24)
-        }
-        return .white.opacity(0.18)
+        if isDisabled { return baseColor.opacity(0.06) }
+        if configuration.isPressed { return baseColor.opacity(pressedFill) }
+        if isHovered { return baseColor.opacity(hoverFill) }
+        return baseColor.opacity(defaultFill)
     }
 
     private var borderColor: Color {
-        if isDisabled {
-            return .white.opacity(0.15)
+        if isDisabled { return baseColor.opacity(0.15) }
+        if configuration.isPressed || isHovered { return baseColor.opacity(pressedBorder) }
+        return baseColor.opacity(defaultBorder)
+    }
+
+    private var baseColor: Color {
+        switch tint {
+        case .neutral:     return .white
+        case .destructive: return .red
+        case .positive:    return .green
         }
-        if configuration.isPressed || isHovered {
-            return .white.opacity(0.65)
+    }
+
+    private var defaultFill: Double {
+        switch tint {
+        case .neutral:     return 0.08
+        case .destructive: return 0.08
+        case .positive:    return 0.12
         }
-        return .white.opacity(0.45)
+    }
+
+    private var hoverFill: Double {
+        switch tint {
+        case .neutral:     return 0.16
+        case .destructive: return 0.14
+        case .positive:    return 0.20
+        }
+    }
+
+    private var pressedFill: Double {
+        switch tint {
+        case .neutral:     return 0.22
+        case .destructive: return 0.20
+        case .positive:    return 0.28
+        }
+    }
+
+    private var defaultBorder: Double {
+        switch tint {
+        case .neutral:     return 0.18
+        case .destructive: return 0.25
+        case .positive:    return 0.25
+        }
+    }
+
+    private var pressedBorder: Double {
+        switch tint {
+        case .neutral:     return 0.45
+        case .destructive: return 0.45
+        case .positive:    return 0.55
+        }
     }
 }

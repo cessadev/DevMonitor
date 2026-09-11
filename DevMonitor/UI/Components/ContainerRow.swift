@@ -62,14 +62,18 @@ struct ContainerRow: View {
                         } label: {
                             if isDeleting {
                                 ProgressView().controlSize(.mini)
+                                    .padding(.horizontal, 7)
+                                    .padding(.vertical, 3)
                             } else {
                                 Text("Delete")
                                     .font(.system(size: 10, weight: .medium))
                                     .foregroundStyle(.red)
+                                    .padding(.horizontal, 7)
+                                    .padding(.vertical, 3)
                             }
                         }
-                        .buttonStyle(.plain)
-                        .contentShape(Capsule())
+                        .buttonStyle(CapsuleButtonStyle(tint: .destructive))
+                        .transition(.scale(scale: 0.85).combined(with: .opacity))
                     }
                     .padding(.horizontal, 7)
                     .padding(.vertical, 3)
@@ -92,14 +96,8 @@ struct ContainerRow: View {
                             .padding(.horizontal, 7)
                             .padding(.top, 3)
                             .padding(.bottom, 4)
-                            .contentShape(Capsule())
                     }
-                    .buttonStyle(.plain)
-                    .background(
-                        Capsule()
-                            .fill(.white.opacity(0.08))
-                            .strokeBorder(.white.opacity(0.18), lineWidth: 0.5)
-                    )
+                    .buttonStyle(CapsuleButtonStyle(tint: .neutral))
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
                 }
             }

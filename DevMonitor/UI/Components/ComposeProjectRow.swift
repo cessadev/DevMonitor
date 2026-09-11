@@ -41,14 +41,8 @@ struct ComposeProjectRow: View {
                             .foregroundStyle(.green)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)
-                            .contentShape(Capsule())
                     }
-                    .buttonStyle(.plain)
-                    .background(
-                        Capsule()
-                            .fill(.green.opacity(0.12))
-                            .strokeBorder(.green.opacity(0.25), lineWidth: 0.5)
-                    )
+                    .buttonStyle(CapsuleButtonStyle(tint: .positive))
 
                     // Down
                     Button {
@@ -59,14 +53,8 @@ struct ComposeProjectRow: View {
                             .foregroundStyle(.red)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)
-                            .contentShape(Capsule())
                     }
-                    .buttonStyle(.plain)
-                    .background(
-                        Capsule()
-                            .fill(.red.opacity(0.08))
-                            .strokeBorder(.red.opacity(0.25), lineWidth: 0.5)
-                    )
+                    .buttonStyle(CapsuleButtonStyle(tint: .destructive))
 
                     // Remove
                     Button(action: onRemove) {
@@ -76,14 +64,8 @@ struct ComposeProjectRow: View {
                             .padding(.horizontal, 7)
                             .padding(.top, 3)
                             .padding(.bottom, 4)
-                            .contentShape(Capsule())
                     }
-                    .buttonStyle(.plain)
-                    .background(
-                        Capsule()
-                            .fill(.white.opacity(0.08))
-                            .strokeBorder(.white.opacity(0.18), lineWidth: 0.5)
-                    )
+                    .buttonStyle(CapsuleButtonStyle(tint: .neutral))
                 }
                 .frame(height: 24)
                 .transition(.scale(scale: 0.85).combined(with: .opacity))
