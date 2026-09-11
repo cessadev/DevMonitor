@@ -33,170 +33,167 @@ struct CreateContainerView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            
+            VStack(alignment: .leading, spacing: 16) {
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-
-                    // Container name
-                    FormSection(title: "Container Name") {
-                        VStack(alignment: .leading, spacing: 4) {
-                            TextField(
-                                "",
-                                text: $containerName,
-                                prompt: Text("e.g. my-nginx").foregroundStyle(.tertiary)
-                            )
-                            .textFieldStyle(.plain)
-                            .font(.system(size: 12))
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 6)
-                            .background(
-                                RoundedRectangle(cornerRadius: 6)
-                                    .fill(.white.opacity(0.30))
-                                    .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
-                            )
-                            .disabled(isCreating)
-                            .onChange(of: containerName) {
-                                if validationError != nil { validationError = nil }
-                            }
-
-                            if let error = validationError {
-                                Text(error)
-                                    .font(.caption)
-                                    .foregroundStyle(.red)
-                                    .padding(.horizontal, 2)
-                            }
+                // Container name
+                FormSection(title: "Container Name") {
+                    VStack(alignment: .leading, spacing: 4) {
+                        TextField(
+                            "",
+                            text: $containerName,
+                            prompt: Text("e.g. my-nginx").foregroundStyle(.tertiary)
+                        )
+                        .textFieldStyle(.plain)
+                        .font(.system(size: 12))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(.white.opacity(0.30))
+                                .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
+                        )
+                        .disabled(isCreating)
+                        .onChange(of: containerName) {
+                            if validationError != nil { validationError = nil }
                         }
-                    }
 
-                    // Port bindings
-                    FormSection(title: "Port Bindings (host:container)") {
-                        VStack(spacing: 4) {
-                            ForEach(portBindings.indices, id: \.self) { index in
-                                HStack(spacing: 6) {
-                                    TextField(
-                                        "",
-                                        text: $portBindings[index],
-                                        prompt: Text("e.g. 8080:80").foregroundStyle(.tertiary)
-                                    )
-                                    .textFieldStyle(.plain)
-                                    .font(.system(size: 12))
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 6)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 6)
-                                            .fill(.white.opacity(0.30))
-                                            .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
-                                    )
-                                    .disabled(isCreating)
-
-                                    if portBindings.count > 1 {
-                                        Button {
-                                            portBindings.remove(at: index)
-                                        } label: {
-                                            Image(systemName: "minus.circle.fill")
-                                                .foregroundStyle(.red.opacity(0.7))
-                                                .font(.system(size: 12))
-                                        }
-                                        .buttonStyle(.plain)
-                                        .disabled(isCreating)
-                                    }
-                                }
-                            }
-
-                            Button {
-                                portBindings.append("")
-                            } label: {
-                                Label("Add Port", systemImage: "plus.circle")
-                                    .font(.system(size: 11))
-                                    .foregroundStyle(.secondary)
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(isCreating)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }
-
-                    // Environment variables
-                    FormSection(title: "Environment Variables") {
-                        VStack(spacing: 4) {
-                            ForEach(envVars.indices, id: \.self) { index in
-                                HStack(spacing: 6) {
-                                    TextField(
-                                        "",
-                                        text: $envVars[index],
-                                        prompt: Text("e.g. DEBUG=true").foregroundStyle(.tertiary)
-                                    )
-                                    .textFieldStyle(.plain)
-                                    .font(.system(size: 12))
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 6)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 6)
-                                            .fill(.white.opacity(0.30))
-                                            .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
-                                    )
-                                    .disabled(isCreating)
-
-                                    if envVars.count > 1 {
-                                        Button {
-                                            envVars.remove(at: index)
-                                        } label: {
-                                            Image(systemName: "minus.circle.fill")
-                                                .foregroundStyle(.red.opacity(0.7))
-                                                .font(.system(size: 12))
-                                        }
-                                        .buttonStyle(.plain)
-                                        .disabled(isCreating)
-                                    }
-                                }
-                            }
-
-                            Button {
-                                envVars.append("")
-                            } label: {
-                                Label("Add Variable", systemImage: "plus.circle")
-                                    .font(.system(size: 11))
-                                    .foregroundStyle(.secondary)
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(isCreating)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }
-
-                    // Restart policy
-                    FormSection(title: "Restart Policy") {
-                        HStack(spacing: 6) {
-                            ForEach(RestartPolicy.allCases) { policy in
-                                let isActive = restartPolicy == policy
-                                Button {
-                                    restartPolicy = policy
-                                } label: {
-                                    Text(policy.label)
-                                        .font(.system(size: 11, weight: isActive ? .semibold : .regular))
-                                        .foregroundStyle(isActive ? .primary : .secondary)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 5)
-                                        .frame(maxWidth: .infinity)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 6)
-                                                .fill(isActive ? .white.opacity(0.2) : .clear)
-                                                .strokeBorder(
-                                                    isActive ? .white.opacity(0.35) : .white.opacity(0.1),
-                                                    lineWidth: 0.5
-                                                )
-                                        )
-                                }
-                                .buttonStyle(.plain)
-                                .disabled(isCreating)
-                            }
+                        if let error = validationError {
+                            Text(error)
+                                .font(.caption)
+                                .foregroundStyle(.red)
+                                .padding(.horizontal, 2)
                         }
                     }
                 }
-                .padding(.horizontal, 4)
-                .padding(.vertical, 12)
+
+                // Port bindings
+                FormSection(title: "Port Bindings (host:container)") {
+                    VStack(spacing: 4) {
+                        ForEach(portBindings.indices, id: \.self) { index in
+                            HStack(spacing: 6) {
+                                TextField(
+                                    "",
+                                    text: $portBindings[index],
+                                    prompt: Text("e.g. 8080:80").foregroundStyle(.tertiary)
+                                )
+                                .textFieldStyle(.plain)
+                                .font(.system(size: 12))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 6)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(.white.opacity(0.30))
+                                        .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
+                                )
+                                .disabled(isCreating)
+
+                                if portBindings.count > 1 {
+                                    Button {
+                                        portBindings.remove(at: index)
+                                    } label: {
+                                        Image(systemName: "minus.circle.fill")
+                                            .foregroundStyle(.red.opacity(0.7))
+                                            .font(.system(size: 12))
+                                    }
+                                    .buttonStyle(.plain)
+                                    .disabled(isCreating)
+                                }
+                            }
+                        }
+
+                        Button {
+                            portBindings.append("")
+                        } label: {
+                            Label("Add Port", systemImage: "plus.circle")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(isCreating)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+
+                // Environment variables
+                FormSection(title: "Environment Variables") {
+                    VStack(spacing: 4) {
+                        ForEach(envVars.indices, id: \.self) { index in
+                            HStack(spacing: 6) {
+                                TextField(
+                                    "",
+                                    text: $envVars[index],
+                                    prompt: Text("e.g. DEBUG=true").foregroundStyle(.tertiary)
+                                )
+                                .textFieldStyle(.plain)
+                                .font(.system(size: 12))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 6)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(.white.opacity(0.30))
+                                        .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
+                                )
+                                .disabled(isCreating)
+
+                                if envVars.count > 1 {
+                                    Button {
+                                        envVars.remove(at: index)
+                                    } label: {
+                                        Image(systemName: "minus.circle.fill")
+                                            .foregroundStyle(.red.opacity(0.7))
+                                            .font(.system(size: 12))
+                                    }
+                                    .buttonStyle(.plain)
+                                    .disabled(isCreating)
+                                }
+                            }
+                        }
+
+                        Button {
+                            envVars.append("")
+                        } label: {
+                            Label("Add Variable", systemImage: "plus.circle")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(isCreating)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+
+                // Restart policy
+                FormSection(title: "Restart Policy") {
+                    HStack(spacing: 6) {
+                        ForEach(RestartPolicy.allCases) { policy in
+                            let isActive = restartPolicy == policy
+                            Button {
+                                restartPolicy = policy
+                            } label: {
+                                Text(policy.label)
+                                    .font(.system(size: 11, weight: isActive ? .semibold : .regular))
+                                    .foregroundStyle(isActive ? .primary : .secondary)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 5)
+                                    .frame(maxWidth: .infinity)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .fill(isActive ? .white.opacity(0.2) : .clear)
+                                            .strokeBorder(
+                                                isActive ? .white.opacity(0.35) : .white.opacity(0.1),
+                                                lineWidth: 0.5
+                                            )
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(isCreating)
+                        }
+                    }
+                }
             }
-            .frame(maxHeight: 320)
+            .padding(.horizontal, 4)
+            .padding(.vertical, 12)
 
             Divider()
                 .padding(.top, 4)

@@ -54,7 +54,8 @@ struct ImagesView: View {
 
             if isExpanded {
                 if !images.isEmpty {
-                    VStack(spacing: 2) {
+                    VStack(spacing: 0) {
+                        Spacer().frame(height: 2)
                         ForEach(images) { image in
                             let isSelected = selectedImage?.id == image.id
 
@@ -98,6 +99,7 @@ struct ImagesView: View {
                                 }
                             }
                         }
+                        Spacer().frame(height: 4)
                     }
                     .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
                     .transition(.opacity)
@@ -144,7 +146,7 @@ private struct PullImageHeader: View {
                 Text("PULL IMAGE")
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundStyle(.tertiary)
-                    .padding(.top, 3)
+                    .padding(.top, 4)
 
                 Spacer()
 
@@ -159,7 +161,7 @@ private struct PullImageHeader: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .padding(.bottom, 3)
+        .padding(.bottom, 4)
     }
 }
 
