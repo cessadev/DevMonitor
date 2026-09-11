@@ -3,10 +3,17 @@ import Combine
 
 struct ContentView: View {
 
-    @State private var servicesVM    = ServicesViewModel()
-    @State private var containersVM  = ContainersViewModel()
-    @State private var isVisible = false
-    @State private var containersExpanded = false
+    @State private var servicesVM                  = ServicesViewModel()
+    @State private var containersVM                = ContainersViewModel()
+    @State private var imagesVM                    = ImagesViewModel()
+    @State private var isVisible                   = false
+    @State private var pullImageName               = ""
+    @State private var composeVM                   = ComposeViewModel()
+    @State private var isComposeBusy               = false
+    
+    @AppStorage("imagesExpanded") private var imagesExpanded = false
+    @AppStorage("pullExpanded")   private var pullExpanded   = false
+    
     private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -17,7 +24,7 @@ struct ContentView: View {
 
                 // Header
                 HStack(spacing: 8) {
-                    Text("DevMonitor")
+                    Text("DocMonitor")
                         .font(.system(size: 14, weight: .semibold))
                     Spacer()
                     Button {
@@ -33,23 +40,77 @@ struct ContentView: View {
                 .padding(.vertical, 8)
 
                 // Local Services
-                ServicesView(
-                    services: servicesVM.services,
-                    containersExpanded: containersExpanded,
-                    onDockerTap: { containersExpanded.toggle() }
-                )
+                ServicesView(services: servicesVM.services)
 
-                // Docker Containers
-                if containersExpanded && !containersVM.containers.isEmpty {
+                // Containers
+                if !containersVM.containers.isEmpty {
                     ContainersView(
                         containers: containersVM.containers,
+                        lockedComposeProject: composeVM.lockedComposeProject,
+                        activeComposeProjects: composeVM.activeComposeProjects,
                         onToggle: { container in await containersVM.toggle(container) },
                         onDelete: { container in await containersVM.delete(container) }
                     )
                 }
 
+                // Compose Projects
+                ComposeView(
+                    projects: composeVM.projects,
+                    loadingProjectId: composeVM.isLoadingProjectId,
+                    onUp: { project in
+                        isComposeBusy = true
+                        await composeVM.up(project)
+                        await containersVM.refresh()
+                        isComposeBusy = false
+                    },
+                    onDown: { project in
+                        isComposeBusy = true
+                        await composeVM.down(project)
+                        await containersVM.refresh()
+                        isComposeBusy = false
+                    },
+                    onRemove:    { project in composeVM.remove(project) },
+                    onAddManual: { composeVM.addManualProject() }
+                )
+
+                // Images header collapsible
+                ImagesView(
+                    images: imagesVM.images,
+                    count: imagesVM.images.count,
+                    isExpanded: imagesExpanded,
+                    pullExpanded: pullExpanded,
+                    pullImageName: $pullImageName,
+                    isPulling: imagesVM.isPulling,
+                    pullProgress: imagesVM.pullProgress,
+                    onHeaderTap: {
+                        withAnimation(.spring(duration: 0.3)) {
+                            imagesExpanded.toggle()
+                            if !imagesExpanded {
+                                pullExpanded  = false
+                                pullImageName = ""
+                            }
+                        }
+                    },
+                    onPullHeaderTap: {
+                        pullExpanded.toggle()
+                    },
+                    onPull: {
+                        Task { await imagesVM.pull(name: pullImageName) }
+                    },
+                    onDelete: { image in await imagesVM.delete(image) },
+                    onCreateContainer: { image, name, ports, envVars, restartPolicy in
+                        return await containersVM.createContainer(
+                            name: name,
+                            imageName: image.displayTag,
+                            portBindings: ports,
+                            envVars: envVars,
+                            restartPolicy: restartPolicy
+                        )
+                    }
+                )
+
                 // Error
-                if let error = containersVM.error {
+                if let error = containersVM.error ?? imagesVM.error {
                     HStack(spacing: 6) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundStyle(.orange)
@@ -67,48 +128,68 @@ struct ContentView: View {
 
                 // Footer
                 HStack {
-                    HStack(spacing: 4) {
-                        Image(systemName: "clock")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                        Text("Refreshes every 5s")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
+                    Button {
+                        // Preferences — static for now
+                    } label: {
+                        Text("Preferences")
+                            .font(.system(size: 12))
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 6)
                     }
+                    .buttonStyle(CapsuleButtonStyle())
+
                     Spacer()
+
                     Button {
                         NSApplication.shared.terminate(nil)
                     } label: {
                         Text("Quit")
-                            .font(.system(size: 13))
+                            .font(.system(size: 12))
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 6)
                     }
-                    .buttonStyle(.glass)
-                    .controlSize(.small)
+                    .buttonStyle(CapsuleButtonStyle())
                     .keyboardShortcut("q")
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 8)
             }
         }
-        .frame(width: 300)
+        .frame(width: 308)
         .fixedSize(horizontal: false, vertical: true)
-        .opacity(isVisible ? 1 : 0)
-        .scaleEffect(isVisible ? 1 : 0.9, anchor: .top)
-        .animation(.spring(duration: 0.4, bounce: 0.35), value: isVisible)
+        .scaleEffect(isVisible ? 1.0 : 0.92)
+        .opacity(isVisible ? 1.0 : 0)
+        .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesVM.images.count)
+        .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesExpanded)
+        .animation(.spring(duration: 0.35, bounce: 0.15), value: pullExpanded)
+        .animation(isVisible
+            ? .spring(duration: 0.3, bounce: 0.2)
+            : .easeIn(duration: 0.15),
+            value: isVisible
+        )
         .onAppear {
             isVisible = true
             refresh()
         }
         .onDisappear {
             isVisible = false
-            containersExpanded = false
+            pullImageName = ""
         }
-        .onReceive(timer) { _ in refresh() }
+        .onReceive(timer) { _ in
+            guard !isComposeBusy else { return }
+            refresh()
+        }
     }
 
     private func refresh() {
         servicesVM.refresh()
-        Task { await containersVM.refresh() }
+        Task {
+            async let containers: () = containersVM.refresh()
+            async let images: ()     = imagesVM.refresh()
+            async let compose: ()    = composeVM.refresh()
+            await containers
+            await images
+            await compose
+        }
     }
 }
-

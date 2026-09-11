@@ -2,6 +2,8 @@ import SwiftUI
 
 struct ContainerRow: View {
     let container: DockerContainer
+    let isLocked: Bool
+    let isDeleteLocked: Bool
     let onToggle: () async -> Void
     let onDelete: () async -> Void
 
@@ -12,16 +14,26 @@ struct ContainerRow: View {
     @State private var isOn: Bool
 
     init(container: DockerContainer,
+         isLocked: Bool,
+         isDeleteLocked: Bool,
          onToggle: @escaping () async -> Void,
          onDelete: @escaping () async -> Void) {
-        self.container = container
-        self.onToggle  = onToggle
-        self.onDelete  = onDelete
-        self._isOn     = State(initialValue: container.isRunning)
+        self.container      = container
+        self.isLocked       = isLocked
+        self.isDeleteLocked = isDeleteLocked
+        self.onToggle       = onToggle
+        self.onDelete       = onDelete
+        self._isOn          = State(initialValue: container.isRunning)
     }
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 6) {
+            Image("container-icon")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
+                .foregroundStyle(.secondary)
+
             VStack(alignment: .leading, spacing: 1) {
                 Text(container.displayName)
                     .font(.system(size: 13))
@@ -36,36 +48,30 @@ struct ContainerRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(-1)
 
-            // Trash icon — visible on hover
-            if isHovered || confirmDelete {
+            // Trash icon - hidden and blocked when compose is up and stopping
+            if !isLocked && !isDeleteLocked && (isHovered || confirmDelete) {
                 if confirmDelete {
-                    // Confirmation inline
-                    HStack(spacing: 4) {
-                        Button {
-                            isDeleting = true
-                            Task {
-                                await onDelete()
-                                isDeleting = false
-                                confirmDelete = false
-                            }
-                        } label: {
-                            if isDeleting {
-                                ProgressView().controlSize(.mini)
-                            } else {
-                                Text("Delete")
-                                    .font(.system(size: 10, weight: .medium))
-                                    .foregroundStyle(.red)
-                            }
+                    Button {
+                        isDeleting = true
+                        Task {
+                            await onDelete()
+                            isDeleting    = false
+                            confirmDelete = false
                         }
-                        .buttonStyle(.plain)
+                    } label: {
+                        if isDeleting {
+                            ProgressView().controlSize(.mini)
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 3)
+                        } else {
+                            Text("Delete")
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundStyle(.red)
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 3)
+                        }
                     }
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 3)
-                    .background(
-                        Capsule()
-                            .fill(.red.opacity(0.08))
-                            .strokeBorder(.red.opacity(0.25), lineWidth: 0.5)
-                    )
+                    .buttonStyle(CapsuleButtonStyle(tint: .destructive))
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
                 } else {
                     // Trash button
@@ -75,22 +81,27 @@ struct ContainerRow: View {
                         }
                     } label: {
                         Image(systemName: "trash")
-                            .font(.system(size: 11))
+                            .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(.secondary)
+                            .padding(.horizontal, 7)
+                            .padding(.top, 3)
+                            .padding(.bottom, 4)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(CapsuleButtonStyle(tint: .neutral))
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
                 }
             }
 
-            // Toggle switch
+            // Toggle switch - disabled and dimmed when compose is stopping
             Toggle("", isOn: $isOn)
                 .toggleStyle(.switch)
                 .controlSize(.mini)
-                .disabled(isLoading || isDeleting)
-                .opacity(isLoading ? 0.5 : 1.0)
+                .disabled(isLoading || isDeleting || isLocked)
+                .opacity(isLoading || isLocked ? 0.4 : 1.0)
                 .animation(.easeInOut(duration: 0.2), value: isLoading)
+                .animation(.easeInOut(duration: 0.2), value: isLocked)
                 .onChange(of: isOn) { _, _ in
+                    guard !isLocked else { return }
                     isLoading = true
                     Task {
                         await onToggle()
@@ -103,7 +114,7 @@ struct ContainerRow: View {
         .onHover { hovered in
             withAnimation(.easeInOut(duration: 0.15)) {
                 isHovered = hovered
-                if !hovered { confirmDelete = false }
+                if !hovered && !isDeleting { confirmDelete = false }
             }
         }
         .onChange(of: container.isRunning) { _, newValue in
