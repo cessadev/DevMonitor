@@ -7,7 +7,7 @@ struct DevMonitorApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
-        MenuBarExtra("DevMonitor", systemImage: "server.rack") {
+        MenuBarExtra("DevMonitor", image: "MenuBarIcon") {
             ContentView()
         }
         .menuBarExtraStyle(.window)
