@@ -233,12 +233,13 @@ class DockerClient {
 
                     // Read response headers
                     var headerBuffer = Data()
-                    var buffer       = [UInt8](repeating: 0, count: 1)
-                    while true {
-                        let n = read(fd, &buffer, 1)
+                    var bigBuffer    = [UInt8](repeating: 0, count: 4096)
+                    let separator    = Data("\r\n\r\n".utf8)
+
+                    while !headerBuffer.contains(separator) {
+                        let n = read(fd, &bigBuffer, bigBuffer.count)
                         if n <= 0 { break }
-                        headerBuffer.append(buffer[0])
-                        if headerBuffer.suffix(4) == Data("\r\n\r\n".utf8) { break }
+                        headerBuffer.append(contentsOf: bigBuffer[..<n])
                     }
 
                     // Stream body line by line
@@ -260,7 +261,6 @@ class DockerClient {
                                 if let data   = line.data(using: .utf8),
                                    let json   = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                                    let status = json["status"] as? String {
-                                    let detail = (json["progressDetail"] as? [String: Any])
                                     let prog   = json["progress"] as? String ?? ""
                                     let msg    = prog.isEmpty ? status : "\(status) \(prog)"
                                     DispatchQueue.main.async { onProgress(msg) }
