@@ -8,6 +8,20 @@ struct ComposeProjectRow: View {
     let onRemove: () -> Void
 
     @State private var isHovered = false
+    @State private var isOn: Bool
+
+    init(project: DockerComposeProject,
+         isLoading: Bool,
+         onUp: @escaping () async -> Void,
+         onDown: @escaping () async -> Void,
+         onRemove: @escaping () -> Void) {
+        self.project   = project
+        self.isLoading = isLoading
+        self.onUp      = onUp
+        self.onDown    = onDown
+        self.onRemove  = onRemove
+        self._isOn     = State(initialValue: project.overallStatus == .running)
+    }
 
     var body: some View {
         HStack(spacing: 8) {
@@ -30,43 +44,33 @@ struct ComposeProjectRow: View {
                     .controlSize(.small)
                     .frame(width: 32, height: 24)
             } else if isHovered {
-                // On hover
                 HStack(spacing: 6) {
-                    // Up
-                    Button {
-                        Task { await onUp() }
-                    } label: {
-                        Image(systemName: "play.fill")
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(.green)
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 3)
-                    }
-                    .buttonStyle(CapsuleButtonStyle(tint: .positive))
-
-                    // Down
-                    Button {
-                        Task { await onDown() }
-                    } label: {
-                        Image(systemName: "stop.fill")
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(.red)
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 3)
-                    }
-                    .buttonStyle(CapsuleButtonStyle(tint: .destructive))
-
                     // Remove
                     Button(action: onRemove) {
                         Image(systemName: "trash")
                             .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 7)
-                            .padding(.top, 3)
-                            .padding(.bottom, 4)
+                            .padding(.vertical, 3)
                     }
                     .buttonStyle(CapsuleButtonStyle(tint: .neutral))
+
+                    // Switch
+                    Toggle("", isOn: $isOn)
+                        .toggleStyle(.switch)
+                        .controlSize(.mini)
+                        .disabled(isLoading)
+                        .onChange(of: isOn) { _, newValue in
+                            Task {
+                                if newValue {
+                                    await onUp()
+                                } else {
+                                    await onDown()
+                                }
+                            }
+                        }
                 }
+                .padding(.horizontal, 4)
                 .frame(height: 24)
                 .transition(.scale(scale: 0.85).combined(with: .opacity))
             } else {
@@ -81,6 +85,9 @@ struct ComposeProjectRow: View {
             withAnimation(.easeInOut(duration: 0.15)) {
                 isHovered = hovered
             }
+        }
+        .onChange(of: project.overallStatus) { _, newStatus in
+            isOn = newStatus == .running
         }
     }
 }

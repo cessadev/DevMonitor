@@ -161,7 +161,7 @@ private struct PullImageHeader: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .padding(.bottom, 4)
+        .padding(.bottom, 3)
     }
 }
 
