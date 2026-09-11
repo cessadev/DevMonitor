@@ -65,13 +65,13 @@ class ComposeViewModel {
             DispatchQueue.global(qos: .userInitiated).async {
                 do {
                     try self.composeService.up(project: project)
-                    Thread.sleep(forTimeInterval: 1.5)
                 } catch {
                     DispatchQueue.main.async { self.error = error.localizedDescription }
                 }
                 continuation.resume()
             }
         }
+        try? await Task.sleep(nanoseconds: 1_500_000_000)
 
         NSApp.setActivationPolicy(.accessory)
         await refresh()
@@ -87,13 +87,13 @@ class ComposeViewModel {
             DispatchQueue.global(qos: .userInitiated).async {
                 do {
                     try self.composeService.down(project: project)
-                    Thread.sleep(forTimeInterval: 2.5)
                 } catch {
                     DispatchQueue.main.async { self.error = error.localizedDescription }
                 }
                 continuation.resume()
             }
         }
+        try? await Task.sleep(nanoseconds: 2_500_000_000)
 
         await refresh()
         isLoadingProjectId = nil
