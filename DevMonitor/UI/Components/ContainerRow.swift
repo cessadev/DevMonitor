@@ -27,7 +27,7 @@ struct ContainerRow: View {
     }
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 10) {
             Image("container-icon")
                 .resizable()
                 .scaledToFit()
@@ -109,7 +109,7 @@ struct ContainerRow: View {
                     }
                 }
         }
-        .padding(.horizontal, 10)
+        .padding(.horizontal, 8)
         .padding(.vertical, 5)
         .onHover { hovered in
             withAnimation(.easeInOut(duration: 0.15)) {
