@@ -1,0 +1,347 @@
+import Foundation
+
+class DockerClient {
+
+    static let shared = DockerClient()
+    private let socketPath = "/var/run/docker.sock"
+
+    // Containers
+    func fetchContainers() async throws -> [DockerContainer] {
+        let responseData = try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    let data = try self.sendRequest(
+                        "GET /containers/json?all=true HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
+                    )
+                    continuation.resume(returning: data)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+
+        guard let separatorRange = responseData.range(of: Data("\r\n\r\n".utf8)) else {
+            throw DockerError.emptyResponse
+        }
+
+        let headerData = responseData[..<separatorRange.lowerBound]
+        let rawBody    = Data(responseData[separatorRange.upperBound...])
+        let headers    = String(data: headerData, encoding: .utf8) ?? ""
+        let isChunked  = headers.lowercased().contains("transfer-encoding: chunked")
+        let body       = isChunked ? Self.decodeChunked(rawBody) : rawBody
+
+        do {
+            return try JSONDecoder().decode([DockerContainer].self, from: body)
+        } catch {
+            let raw = String(data: body, encoding: .utf8) ?? "unreadable"
+            throw DockerError.decodingFailed(String(raw.prefix(300)))
+        }
+    }
+
+    func startContainer(id: String) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    _ = try self.sendRequest("POST /containers/\(id)/start HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    func stopContainer(id: String) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    _ = try self.sendRequest("POST /containers/\(id)/stop HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
+    func deleteContainer(id: String) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    _ = try self.sendRequest("DELETE /containers/\(id)?force=true HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n")
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
+    func createContainer(
+        name: String,
+        imageName: String,
+        portBindings: [String],
+        envVars: [String],
+        restartPolicy: String
+    ) async throws {
+        let containerName = name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? name
+
+        // Build PortBindings dict: {"80/tcp": [{"HostPort": "8080"}]}
+        var portBindingsDict: [String: Any] = [:]
+        var exposedPorts: [String: Any]     = [:]
+        for binding in portBindings where !binding.trimmingCharacters(in: .whitespaces).isEmpty {
+            let parts             = binding.components(separatedBy: ":")
+            guard parts.count     == 2 else { continue }
+            let hostPort          = parts[0].trimmingCharacters(in: .whitespaces)
+            let containerPort     = parts[1].trimmingCharacters(in: .whitespaces)
+            let key               = "\(containerPort)/tcp"
+            portBindingsDict[key] = [["HostPort": hostPort]]
+            exposedPorts[key]     = [:]
+        }
+
+        let filteredEnv = envVars.filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+
+        let body: [String: Any] = [
+            "Image": imageName,
+            "Env": filteredEnv,
+            "ExposedPorts": exposedPorts,
+            "HostConfig": [
+                "PortBindings": portBindingsDict,
+                "RestartPolicy": ["Name": restartPolicy]
+            ]
+        ]
+
+        let bodyData  = try JSONSerialization.data(withJSONObject: body)
+        let bodyJSON  = String(data: bodyData, encoding: .utf8) ?? "{}"
+        let bodyBytes = bodyJSON.utf8.count
+
+        let request = "POST /containers/create?name=\(containerName) HTTP/1.1\r\n" +
+                      "Host: localhost\r\n" +
+                      "Content-Type: application/json\r\n" +
+                      "Content-Length: \(bodyBytes)\r\n" +
+                      "Connection: close\r\n\r\n" +
+                      bodyJSON
+
+        let responseData = try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    let data = try self.sendRequest(request)
+                    continuation.resume(returning: data)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+
+        guard let headerEnd = responseData.range(of: Data("\r\n\r\n".utf8)) else {
+            throw DockerError.emptyResponse
+        }
+        let headerString = String(data: responseData[..<headerEnd.lowerBound], encoding: .utf8) ?? ""
+        let statusLine   = headerString.components(separatedBy: "\r\n").first ?? ""
+        let statusCode   = Int(statusLine.components(separatedBy: " ").dropFirst().first ?? "") ?? 0
+
+        switch statusCode {
+        case 201: return
+        case 404: throw DockerError.requestFailed("Image '\(imageName)' not found locally")
+        case 409: throw DockerError.requestFailed("Container name '\(name)' already exists")
+        default:  throw DockerError.requestFailed("Unexpected status: \(statusCode)")
+        }
+    }
+    
+    // Images
+    func fetchImages() async throws -> [DockerImage] {
+        let responseData = try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    let data = try self.sendRequest(
+                        "GET /images/json?dangling=false HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
+                    )
+                    continuation.resume(returning: data)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+
+        guard let separatorRange = responseData.range(of: Data("\r\n\r\n".utf8)) else {
+            throw DockerError.emptyResponse
+        }
+
+        let headerData = responseData[..<separatorRange.lowerBound]
+        let rawBody    = Data(responseData[separatorRange.upperBound...])
+        let headers    = String(data: headerData, encoding: .utf8) ?? ""
+        let isChunked  = headers.lowercased().contains("transfer-encoding: chunked")
+        let body       = isChunked ? Self.decodeChunked(rawBody) : rawBody
+
+        do {
+            return try JSONDecoder().decode([DockerImage].self, from: body)
+        } catch {
+            let raw = String(data: body, encoding: .utf8) ?? "unreadable"
+            throw DockerError.decodingFailed(String(raw.prefix(300)))
+        }
+    }
+
+    func deleteImage(id: String) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    _ = try self.sendRequest("DELETE /images/\(id)?force=false HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n")
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
+    func pullImage(name: String, onProgress: @escaping (String) -> Void) async throws {
+        let encoded = name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? name
+        let request = "POST /images/create?fromImage=\(encoded) HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
+
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    guard FileManager.default.fileExists(atPath: self.socketPath) else {
+                        throw DockerError.socketNotFound
+                    }
+
+                    let fd = socket(AF_UNIX, SOCK_STREAM, 0)
+                    guard fd >= 0 else { throw DockerError.connectionFailed }
+                    defer { close(fd) }
+
+                    var addr        = sockaddr_un()
+                    addr.sun_family = sa_family_t(AF_UNIX)
+                    let pathBytes   = self.socketPath.utf8CString
+                    withUnsafeMutablePointer(to: &addr.sun_path) { ptr in
+                        pathBytes.withUnsafeBytes { src in
+                            UnsafeMutableRawPointer(ptr)
+                                .copyMemory(from: src.baseAddress!, byteCount: min(src.count, 104))
+                        }
+                    }
+
+                    let connectResult = withUnsafePointer(to: &addr) { ptr in
+                        ptr.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                            connect(fd, $0, socklen_t(MemoryLayout<sockaddr_un>.size))
+                        }
+                    }
+                    guard connectResult == 0 else { throw DockerError.connectionFailed }
+
+                    var requestBytes = Array(request.utf8)
+                    guard write(fd, &requestBytes, requestBytes.count) >= 0 else {
+                        throw DockerError.connectionFailed
+                    }
+
+                    // Read response headers
+                    var headerBuffer = Data()
+                    var bigBuffer    = [UInt8](repeating: 0, count: 4096)
+                    let separator    = Data("\r\n\r\n".utf8)
+
+                    while !headerBuffer.contains(separator) {
+                        let n = read(fd, &bigBuffer, bigBuffer.count)
+                        if n <= 0 { break }
+                        headerBuffer.append(contentsOf: bigBuffer[..<n])
+                    }
+
+                    // Stream body line by line
+                    var lineBuffer = ""
+                    var readBuf    = [UInt8](repeating: 0, count: 512)
+                    while true {
+                        let n = read(fd, &readBuf, readBuf.count)
+                        if n <= 0 { break }
+                        let chunk = String(bytes: readBuf[..<n], encoding: .utf8) ?? ""
+                        lineBuffer += chunk
+
+                        // Each JSON event is a separate line
+                        while let newline = lineBuffer.firstIndex(of: "\n") {
+                            let line = String(lineBuffer[..<newline]).trimmingCharacters(in: .whitespaces)
+                            lineBuffer = String(lineBuffer[lineBuffer.index(after: newline)...])
+
+                            // Skip chunked size lines
+                            if !line.isEmpty && line.hasPrefix("{") {
+                                if let data   = line.data(using: .utf8),
+                                   let json   = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                                   let status = json["status"] as? String {
+                                    let prog   = json["progress"] as? String ?? ""
+                                    let msg    = prog.isEmpty ? status : "\(status) \(prog)"
+                                    DispatchQueue.main.async { onProgress(msg) }
+                                }
+                            }
+                        }
+                    }
+
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    private static func decodeChunked(_ data: Data) -> Data {
+        var result = Data()
+        var index  = data.startIndex
+        let crlf   = Data("\r\n".utf8)
+
+        while index < data.endIndex {
+            guard let lineEnd = data.range(of: crlf, in: index..<data.endIndex) else { break }
+
+            let sizeLine = String(data: data[index..<lineEnd.lowerBound], encoding: .utf8)?
+                .trimmingCharacters(in: .whitespaces) ?? ""
+            let hexPart  = sizeLine.components(separatedBy: ";").first ?? sizeLine
+
+            guard let chunkSize = Int(hexPart, radix: 16) else { break }
+            if chunkSize == 0 { break }
+
+            let chunkStart = lineEnd.upperBound
+            let chunkEnd   = data.index(chunkStart, offsetBy: chunkSize, limitedBy: data.endIndex) ?? data.endIndex
+
+            result.append(data[chunkStart..<chunkEnd])
+            index = data.index(chunkEnd, offsetBy: 2, limitedBy: data.endIndex) ?? data.endIndex
+        }
+
+        return result
+    }
+
+    private func sendRequest(_ httpRequest: String) throws -> Data {
+        guard FileManager.default.fileExists(atPath: socketPath) else {
+            throw DockerError.socketNotFound
+        }
+
+        let fd = socket(AF_UNIX, SOCK_STREAM, 0)
+        guard fd >= 0 else { throw DockerError.connectionFailed }
+        defer { close(fd) }
+
+        var addr        = sockaddr_un()
+        addr.sun_family = sa_family_t(AF_UNIX)
+        let pathBytes   = socketPath.utf8CString
+        withUnsafeMutablePointer(to: &addr.sun_path) { ptr in
+            pathBytes.withUnsafeBytes { src in
+                UnsafeMutableRawPointer(ptr)
+                    .copyMemory(from: src.baseAddress!, byteCount: min(src.count, 104))
+            }
+        }
+
+        let connectResult = withUnsafePointer(to: &addr) { ptr in
+            ptr.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                connect(fd, $0, socklen_t(MemoryLayout<sockaddr_un>.size))
+            }
+        }
+        guard connectResult == 0 else { throw DockerError.connectionFailed }
+
+        var requestBytes = Array(httpRequest.utf8)
+        guard write(fd, &requestBytes, requestBytes.count) >= 0 else {
+            throw DockerError.connectionFailed
+        }
+
+        var response = Data()
+        var buffer   = [UInt8](repeating: 0, count: 8192)
+        while true {
+            let n = read(fd, &buffer, buffer.count)
+            if n <= 0 { break }
+            response.append(contentsOf: buffer[..<n])
+        }
+
+        guard !response.isEmpty else { throw DockerError.emptyResponse }
+        return response
+    }
+}

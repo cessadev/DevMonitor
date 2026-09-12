@@ -69,3 +69,18 @@ Icon?
 *.pkg
 *.dmg
 *.app
+
+# Xcode user state
+*.xcuserstate
+xcuserdata/
+
+# Xcode derived data
+DerivedData/
+*.xccheckout
+*.moved-aside
+
+# Build
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
