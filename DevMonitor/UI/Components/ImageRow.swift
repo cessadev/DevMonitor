@@ -12,10 +12,11 @@ struct ImageRow: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: "photo.stack")
-                .font(.system(size: 13))
+            Image("imagen-icon")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
                 .foregroundStyle(isSelected ? .primary : .secondary)
-                .frame(width: 22)
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(image.displayTag)

@@ -24,13 +24,12 @@ struct ComposeProjectRow: View {
     }
 
     var body: some View {
-        HStack(spacing: 8) {
-
-            Image(systemName: "square.stack.3d.up")
-                .font(.system(size: 13))
+        HStack(spacing: 10) {
+            Image("compose-icon")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
                 .foregroundStyle(.secondary)
-                .frame(width: 22)
-                .padding(.bottom, 1.8)
 
             Text(project.displayName)
                 .font(.system(size: 13))
@@ -77,7 +76,7 @@ struct ComposeProjectRow: View {
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
             }
         }
-        .padding(.horizontal, 7)
+        .padding(.horizontal, 8)
         .padding(.vertical, 5)
         .onHover { hovered in
             withAnimation(.easeInOut(duration: 0.15)) {
