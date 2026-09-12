@@ -67,7 +67,6 @@ struct ComposeProjectRow: View {
                             }
                         }
                 }
-                .padding(.horizontal, 4)
                 .frame(height: 24)
                 .transition(.scale(scale: 0.85).combined(with: .opacity))
             } else {
