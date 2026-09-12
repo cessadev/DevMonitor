@@ -12,6 +12,7 @@ struct CreateContainerView: View {
     @State private var restartPolicy            = RestartPolicy.no
     @State private var isCreating               = false
     @State private var validationError: String? = nil
+    @State private var portError: String?       = nil
 
     enum RestartPolicy: String, CaseIterable, Identifiable {
         case no            = "no"
@@ -55,14 +56,18 @@ struct CreateContainerView: View {
                         )
                         .disabled(isCreating)
                         .onChange(of: containerName) {
-                            if validationError != nil { validationError = nil }
+                            withAnimation(.easeOut(duration: 0.2)) {
+                                if validationError != nil { validationError = nil }
+                            }
                         }
 
                         if let error = validationError {
                             Text(error)
                                 .font(.caption)
                                 .foregroundStyle(.red)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, 2)
+                                .transition(.opacity)
                         }
                     }
                 }
@@ -87,6 +92,11 @@ struct CreateContainerView: View {
                                         .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
                                 )
                                 .disabled(isCreating)
+                                .onChange(of: portBindings[index]) { _, _ in
+                                    withAnimation(.easeOut(duration: 0.2)) {
+                                        if portError != nil { portError = nil }
+                                    }
+                                }
 
                                 if portBindings.count > 1 {
                                     Button {
@@ -105,6 +115,15 @@ struct CreateContainerView: View {
                                 }
                             }
                             .transition(.opacity.combined(with: .move(edge: .top)))
+                        }
+                        
+                        if let error = portError {
+                            Text(error)
+                                .font(.caption)
+                                .foregroundStyle(.red)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 2)
+                                .transition(.opacity)
                         }
 
                         Button {
@@ -185,7 +204,9 @@ struct CreateContainerView: View {
                         ForEach(RestartPolicy.allCases) { policy in
                             let isActive = restartPolicy == policy
                             Button {
-                                restartPolicy = policy
+                                withAnimation(.spring(duration: 0.2, bounce: 0.3)) {
+                                    restartPolicy = policy
+                                }
                             } label: {
                                 Text(policy.label)
                                     .font(.system(size: 11, weight: isActive ? .semibold : .regular))
@@ -202,7 +223,7 @@ struct CreateContainerView: View {
                                             )
                                     )
                             }
-                            .buttonStyle(.plain)
+                            .buttonStyle(RestartPolicyButtonStyle())
                             .disabled(isCreating)
                         }
                     }
@@ -259,11 +280,22 @@ struct CreateContainerView: View {
     }
 
     private func submit() {
+        let filledPorts = portBindings.filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+        for port in filledPorts {
+            if !isValidPortBinding(port) {
+                withAnimation(.easeOut(duration: 0.2)) {
+                    portError = "Invalid format. Use host:container"
+                }
+                return
+            }
+        }
+
+        portError  = nil
         isCreating = true
         Task {
             let result = await onCreate(
                 containerName,
-                portBindings.filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty },
+                filledPorts,
                 envVars.filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty },
                 restartPolicy.rawValue
             )
@@ -271,9 +303,39 @@ struct CreateContainerView: View {
             if result.success {
                 onDismiss()
             } else if let msg = result.validationError {
-                validationError = msg
+                withAnimation(.easeOut(duration: 0.2)) {
+                    validationError = msg
+                }
             }
         }
+    }
+    
+    private func isValidPortBinding(_ binding: String) -> Bool {
+        // Accepts: "8080:80", "127.0.0.1:8080:80", "8080:80/tcp", "8080:80/udp"
+        let parts = binding.split(separator: ":").map(String.init)
+
+        guard parts.count == 2 || parts.count == 3 else { return false }
+
+        let hostPort      = parts[parts.count - 2]
+        let containerPart = parts[parts.count - 1]
+
+        // Container port may have protocol suffix: "80/tcp"
+        let containerPort = containerPart.split(separator: "/").first.map(String.init) ?? containerPart
+
+        guard let host = Int(hostPort), host > 0 && host <= 65535 else { return false }
+        guard let container = Int(containerPort), container > 0 && container <= 65535 else { return false }
+
+        return true
+    }
+}
+
+// MARK: - Restart Policy Button Style
+
+private struct RestartPolicyButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.93 : 1.0)
+            .animation(.spring(duration: 0.2, bounce: 0.3), value: configuration.isPressed)
     }
 }
 
