@@ -185,7 +185,9 @@ struct CreateContainerView: View {
                         ForEach(RestartPolicy.allCases) { policy in
                             let isActive = restartPolicy == policy
                             Button {
-                                restartPolicy = policy
+                                withAnimation(.spring(duration: 0.2, bounce: 0.3)) {
+                                    restartPolicy = policy
+                                }
                             } label: {
                                 Text(policy.label)
                                     .font(.system(size: 11, weight: isActive ? .semibold : .regular))
@@ -202,7 +204,7 @@ struct CreateContainerView: View {
                                             )
                                     )
                             }
-                            .buttonStyle(.plain)
+                            .buttonStyle(RestartPolicyButtonStyle())
                             .disabled(isCreating)
                         }
                     }
@@ -274,6 +276,16 @@ struct CreateContainerView: View {
                 validationError = msg
             }
         }
+    }
+}
+
+// MARK: - Restart Policy Button Style
+
+private struct RestartPolicyButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.93 : 1.0)
+            .animation(.spring(duration: 0.2, bounce: 0.3), value: configuration.isPressed)
     }
 }
 
