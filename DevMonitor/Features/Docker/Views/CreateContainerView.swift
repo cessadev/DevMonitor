@@ -115,6 +115,8 @@ struct CreateContainerView: View {
                             Text(error)
                                 .font(.caption)
                                 .foregroundStyle(.red)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 2)
                                 .transition(.opacity)
                         }
 
