@@ -56,14 +56,18 @@ struct CreateContainerView: View {
                         )
                         .disabled(isCreating)
                         .onChange(of: containerName) {
-                            if validationError != nil { validationError = nil }
+                            withAnimation(.easeOut(duration: 0.2)) {
+                                if validationError != nil { validationError = nil }
+                            }
                         }
 
                         if let error = validationError {
                             Text(error)
                                 .font(.caption)
                                 .foregroundStyle(.red)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, 2)
+                                .transition(.opacity)
                         }
                     }
                 }
@@ -89,7 +93,9 @@ struct CreateContainerView: View {
                                 )
                                 .disabled(isCreating)
                                 .onChange(of: portBindings[index]) { _, _ in
-                                    if portError != nil { portError = nil }
+                                    withAnimation(.easeOut(duration: 0.2)) {
+                                        if portError != nil { portError = nil }
+                                    }
                                 }
 
                                 if portBindings.count > 1 {
@@ -297,7 +303,9 @@ struct CreateContainerView: View {
             if result.success {
                 onDismiss()
             } else if let msg = result.validationError {
-                validationError = msg
+                withAnimation(.easeOut(duration: 0.2)) {
+                    validationError = msg
+                }
             }
         }
     }
