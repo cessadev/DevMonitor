@@ -174,6 +174,7 @@ struct ContentView: View {
         .onDisappear {
             isVisible = false
             pullImageName = ""
+            NSApp.keyWindow?.makeFirstResponder(nil)
         }
         .onReceive(timer) { _ in
             guard !isComposeBusy else { return }
