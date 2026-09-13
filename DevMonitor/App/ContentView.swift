@@ -10,9 +10,11 @@ struct ContentView: View {
     @State private var pullImageName               = ""
     @State private var composeVM                   = ComposeViewModel()
     @State private var isComposeBusy               = false
+    @State private var buildVM                     = BuildViewModel()
     
     @AppStorage("imagesExpanded") private var imagesExpanded = false
     @AppStorage("pullExpanded")   private var pullExpanded   = false
+    @AppStorage("buildExpanded") private var buildExpanded   = false
     
     private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
@@ -73,7 +75,7 @@ struct ContentView: View {
                     onAddManual: { composeVM.addManualProject() }
                 )
 
-                // Images header collapsible
+                // Images
                 ImagesView(
                     images: imagesVM.images,
                     count: imagesVM.images.count,
@@ -97,7 +99,15 @@ struct ContentView: View {
                     onPull: {
                         Task { await imagesVM.pull(name: pullImageName) }
                     },
-                    onDelete: { image in await imagesVM.delete(image) },
+                    onDelete: {
+                        image in await imagesVM.delete(image)
+                    },
+                    buildExpanded: buildExpanded,
+                    buildVM: buildVM,
+                    onBuildHeaderTap: {
+                        if buildExpanded { buildVM.reset() }
+                        buildExpanded.toggle()
+                    },
                     onCreateContainer: { image, name, ports, envVars, restartPolicy in
                         return await containersVM.createContainer(
                             name: name,
@@ -162,6 +172,7 @@ struct ContentView: View {
         .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesVM.images.count)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesExpanded)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: pullExpanded)
+        .animation(.spring(duration: 0.35, bounce: 0.15), value: buildExpanded)
         .animation(isVisible
             ? .spring(duration: 0.3, bounce: 0.2)
             : .easeIn(duration: 0.15),
@@ -174,6 +185,7 @@ struct ContentView: View {
         .onDisappear {
             isVisible = false
             pullImageName = ""
+            buildVM.reset()
             NSApp.keyWindow?.makeFirstResponder(nil)
         }
         .onReceive(timer) { _ in

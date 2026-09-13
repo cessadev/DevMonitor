@@ -13,6 +13,9 @@ struct ImagesView: View {
     let onPullHeaderTap: () -> Void
     let onPull: () -> Void
     let onDelete: (DockerImage) async -> Void
+    let buildExpanded: Bool
+    let buildVM: BuildViewModel
+    let onBuildHeaderTap: () -> Void
     let onCreateContainer: (DockerImage, String, [String], [String], String) async -> (success: Bool, validationError: String?)
 
     @State private var selectedImage: DockerImage? = nil
@@ -103,6 +106,24 @@ struct ImagesView: View {
                     }
                     .glassEffect(.clear, in: RoundedRectangle(cornerRadius: 12))
                     .transition(.opacity)
+                }
+                
+                // Build Image collapsible
+                if selectedImage == nil {
+                    BuildImageHeader(
+                        isExpanded: buildExpanded,
+                        onTap: {
+                            withAnimation(.spring(duration: 0.3)) {
+                                onBuildHeaderTap()
+                            }
+                        }
+                    )
+                    .transition(.opacity)
+
+                    if buildExpanded {
+                        BuildImageView(vm: buildVM)
+                            .transition(.opacity)
+                    }
                 }
 
                 // Pull Image
@@ -207,5 +228,32 @@ private struct PullImageView: View {
         }
         .padding(.bottom, 6)
         .transition(.opacity)
+    }
+}
+
+private struct BuildImageHeader: View {
+    let isExpanded: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack {
+                Text("BUILD IMAGE")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(.tertiary)
+                    .padding(.top, 3)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.tertiary)
+                    .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                    .animation(.spring(duration: 0.3), value: isExpanded)
+            }
+            .padding(.horizontal, 4)
+            .padding(.vertical, 2)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .padding(.bottom, 3)
     }
 }
