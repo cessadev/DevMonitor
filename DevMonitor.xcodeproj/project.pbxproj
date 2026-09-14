@@ -35,7 +35,6 @@
 		DBD6B57B3053A27A00C8E719 /* CapsuleButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B57A3053A27A00C8E719 /* CapsuleButtonStyle.swift */; };
 		DBD6B5CC30570B4300C8E719 /* BuildViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5C83057099500C8E719 /* BuildViewModel.swift */; };
 		DBD6B5CD30570B4300C8E719 /* DockerBuildService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5C63057095300C8E719 /* DockerBuildService.swift */; };
-		DBD6B5CE30570B4300C8E719 /* DockerBuild.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5C43057093200C8E719 /* DockerBuild.swift */; };
 		DBD6B5CF30570B4300C8E719 /* BuildImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5CA305709BD00C8E719 /* BuildImageView.swift */; };
 		DBD6B5D130570FA100C8E719 /* FormSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5D030570FA100C8E719 /* FormSection.swift */; };
 /* End PBXBuildFile section */
@@ -68,7 +67,6 @@
 		DBD6B572304671C700C8E719 /* ComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeView.swift; sourceTree = "<group>"; };
 		DBD6B578304C88AD00C8E719 /* CreateContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateContainerView.swift; sourceTree = "<group>"; };
 		DBD6B57A3053A27A00C8E719 /* CapsuleButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapsuleButtonStyle.swift; sourceTree = "<group>"; };
-		DBD6B5C43057093200C8E719 /* DockerBuild.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockerBuild.swift; sourceTree = "<group>"; };
 		DBD6B5C63057095300C8E719 /* DockerBuildService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockerBuildService.swift; sourceTree = "<group>"; };
 		DBD6B5C83057099500C8E719 /* BuildViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildViewModel.swift; sourceTree = "<group>"; };
 		DBD6B5CA305709BD00C8E719 /* BuildImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildImageView.swift; sourceTree = "<group>"; };
@@ -114,7 +112,6 @@
 		DBD6B4DA3042849900C8E719 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				DBD6B5C43057093200C8E719 /* DockerBuild.swift */,
 				DBD6B5193043452900C8E719 /* DockerImage.swift */,
 				DBD6B4E63042858500C8E719 /* DockerContainer.swift */,
 				DBD6B4E53042857400C8E719 /* LocalService.swift */,
@@ -318,7 +315,6 @@
 				DBD6B5273043498600C8E719 /* ServicesView.swift in Sources */,
 				DBD6B5CC30570B4300C8E719 /* BuildViewModel.swift in Sources */,
 				DBD6B5CD30570B4300C8E719 /* DockerBuildService.swift in Sources */,
-				DBD6B5CE30570B4300C8E719 /* DockerBuild.swift in Sources */,
 				DBD6B5D130570FA100C8E719 /* FormSection.swift in Sources */,
 				DBD6B5CF30570B4300C8E719 /* BuildImageView.swift in Sources */,
 				DBD6B5283043498600C8E719 /* ImagesView.swift in Sources */,
