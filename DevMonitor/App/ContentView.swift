@@ -43,37 +43,41 @@ struct ContentView: View {
 
                 // Local Services
                 ServicesView(services: servicesVM.services)
-
-                // Containers
-                if !containersVM.containers.isEmpty {
-                    ContainersView(
-                        containers: containersVM.containers,
-                        lockedComposeProject: composeVM.lockedComposeProject,
-                        activeComposeProjects: composeVM.activeComposeProjects,
-                        onToggle: { container in await containersVM.toggle(container) },
-                        onDelete: { container in await containersVM.delete(container) }
+                
+                if !buildExpanded {
+                    // Containers
+                    if !containersVM.containers.isEmpty {
+                        ContainersView(
+                            containers: containersVM.containers,
+                            lockedComposeProject: composeVM.lockedComposeProject,
+                            activeComposeProjects: composeVM.activeComposeProjects,
+                            onToggle: { container in await containersVM.toggle(container) },
+                            onDelete: { container in await containersVM.delete(container) }
+                        )
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
+                    
+                    // Compose Projects
+                    ComposeView(
+                        projects: composeVM.projects,
+                        loadingProjectId: composeVM.isLoadingProjectId,
+                        onUp: { project in
+                            isComposeBusy = true
+                            await composeVM.up(project)
+                            await containersVM.refresh()
+                            isComposeBusy = false
+                        },
+                        onDown: { project in
+                            isComposeBusy = true
+                            await composeVM.down(project)
+                            await containersVM.refresh()
+                            isComposeBusy = false
+                        },
+                        onRemove:    { project in composeVM.remove(project) },
+                        onAddManual: { composeVM.addManualProject() }
                     )
+                    .transition(.opacity.combined(with: .move(edge: .top)))
                 }
-
-                // Compose Projects
-                ComposeView(
-                    projects: composeVM.projects,
-                    loadingProjectId: composeVM.isLoadingProjectId,
-                    onUp: { project in
-                        isComposeBusy = true
-                        await composeVM.up(project)
-                        await containersVM.refresh()
-                        isComposeBusy = false
-                    },
-                    onDown: { project in
-                        isComposeBusy = true
-                        await composeVM.down(project)
-                        await containersVM.refresh()
-                        isComposeBusy = false
-                    },
-                    onRemove:    { project in composeVM.remove(project) },
-                    onAddManual: { composeVM.addManualProject() }
-                )
 
                 // Images
                 ImagesView(
@@ -178,6 +182,14 @@ struct ContentView: View {
             : .easeIn(duration: 0.15),
             value: isVisible
         )
+        .onChange(of: buildVM.buildSuccess) { _, success in
+            if success {
+                withAnimation(.spring(duration: 0.35, bounce: 0.15)) {
+                    buildExpanded = false
+                    buildVM.reset()
+                }
+            }
+        }
         .onAppear {
             isVisible = true
             refresh()
