@@ -32,7 +32,7 @@ struct ComposeProjectRow: View {
                 .foregroundStyle(.secondary)
 
             Text(project.displayName)
-                .font(.system(size: 13))
+                .font(AppFont.body)
                 .lineLimit(1)
                 .truncationMode(.tail)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -116,7 +116,7 @@ private struct ComposeBadge: View {
                 .frame(width: 6, height: 6)
                 .shadow(color: status == .running ? color.opacity(0.6) : .clear, radius: 3)
             Text(label)
-                .font(.system(size: 11))
+                .font(AppFont.caption)
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 7)

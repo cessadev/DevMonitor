@@ -12,7 +12,7 @@ struct ServiceRow: View {
                 .foregroundStyle(.secondary)
 
             Text(service.name)
-                .font(.system(size: 13, weight: .medium))
+                .font(AppFont.bodyMedium)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             StatusDot(isRunning: service.isRunning)

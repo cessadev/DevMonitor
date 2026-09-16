@@ -27,7 +27,7 @@ struct ContentView: View {
                 // Header
                 HStack(spacing: 8) {
                     Text("DocMonitor")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(AppFont.title)
                     Spacer()
                     Button {
                         refresh()
@@ -142,7 +142,7 @@ struct ContentView: View {
                         // Preferences — static for now
                     } label: {
                         Text("Preferences")
-                            .font(.system(size: 12))
+                            .font(AppFont.action)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 6)
                     }
@@ -154,7 +154,7 @@ struct ContentView: View {
                         NSApplication.shared.terminate(nil)
                     } label: {
                         Text("Quit")
-                            .font(.system(size: 12))
+                            .font(AppFont.action)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 6)
                     }

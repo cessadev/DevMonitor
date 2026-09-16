@@ -11,7 +11,7 @@ struct BuildImageView: View {
             FormSection(title: "Dockerfile Directory") {
                 HStack(spacing: 8) {
                     Text(vm.contextPath.isEmpty ? "No directory selected" : vm.contextPath)
-                        .font(.system(size: 11))
+                        .font(AppFont.caption)
                         .foregroundStyle(vm.contextPath.isEmpty ? .tertiary : .secondary)
                         .lineLimit(1)
                         .truncationMode(.head)
@@ -21,7 +21,7 @@ struct BuildImageView: View {
                         Task { await vm.selectDirectory() }
                     } label: {
                         Text("Browse")
-                            .font(.system(size: 11))
+                            .font(AppFont.caption)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 5)
                     }
@@ -44,7 +44,7 @@ struct BuildImageView: View {
                     prompt: Text("e.g. my-app:latest").foregroundStyle(.tertiary)
                 )
                 .textFieldStyle(.plain)
-                .font(.system(size: 13))
+                .font(AppFont.body)
                 .disabled(vm.isBuilding)
                 .onSubmit {
                     Task { await vm.build() }
@@ -77,7 +77,7 @@ struct BuildImageView: View {
             if vm.isBuilding || !vm.buildOutput.isEmpty {
                 ScrollView {
                     Text(vm.buildOutput.isEmpty ? "Building..." : vm.buildOutput)
-                        .font(.system(size: 9, design: .monospaced))
+                        .font(AppFont.mono)
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .textSelection(.enabled)
@@ -94,7 +94,7 @@ struct BuildImageView: View {
             // Success message
             if vm.buildSuccess {
                 Label("Image built successfully", systemImage: "checkmark.circle.fill")
-                    .font(.system(size: 11))
+                    .font(AppFont.caption)
                     .foregroundStyle(.green)
                     .transition(.opacity)
             }
@@ -115,7 +115,7 @@ struct BuildImageView: View {
                             Text(vm.buildSuccess ? "Build Again" : "Build Image")
                         }
                     }
-                    .font(.system(size: 12))
+                    .font(AppFont.action)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 6)
                 }

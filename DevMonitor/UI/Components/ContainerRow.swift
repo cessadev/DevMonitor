@@ -36,11 +36,11 @@ struct ContainerRow: View {
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(container.displayName)
-                    .font(.system(size: 13))
+                    .font(AppFont.body)
                     .lineLimit(1)
                     .truncationMode(.tail)
                 Text(container.image)
-                    .font(.system(size: 10))
+                    .font(AppFont.metadata)
                     .foregroundStyle(.tertiary)
                     .lineLimit(1)
                     .truncationMode(.tail)
@@ -65,7 +65,7 @@ struct ContainerRow: View {
                                 .padding(.vertical, 3)
                         } else {
                             Text("Delete")
-                                .font(.system(size: 10, weight: .medium))
+                                .font(AppFont.micro)
                                 .foregroundStyle(.red)
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 3)
@@ -81,7 +81,7 @@ struct ContainerRow: View {
                         }
                     } label: {
                         Image(systemName: "trash")
-                            .font(.system(size: 13, weight: .medium))
+                            .font(AppFont.bodyMedium)
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 7)
                             .padding(.top, 3)

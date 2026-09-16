@@ -32,7 +32,7 @@ struct ImagesView: View {
 
                     HStack(spacing: 6) {
                         Text("\(count)")
-                            .font(.system(size: 11))
+                            .font(AppFont.caption)
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)
@@ -43,7 +43,7 @@ struct ImagesView: View {
                             )
 
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 10, weight: .medium))
+                            .font(AppFont.micro)
                             .foregroundStyle(.tertiary)
                             .rotationEffect(.degrees(isExpanded ? 90 : 0))
                             .animation(.spring(duration: 0.3), value: isExpanded)
@@ -165,14 +165,14 @@ private struct PullImageHeader: View {
         Button(action: onTap) {
             HStack {
                 Text("PULL IMAGE")
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(AppFont.label)
                     .foregroundStyle(.tertiary)
                     .padding(.top, 4)
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 10, weight: .medium))
+                    .font(AppFont.micro)
                     .foregroundStyle(.tertiary)
                     .rotationEffect(.degrees(isExpanded ? 90 : 0))
                     .animation(.spring(duration: 0.3), value: isExpanded)
@@ -200,12 +200,12 @@ private struct PullImageView: View {
             HStack(spacing: 8) {
                 TextField("e.g. nginx:latest", text: $imageName)
                     .textFieldStyle(.plain)
-                    .font(.system(size: 13))
+                    .font(AppFont.body)
                     .disabled(isPulling)
                     .onSubmit { onPull() }
 
                 Text(isPulling ? "Pulling..." : "Enter")
-                    .font(.system(size: 11))
+                    .font(AppFont.caption)
                     .foregroundStyle(.tertiary)
             }
             .padding(.vertical, 10)
@@ -219,7 +219,7 @@ private struct PullImageView: View {
 
             if !progress.isEmpty {
                 Text(progress)
-                    .font(.system(size: 10))
+                    .font(AppFont.metadata)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .truncationMode(.middle)
@@ -239,12 +239,12 @@ private struct BuildImageHeader: View {
         Button(action: onTap) {
             HStack {
                 Text("BUILD IMAGE")
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(AppFont.label)
                     .foregroundStyle(.tertiary)
                     .padding(.top, 3)
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 10, weight: .medium))
+                    .font(AppFont.micro)
                     .foregroundStyle(.tertiary)
                     .rotationEffect(.degrees(isExpanded ? 90 : 0))
                     .animation(.spring(duration: 0.3), value: isExpanded)
