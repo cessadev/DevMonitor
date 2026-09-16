@@ -15,6 +15,9 @@ enum AppFont {
 
     /// Buttons, inputs, form actions
     static let action: Font        = .system(size: 13)
+    
+    /// Label status compose
+    static let statusCompose: Font = .system(size: 12)
 
     /// Section headers, badges, secondary info
     static let caption: Font       = .system(size: 11)

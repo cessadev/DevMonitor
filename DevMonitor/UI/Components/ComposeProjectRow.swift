@@ -116,7 +116,7 @@ private struct ComposeBadge: View {
                 .frame(width: AppIcon.composeDot, height: AppIcon.composeDot)
                 .shadow(color: status == .running ? color.opacity(0.6) : .clear, radius: 3)
             Text(label)
-                .font(AppFont.action)
+                .font(AppFont.statusCompose)
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 7)
