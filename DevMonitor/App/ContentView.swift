@@ -10,9 +10,11 @@ struct ContentView: View {
     @State private var pullImageName               = ""
     @State private var composeVM                   = ComposeViewModel()
     @State private var isComposeBusy               = false
+    @State private var buildVM                     = BuildViewModel()
     
     @AppStorage("imagesExpanded") private var imagesExpanded = false
     @AppStorage("pullExpanded")   private var pullExpanded   = false
+    @AppStorage("buildExpanded") private var buildExpanded   = false
     
     private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
@@ -25,7 +27,7 @@ struct ContentView: View {
                 // Header
                 HStack(spacing: 8) {
                     Text("DocMonitor")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(AppFont.title)
                     Spacer()
                     Button {
                         refresh()
@@ -41,39 +43,43 @@ struct ContentView: View {
 
                 // Local Services
                 ServicesView(services: servicesVM.services)
-
-                // Containers
-                if !containersVM.containers.isEmpty {
-                    ContainersView(
-                        containers: containersVM.containers,
-                        lockedComposeProject: composeVM.lockedComposeProject,
-                        activeComposeProjects: composeVM.activeComposeProjects,
-                        onToggle: { container in await containersVM.toggle(container) },
-                        onDelete: { container in await containersVM.delete(container) }
+                
+                if !buildExpanded {
+                    // Containers
+                    if !containersVM.containers.isEmpty {
+                        ContainersView(
+                            containers: containersVM.containers,
+                            lockedComposeProject: composeVM.lockedComposeProject,
+                            activeComposeProjects: composeVM.activeComposeProjects,
+                            onToggle: { container in await containersVM.toggle(container) },
+                            onDelete: { container in await containersVM.delete(container) }
+                        )
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
+                    
+                    // Compose Projects
+                    ComposeView(
+                        projects: composeVM.projects,
+                        loadingProjectId: composeVM.isLoadingProjectId,
+                        onUp: { project in
+                            isComposeBusy = true
+                            await composeVM.up(project)
+                            await containersVM.refresh()
+                            isComposeBusy = false
+                        },
+                        onDown: { project in
+                            isComposeBusy = true
+                            await composeVM.down(project)
+                            await containersVM.refresh()
+                            isComposeBusy = false
+                        },
+                        onRemove:    { project in composeVM.remove(project) },
+                        onAddManual: { composeVM.addManualProject() }
                     )
+                    .transition(.opacity.combined(with: .move(edge: .top)))
                 }
 
-                // Compose Projects
-                ComposeView(
-                    projects: composeVM.projects,
-                    loadingProjectId: composeVM.isLoadingProjectId,
-                    onUp: { project in
-                        isComposeBusy = true
-                        await composeVM.up(project)
-                        await containersVM.refresh()
-                        isComposeBusy = false
-                    },
-                    onDown: { project in
-                        isComposeBusy = true
-                        await composeVM.down(project)
-                        await containersVM.refresh()
-                        isComposeBusy = false
-                    },
-                    onRemove:    { project in composeVM.remove(project) },
-                    onAddManual: { composeVM.addManualProject() }
-                )
-
-                // Images header collapsible
+                // Images
                 ImagesView(
                     images: imagesVM.images,
                     count: imagesVM.images.count,
@@ -97,7 +103,15 @@ struct ContentView: View {
                     onPull: {
                         Task { await imagesVM.pull(name: pullImageName) }
                     },
-                    onDelete: { image in await imagesVM.delete(image) },
+                    onDelete: {
+                        image in await imagesVM.delete(image)
+                    },
+                    buildExpanded: buildExpanded,
+                    buildVM: buildVM,
+                    onBuildHeaderTap: {
+                        if buildExpanded { buildVM.reset() }
+                        buildExpanded.toggle()
+                    },
                     onCreateContainer: { image, name, ports, envVars, restartPolicy in
                         return await containersVM.createContainer(
                             name: name,
@@ -132,7 +146,7 @@ struct ContentView: View {
                         // Preferences — static for now
                     } label: {
                         Text("Preferences")
-                            .font(.system(size: 12))
+                            .font(AppFont.action)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 6)
                     }
@@ -144,7 +158,7 @@ struct ContentView: View {
                         NSApplication.shared.terminate(nil)
                     } label: {
                         Text("Quit")
-                            .font(.system(size: 12))
+                            .font(AppFont.action)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 6)
                     }
@@ -159,13 +173,23 @@ struct ContentView: View {
         .fixedSize(horizontal: false, vertical: true)
         .scaleEffect(isVisible ? 1.0 : 0.92)
         .opacity(isVisible ? 1.0 : 0)
+        .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesVM.images.count)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: imagesExpanded)
         .animation(.spring(duration: 0.35, bounce: 0.15), value: pullExpanded)
+        .animation(.spring(duration: 0.35, bounce: 0.15), value: buildExpanded)
         .animation(isVisible
             ? .spring(duration: 0.3, bounce: 0.2)
             : .easeIn(duration: 0.15),
             value: isVisible
         )
+        .onChange(of: buildVM.buildSuccess) { _, success in
+            if success {
+                withAnimation(.spring(duration: 0.35, bounce: 0.15)) {
+                    buildExpanded = false
+                    buildVM.reset()
+                }
+            }
+        }
         .onAppear {
             isVisible = true
             refresh()
@@ -173,6 +197,8 @@ struct ContentView: View {
         .onDisappear {
             isVisible = false
             pullImageName = ""
+            buildVM.reset()
+            NSApp.keyWindow?.makeFirstResponder(nil)
         }
         .onReceive(timer) { _ in
             guard !isComposeBusy else { return }

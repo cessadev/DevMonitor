@@ -82,7 +82,7 @@ class ComposeService {
 
         // Provide a clean environment with required PATH
         process.environment = [
-            "PATH": "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin",
+            "PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/opt/homebrew/sbin:/Applications/Docker.app/Contents/Resources/bin",
             "HOME": FileManager.default.homeDirectoryForCurrentUser.path,
         ]
 

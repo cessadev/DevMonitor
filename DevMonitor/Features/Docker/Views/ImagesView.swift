@@ -13,6 +13,9 @@ struct ImagesView: View {
     let onPullHeaderTap: () -> Void
     let onPull: () -> Void
     let onDelete: (DockerImage) async -> Void
+    let buildExpanded: Bool
+    let buildVM: BuildViewModel
+    let onBuildHeaderTap: () -> Void
     let onCreateContainer: (DockerImage, String, [String], [String], String) async -> (success: Bool, validationError: String?)
 
     @State private var selectedImage: DockerImage? = nil
@@ -29,7 +32,7 @@ struct ImagesView: View {
 
                     HStack(spacing: 6) {
                         Text("\(count)")
-                            .font(.system(size: 11))
+                            .font(AppFont.caption)
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)
@@ -40,7 +43,7 @@ struct ImagesView: View {
                             )
 
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 10, weight: .medium))
+                            .font(AppFont.micro)
                             .foregroundStyle(.tertiary)
                             .rotationEffect(.degrees(isExpanded ? 90 : 0))
                             .animation(.spring(duration: 0.3), value: isExpanded)
@@ -101,8 +104,27 @@ struct ImagesView: View {
                         }
                         Spacer().frame(height: 4)
                     }
+                    .animation(.spring(duration: 0.4, bounce: 0.1), value: images.count)
                     .glassEffect(.clear, in: RoundedRectangle(cornerRadius: 12))
                     .transition(.opacity)
+                }
+                
+                // Build Image collapsible
+                if selectedImage == nil {
+                    BuildImageHeader(
+                        isExpanded: buildExpanded,
+                        onTap: {
+                            withAnimation(.spring(duration: 0.3)) {
+                                onBuildHeaderTap()
+                            }
+                        }
+                    )
+                    .transition(.opacity)
+
+                    if buildExpanded {
+                        BuildImageView(vm: buildVM)
+                            .transition(.opacity)
+                    }
                 }
 
                 // Pull Image
@@ -144,14 +166,14 @@ private struct PullImageHeader: View {
         Button(action: onTap) {
             HStack {
                 Text("PULL IMAGE")
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(AppFont.label)
                     .foregroundStyle(.tertiary)
                     .padding(.top, 4)
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 10, weight: .medium))
+                    .font(AppFont.micro)
                     .foregroundStyle(.tertiary)
                     .rotationEffect(.degrees(isExpanded ? 90 : 0))
                     .animation(.spring(duration: 0.3), value: isExpanded)
@@ -179,12 +201,12 @@ private struct PullImageView: View {
             HStack(spacing: 8) {
                 TextField("e.g. nginx:latest", text: $imageName)
                     .textFieldStyle(.plain)
-                    .font(.system(size: 13))
+                    .font(AppFont.body)
                     .disabled(isPulling)
                     .onSubmit { onPull() }
 
                 Text(isPulling ? "Pulling..." : "Enter")
-                    .font(.system(size: 11))
+                    .font(AppFont.caption)
                     .foregroundStyle(.tertiary)
             }
             .padding(.vertical, 10)
@@ -198,7 +220,7 @@ private struct PullImageView: View {
 
             if !progress.isEmpty {
                 Text(progress)
-                    .font(.system(size: 10))
+                    .font(AppFont.metadata)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .truncationMode(.middle)
@@ -207,5 +229,32 @@ private struct PullImageView: View {
         }
         .padding(.bottom, 6)
         .transition(.opacity)
+    }
+}
+
+private struct BuildImageHeader: View {
+    let isExpanded: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack {
+                Text("BUILD IMAGE")
+                    .font(AppFont.label)
+                    .foregroundStyle(.tertiary)
+                    .padding(.top, 3)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(AppFont.micro)
+                    .foregroundStyle(.tertiary)
+                    .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                    .animation(.spring(duration: 0.3), value: isExpanded)
+            }
+            .padding(.horizontal, 4)
+            .padding(.vertical, 2)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .padding(.bottom, 3)
     }
 }

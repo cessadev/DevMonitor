@@ -46,7 +46,7 @@ struct CreateContainerView: View {
                             prompt: Text("e.g. my-nginx").foregroundStyle(.tertiary)
                         )
                         .textFieldStyle(.plain)
-                        .font(.system(size: 12))
+                        .font(AppFont.action)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 6)
                         .background(
@@ -83,7 +83,7 @@ struct CreateContainerView: View {
                                     prompt: Text("e.g. 8080:80").foregroundStyle(.tertiary)
                                 )
                                 .textFieldStyle(.plain)
-                                .font(.system(size: 12))
+                                .font(AppFont.action)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 6)
                                 .background(
@@ -107,7 +107,7 @@ struct CreateContainerView: View {
                                     } label: {
                                         Image(systemName: "minus.circle.fill")
                                             .foregroundStyle(.red.opacity(0.7))
-                                            .font(.system(size: 12))
+                                            .font(AppFont.action)
                                     }
                                     .buttonStyle(.plain)
                                     .disabled(isCreating)
@@ -132,7 +132,7 @@ struct CreateContainerView: View {
                             }
                         } label: {
                             Label("Add Port", systemImage: "plus.circle")
-                                .font(.system(size: 11))
+                                .font(AppFont.caption)
                                 .foregroundStyle(.secondary)
                         }
                         .buttonStyle(.plain)
@@ -153,7 +153,7 @@ struct CreateContainerView: View {
                                     prompt: Text("e.g. DEBUG=true").foregroundStyle(.tertiary)
                                 )
                                 .textFieldStyle(.plain)
-                                .font(.system(size: 12))
+                                .font(AppFont.action)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 6)
                                 .background(
@@ -172,7 +172,7 @@ struct CreateContainerView: View {
                                     } label: {
                                         Image(systemName: "minus.circle.fill")
                                             .foregroundStyle(.red.opacity(0.7))
-                                            .font(.system(size: 12))
+                                            .font(AppFont.action)
                                     }
                                     .buttonStyle(.plain)
                                     .disabled(isCreating)
@@ -188,7 +188,7 @@ struct CreateContainerView: View {
                             }
                         } label: {
                             Label("Add Variable", systemImage: "plus.circle")
-                                .font(.system(size: 11))
+                                .font(AppFont.caption)
                                 .foregroundStyle(.secondary)
                         }
                         .buttonStyle(.plain)
@@ -241,7 +241,7 @@ struct CreateContainerView: View {
                     onDismiss()
                 } label: {
                     Text("Cancel")
-                        .font(.system(size: 12))
+                        .font(AppFont.action)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 6)
                 }
@@ -257,14 +257,14 @@ struct CreateContainerView: View {
                     Group {
                         if isCreating {
                             HStack(spacing: 6) {
-                                ProgressView().controlSize(.mini)
+                                ProgressView().controlSize(AppControl.switchControlSize)
                                 Text("Creating...")
                             }
                         } else {
                             Text("Create Container")
                         }
                     }
-                    .font(.system(size: 12))
+                    .font(AppFont.action)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 6)
                 }
@@ -336,21 +336,5 @@ private struct RestartPolicyButtonStyle: ButtonStyle {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.93 : 1.0)
             .animation(.spring(duration: 0.2, bounce: 0.3), value: configuration.isPressed)
-    }
-}
-
-// MARK: - FormSection
-
-private struct FormSection<Content: View>: View {
-    let title: String
-    @ViewBuilder let content: () -> Content
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title.uppercased())
-                .font(.system(size: 10, weight: .semibold))
-                .foregroundStyle(.tertiary)
-            content()
-        }
     }
 }

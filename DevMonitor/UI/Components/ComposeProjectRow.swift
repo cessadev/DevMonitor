@@ -28,11 +28,11 @@ struct ComposeProjectRow: View {
             Image("compose-icon")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 16, height: 16)
+                .frame(width: AppIcon.rowIcon, height: AppIcon.rowIcon)
                 .foregroundStyle(.secondary)
 
             Text(project.displayName)
-                .font(.system(size: 13))
+                .font(AppFont.body)
                 .lineLimit(1)
                 .truncationMode(.tail)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -43,7 +43,7 @@ struct ComposeProjectRow: View {
                     // Remove
                     Button(action: onRemove) {
                         Image(systemName: "trash")
-                            .font(.system(size: 11, weight: .medium))
+                            .font(.system(size: AppIcon.actionIcon, weight: .medium))
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)
@@ -53,7 +53,7 @@ struct ComposeProjectRow: View {
                     // Switch
                     Toggle("", isOn: $isOn)
                         .toggleStyle(.switch)
-                        .controlSize(.mini)
+                        .controlSize(AppControl.switchControlSize)
                         .disabled(isLoading)
                         .opacity(isLoading ? 0.4 : 1.0)
                         .animation(.easeInOut(duration: 0.2), value: isLoading)
@@ -113,10 +113,10 @@ private struct ComposeBadge: View {
         HStack(spacing: 4) {
             Circle()
                 .fill(color.opacity(status == .stopped ? 0.8 : 1.0))
-                .frame(width: 6, height: 6)
+                .frame(width: AppIcon.composeDot, height: AppIcon.composeDot)
                 .shadow(color: status == .running ? color.opacity(0.6) : .clear, radius: 3)
             Text(label)
-                .font(.system(size: 11))
+                .font(AppFont.statusCompose)
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 7)
