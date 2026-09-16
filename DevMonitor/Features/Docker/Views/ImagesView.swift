@@ -104,6 +104,7 @@ struct ImagesView: View {
                         }
                         Spacer().frame(height: 4)
                     }
+                    .animation(.spring(duration: 0.4, bounce: 0.1), value: images.count)
                     .glassEffect(.clear, in: RoundedRectangle(cornerRadius: 12))
                     .transition(.opacity)
                 }
