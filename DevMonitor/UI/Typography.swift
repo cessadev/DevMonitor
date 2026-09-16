@@ -8,13 +8,13 @@ enum AppFont {
     static let title: Font         = .system(size: 14, weight: .semibold)
 
     /// Primary row text — container name, image tag, service name
-    static let body: Font          = .system(size: 13)
+    static let body: Font          = .system(size: 14)
 
     /// Primary row text with medium weight — icons, labels
     static let bodyMedium: Font    = .system(size: 13, weight: .medium)
 
     /// Buttons, inputs, form actions
-    static let action: Font        = .system(size: 12)
+    static let action: Font        = .system(size: 13)
 
     /// Section headers, badges, secondary info
     static let caption: Font       = .system(size: 11)

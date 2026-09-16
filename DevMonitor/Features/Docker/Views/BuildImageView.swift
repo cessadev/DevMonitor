@@ -11,7 +11,7 @@ struct BuildImageView: View {
             FormSection(title: "Dockerfile Directory") {
                 HStack(spacing: 8) {
                     Text(vm.contextPath.isEmpty ? "No directory selected" : vm.contextPath)
-                        .font(AppFont.caption)
+                        .font(AppFont.action)
                         .foregroundStyle(vm.contextPath.isEmpty ? .tertiary : .secondary)
                         .lineLimit(1)
                         .truncationMode(.head)
@@ -21,7 +21,7 @@ struct BuildImageView: View {
                         Task { await vm.selectDirectory() }
                     } label: {
                         Text("Browse")
-                            .font(AppFont.caption)
+                            .font(AppFont.action)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 5)
                     }

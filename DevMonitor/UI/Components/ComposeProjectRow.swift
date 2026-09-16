@@ -113,10 +113,10 @@ private struct ComposeBadge: View {
         HStack(spacing: 4) {
             Circle()
                 .fill(color.opacity(status == .stopped ? 0.8 : 1.0))
-                .frame(width: 6, height: 6)
+                .frame(width: 8, height: 8)
                 .shadow(color: status == .running ? color.opacity(0.6) : .clear, radius: 3)
             Text(label)
-                .font(AppFont.caption)
+                .font(AppFont.action)
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 7)
