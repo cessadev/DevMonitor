@@ -33,10 +33,10 @@ struct ComposeView: View {
             Button(action: onAddManual) {
                 HStack(spacing: 6) {
                     Image(systemName: "plus.circle")
-                        .font(.system(size: 11))
+                        .font(AppFont.caption)
                         .foregroundStyle(.tertiary)
                     Text("Add compose file...")
-                        .font(.system(size: 12))
+                        .font(AppFont.action)
                         .foregroundStyle(.tertiary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

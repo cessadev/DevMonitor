@@ -31,16 +31,16 @@ struct ContainerRow: View {
             Image("container-icon")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 16, height: 16)
+                .frame(width: AppIcon.rowIcon, height: AppIcon.rowIcon)
                 .foregroundStyle(.secondary)
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(container.displayName)
-                    .font(.system(size: 13))
+                    .font(AppFont.body)
                     .lineLimit(1)
                     .truncationMode(.tail)
                 Text(container.image)
-                    .font(.system(size: 10))
+                    .font(AppFont.metadata)
                     .foregroundStyle(.tertiary)
                     .lineLimit(1)
                     .truncationMode(.tail)
@@ -60,12 +60,12 @@ struct ContainerRow: View {
                         }
                     } label: {
                         if isDeleting {
-                            ProgressView().controlSize(.mini)
+                            ProgressView().controlSize(AppControl.switchControlSize)
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 3)
                         } else {
                             Text("Delete")
-                                .font(.system(size: 10, weight: .medium))
+                                .font(AppFont.micro)
                                 .foregroundStyle(.red)
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 3)
@@ -81,7 +81,7 @@ struct ContainerRow: View {
                         }
                     } label: {
                         Image(systemName: "trash")
-                            .font(.system(size: 13, weight: .medium))
+                            .font(AppFont.bodyMedium)
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 7)
                             .padding(.top, 3)
@@ -95,7 +95,7 @@ struct ContainerRow: View {
             // Toggle switch - disabled and dimmed when compose is stopping
             Toggle("", isOn: $isOn)
                 .toggleStyle(.switch)
-                .controlSize(.mini)
+                .controlSize(AppControl.switchControlSize)
                 .disabled(isLoading || isDeleting || isLocked)
                 .opacity(isLoading || isLocked ? 0.4 : 1.0)
                 .animation(.easeInOut(duration: 0.2), value: isLoading)

@@ -15,12 +15,12 @@ struct ImageRow: View {
             Image("imagen-icon")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 16, height: 16)
+                .frame(width: AppIcon.rowIcon, height: AppIcon.rowIcon)
                 .foregroundStyle(isSelected ? .primary : .secondary)
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(image.displayTag)
-                    .font(.system(size: 13))
+                    .font(AppFont.body)
                     .lineLimit(1)
                     .truncationMode(.tail)
                 HStack(spacing: 4) {
@@ -30,7 +30,7 @@ struct ImageRow: View {
                     Text("·")
                     Text(image.displayAge)
                 }
-                .font(.system(size: 10))
+                .font(AppFont.metadata)
                 .foregroundStyle(.tertiary)
                 .lineLimit(1)
                 .truncationMode(.tail)
@@ -50,12 +50,12 @@ struct ImageRow: View {
                         }
                     } label: {
                         if isDeleting {
-                            ProgressView().controlSize(.mini)
+                            ProgressView().controlSize(AppControl.switchControlSize)
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 3)
                         } else {
                             Text("Delete")
-                                .font(.system(size: 10, weight: .medium))
+                                .font(AppFont.micro)
                                 .foregroundStyle(.red)
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 3)
@@ -73,7 +73,7 @@ struct ImageRow: View {
                                 }
                             } label: {
                                 Image(systemName: "trash")
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(AppFont.bodyMedium)
                                     .foregroundStyle(.secondary)
                                     .padding(.horizontal, 7)
                                     .padding(.vertical, 3)

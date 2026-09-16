@@ -5,7 +5,7 @@ struct SectionLabel: View {
 
     var body: some View {
         Text(title.uppercased())
-            .font(.system(size: 10, weight: .semibold))
+            .font(AppFont.label)
             .foregroundStyle(.tertiary)
             .padding(.horizontal, 4)
     }

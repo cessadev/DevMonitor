@@ -8,11 +8,11 @@ struct ServiceRow: View {
             Image("docker-icon")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 16, height: 16)
+                .frame(width: AppIcon.rowIcon, height: AppIcon.rowIcon)
                 .foregroundStyle(.secondary)
 
             Text(service.name)
-                .font(.system(size: 13, weight: .medium))
+                .font(AppFont.title)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             StatusDot(isRunning: service.isRunning)
@@ -30,7 +30,7 @@ private struct StatusDot: View {
     var body: some View {
         Circle()
             .fill(isRunning ? Color.green : Color.red)
-            .frame(width: 8, height: 8)
-            .shadow(color: isRunning ? .green.opacity(0.7) : .red.opacity(0.7), radius: 0.5)
+            .frame(width: AppIcon.statusDot, height: AppIcon.statusDot)
+            .shadow(color: isRunning ? .green.opacity(0.7) : .red.opacity(0.7), radius: 1)
     }
 }
