@@ -108,7 +108,7 @@ struct BuildImageView: View {
                     Group {
                         if vm.isBuilding {
                             HStack(spacing: 6) {
-                                ProgressView().controlSize(.mini)
+                                ProgressView().controlSize(AppControl.switchControlSize)
                                 Text("Building...")
                             }
                         } else {

@@ -31,3 +31,29 @@ enum AppFont {
     /// Build output console
     static let mono: Font          = .system(size: 9, design: .monospaced)
 }
+
+// MARK: - Icon Sizes
+
+enum AppIcon {
+
+    // Row SVG icons — docker, container, image, compose
+    static let rowIcon: CGFloat    = 16
+    
+    // Action icons — trash, play, stop
+    static let actionIcon: CGFloat = 11
+
+    // Status dot — service running indicator
+    static let statusDot: CGFloat  = 9
+
+    // Compose status dot
+    static let composeDot: CGFloat = 8
+}
+
+// MARK: - Control Sizes
+
+enum AppControl {
+
+    // Toggle switch scale relative to .mini
+    // Used in ContainerRow and ComposeProjectRow
+    static let switchControlSize: ControlSize = .small
+}

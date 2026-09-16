@@ -257,7 +257,7 @@ struct CreateContainerView: View {
                     Group {
                         if isCreating {
                             HStack(spacing: 6) {
-                                ProgressView().controlSize(.mini)
+                                ProgressView().controlSize(AppControl.switchControlSize)
                                 Text("Creating...")
                             }
                         } else {

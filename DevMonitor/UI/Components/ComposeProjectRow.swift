@@ -28,7 +28,7 @@ struct ComposeProjectRow: View {
             Image("compose-icon")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 16, height: 16)
+                .frame(width: AppIcon.rowIcon, height: AppIcon.rowIcon)
                 .foregroundStyle(.secondary)
 
             Text(project.displayName)
@@ -43,7 +43,7 @@ struct ComposeProjectRow: View {
                     // Remove
                     Button(action: onRemove) {
                         Image(systemName: "trash")
-                            .font(.system(size: 11, weight: .medium))
+                            .font(.system(size: AppIcon.actionIcon, weight: .medium))
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)
@@ -53,7 +53,7 @@ struct ComposeProjectRow: View {
                     // Switch
                     Toggle("", isOn: $isOn)
                         .toggleStyle(.switch)
-                        .controlSize(.mini)
+                        .controlSize(AppControl.switchControlSize)
                         .disabled(isLoading)
                         .opacity(isLoading ? 0.4 : 1.0)
                         .animation(.easeInOut(duration: 0.2), value: isLoading)
@@ -113,7 +113,7 @@ private struct ComposeBadge: View {
         HStack(spacing: 4) {
             Circle()
                 .fill(color.opacity(status == .stopped ? 0.8 : 1.0))
-                .frame(width: 8, height: 8)
+                .frame(width: AppIcon.composeDot, height: AppIcon.composeDot)
                 .shadow(color: status == .running ? color.opacity(0.6) : .clear, radius: 3)
             Text(label)
                 .font(AppFont.action)

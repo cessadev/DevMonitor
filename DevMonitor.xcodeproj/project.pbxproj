@@ -37,7 +37,7 @@
 		DBD6B5CD30570B4300C8E719 /* DockerBuildService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5C63057095300C8E719 /* DockerBuildService.swift */; };
 		DBD6B5CF30570B4300C8E719 /* BuildImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5CA305709BD00C8E719 /* BuildImageView.swift */; };
 		DBD6B5D130570FA100C8E719 /* FormSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5D030570FA100C8E719 /* FormSection.swift */; };
-		DBD6B5D3305A324C00C8E719 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5D2305A324C00C8E719 /* Typography.swift */; };
+		DBD6B5D3305A324C00C8E719 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5D2305A324C00C8E719 /* DesignTokens.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,7 +72,7 @@
 		DBD6B5C83057099500C8E719 /* BuildViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildViewModel.swift; sourceTree = "<group>"; };
 		DBD6B5CA305709BD00C8E719 /* BuildImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildImageView.swift; sourceTree = "<group>"; };
 		DBD6B5D030570FA100C8E719 /* FormSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormSection.swift; sourceTree = "<group>"; };
-		DBD6B5D2305A324C00C8E719 /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
+		DBD6B5D2305A324C00C8E719 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,7 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				DBD6B4E2304284DB00C8E719 /* Components */,
-				DBD6B5D2305A324C00C8E719 /* Typography.swift */,
+				DBD6B5D2305A324C00C8E719 /* DesignTokens.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -318,7 +318,7 @@
 				DBD6B5273043498600C8E719 /* ServicesView.swift in Sources */,
 				DBD6B5CC30570B4300C8E719 /* BuildViewModel.swift in Sources */,
 				DBD6B5CD30570B4300C8E719 /* DockerBuildService.swift in Sources */,
-				DBD6B5D3305A324C00C8E719 /* Typography.swift in Sources */,
+				DBD6B5D3305A324C00C8E719 /* DesignTokens.swift in Sources */,
 				DBD6B5D130570FA100C8E719 /* FormSection.swift in Sources */,
 				DBD6B5CF30570B4300C8E719 /* BuildImageView.swift in Sources */,
 				DBD6B5283043498600C8E719 /* ImagesView.swift in Sources */,

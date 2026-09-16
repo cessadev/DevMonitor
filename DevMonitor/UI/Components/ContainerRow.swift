@@ -31,7 +31,7 @@ struct ContainerRow: View {
             Image("container-icon")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 16, height: 16)
+                .frame(width: AppIcon.rowIcon, height: AppIcon.rowIcon)
                 .foregroundStyle(.secondary)
 
             VStack(alignment: .leading, spacing: 1) {
@@ -60,7 +60,7 @@ struct ContainerRow: View {
                         }
                     } label: {
                         if isDeleting {
-                            ProgressView().controlSize(.mini)
+                            ProgressView().controlSize(AppControl.switchControlSize)
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 3)
                         } else {
@@ -95,7 +95,7 @@ struct ContainerRow: View {
             // Toggle switch - disabled and dimmed when compose is stopping
             Toggle("", isOn: $isOn)
                 .toggleStyle(.switch)
-                .controlSize(.mini)
+                .controlSize(AppControl.switchControlSize)
                 .disabled(isLoading || isDeleting || isLocked)
                 .opacity(isLoading || isLocked ? 0.4 : 1.0)
                 .animation(.easeInOut(duration: 0.2), value: isLoading)

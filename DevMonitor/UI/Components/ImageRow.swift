@@ -15,7 +15,7 @@ struct ImageRow: View {
             Image("imagen-icon")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 16, height: 16)
+                .frame(width: AppIcon.rowIcon, height: AppIcon.rowIcon)
                 .foregroundStyle(isSelected ? .primary : .secondary)
 
             VStack(alignment: .leading, spacing: 1) {
@@ -50,7 +50,7 @@ struct ImageRow: View {
                         }
                     } label: {
                         if isDeleting {
-                            ProgressView().controlSize(.mini)
+                            ProgressView().controlSize(AppControl.switchControlSize)
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 3)
                         } else {
