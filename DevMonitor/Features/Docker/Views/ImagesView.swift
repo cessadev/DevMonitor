@@ -70,7 +70,10 @@ struct ImagesView: View {
                                         await onDelete(image)
                                     },
                                     onSelect: {
-                                        withAnimation(.easeOut(duration: 0.2)) {
+                                        let index = images.firstIndex(where: { $0.id == image.id }) ?? 0
+                                        let duration = min(0.2 + Double(index) * 0.035, 0.5)
+
+                                        withAnimation(.easeOut(duration: duration)) {
                                             if isSelected {
                                                 selectedImage = nil
                                             } else {
@@ -91,7 +94,10 @@ struct ImagesView: View {
                                             await onCreateContainer(image, name, ports, envVars, restartPolicy)
                                         },
                                         onDismiss: {
-                                            withAnimation(.easeOut(duration: 0.2)) {
+                                            let index = images.firstIndex(where: { $0.id == image.id }) ?? 0
+                                            let duration = min(0.2 + Double(index) * 0.035, 0.5)
+
+                                            withAnimation(.easeOut(duration: duration)) {
                                                 selectedImage = nil
                                             }
                                         }
