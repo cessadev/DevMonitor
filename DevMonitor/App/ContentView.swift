@@ -44,7 +44,7 @@ struct ContentView: View {
                 // Local Services
                 ServicesView(services: servicesVM.services)
                 
-                if !buildExpanded {
+                if !buildExpanded && !pullExpanded {
                     // Containers
                     if !containersVM.containers.isEmpty {
                         ContainersView(
@@ -187,6 +187,14 @@ struct ContentView: View {
                 withAnimation(.spring(duration: 0.35, bounce: 0.15)) {
                     buildExpanded = false
                     buildVM.reset()
+                }
+            }
+        }
+        .onChange(of: imagesVM.pullSuccess) { _, success in
+            if success {
+                withAnimation(.spring(duration: 0.35, bounce: 0.15)) {
+                    pullExpanded  = false
+                    pullImageName = ""
                 }
             }
         }

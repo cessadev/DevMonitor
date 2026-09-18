@@ -86,7 +86,7 @@ struct ImageRow: View {
                 }
             }
         }
-        .padding(.horizontal, 7)
+        .padding(.horizontal, 8)
         .padding(.vertical, 5)
         .contentShape(Rectangle())
         .onTapGesture {

@@ -48,7 +48,7 @@ struct ContainerRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(-1)
 
-            // Trash icon - hidden and blocked when compose is up and stopping
+            // Trash icon
             if !isLocked && !isDeleteLocked && (isHovered || confirmDelete) {
                 if confirmDelete {
                     Button {
@@ -74,7 +74,6 @@ struct ContainerRow: View {
                     .buttonStyle(CapsuleButtonStyle(tint: .destructive))
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
                 } else {
-                    // Trash button
                     Button {
                         withAnimation(.spring(duration: 0.2)) {
                             confirmDelete = true
@@ -92,7 +91,7 @@ struct ContainerRow: View {
                 }
             }
 
-            // Toggle switch - disabled and dimmed when compose is stopping
+            // Switch
             Toggle("", isOn: $isOn)
                 .toggleStyle(.switch)
                 .controlSize(AppControl.switchControlSize)
