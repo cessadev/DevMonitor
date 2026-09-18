@@ -44,7 +44,7 @@ struct ContentView: View {
                 // Local Services
                 ServicesView(services: servicesVM.services)
                 
-                if !buildExpanded {
+                if !buildExpanded && !pullExpanded {
                     // Containers
                     if !containersVM.containers.isEmpty {
                         ContainersView(
