@@ -202,19 +202,17 @@ private struct PullImageView: View {
     let onPull: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
 
-            HStack(spacing: 8) {
-                TextField("e.g. nginx:latest", text: $imageName)
-                    .textFieldStyle(.plain)
-                    .font(AppFont.body)
-                    .disabled(isPulling)
-                    .onSubmit { onPull() }
-
-                Text(isPulling ? "Pulling..." : "Enter")
-                    .font(AppFont.caption)
-                    .foregroundStyle(.tertiary)
-            }
+            TextField(
+                "",
+                text: $imageName,
+                prompt: Text("e.g. nginx:latest").foregroundStyle(.tertiary)
+            )
+            .textFieldStyle(.plain)
+            .font(AppFont.body)
+            .disabled(isPulling)
+            .onSubmit { onPull() }
             .padding(.vertical, 10)
             .padding(.horizontal, 8)
             .background(
@@ -222,7 +220,6 @@ private struct PullImageView: View {
                     .fill(.white.opacity(0.30))
                     .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
             )
-            .padding(.horizontal, 4)
 
             if !progress.isEmpty {
                 Text(progress)
@@ -230,9 +227,32 @@ private struct PullImageView: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .truncationMode(.middle)
-                    .padding(.horizontal, 16)
+            }
+
+            HStack {
+                Spacer()
+                Button {
+                    onPull()
+                } label: {
+                    Group {
+                        if isPulling {
+                            HStack(spacing: 6) {
+                                ProgressView().controlSize(AppControl.switchControlSize)
+                                Text("Pulling...")
+                            }
+                        } else {
+                            Text("Pull Image")
+                        }
+                    }
+                    .font(AppFont.action)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 6)
+                }
+                .buttonStyle(CapsuleButtonStyle(isDisabled: isPulling))
+                .disabled(isPulling || imageName.trimmingCharacters(in: .whitespaces).isEmpty)
             }
         }
+        .padding(.horizontal, 4)
         .padding(.bottom, 6)
         .transition(.opacity)
     }

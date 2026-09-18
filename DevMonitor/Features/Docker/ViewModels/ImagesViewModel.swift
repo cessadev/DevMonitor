@@ -8,6 +8,7 @@ class ImagesViewModel {
     
     var pullProgress: String = ""
     var isPulling: Bool      = false
+    var pullSuccess: Bool    = false
 
     private let dockerClient = DockerClient.shared
 
@@ -31,6 +32,7 @@ class ImagesViewModel {
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         isPulling    = true
         pullProgress = "Connecting..."
+        pullSuccess  = false
         error        = nil
 
         do {
@@ -41,6 +43,7 @@ class ImagesViewModel {
             try? await Task.sleep(nanoseconds: 800_000_000)
             pullProgress = ""
             isPulling    = false
+            pullSuccess  = true
             await refresh()
         } catch {
             self.error   = error.localizedDescription
