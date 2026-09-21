@@ -61,7 +61,7 @@ struct ComposeProjectRow: View {
                         }
                     } label: {
                         Image(systemName: "trash")
-                            .font(.system(size: AppIcon.actionIcon, weight: .medium))
+                            .font(AppFont.bodyMedium)
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)

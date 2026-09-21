@@ -53,7 +53,7 @@ struct ContainerRow: View {
 
             // Trailing controls group
             HStack(spacing: 6) {
-                if !isLocked && !isDeleteLocked && (isHovered || confirmDelete) {
+                if isHovered || confirmDelete {
                     if confirmDelete {
                         Button {
                             isDeleting = true
@@ -96,20 +96,22 @@ struct ContainerRow: View {
                             .transition(.scale(scale: 0.85).combined(with: .opacity))
                         }
                         // Trash
-                        Button {
-                            withAnimation(.spring(duration: 0.2)) {
-                                confirmDelete = true
+                        if !isLocked && !isDeleteLocked {
+                            Button {
+                                withAnimation(.spring(duration: 0.2)) {
+                                    confirmDelete = true
+                                }
+                            } label: {
+                                Image(systemName: "trash")
+                                    .font(AppFont.bodyMedium)
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 7)
+                                    .padding(.top, 3)
+                                    .padding(.bottom, 4)
                             }
-                        } label: {
-                            Image(systemName: "trash")
-                                .font(AppFont.bodyMedium)
-                                .foregroundStyle(.secondary)
-                                .padding(.horizontal, 7)
-                                .padding(.top, 3)
-                                .padding(.bottom, 4)
+                            .buttonStyle(CapsuleButtonStyle(tint: .neutral))
+                            .transition(.scale(scale: 0.85).combined(with: .opacity))
                         }
-                        .buttonStyle(CapsuleButtonStyle(tint: .neutral))
-                        .transition(.scale(scale: 0.85).combined(with: .opacity))
                     }
                 }
 
