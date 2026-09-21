@@ -8,6 +8,7 @@ struct ComposeProjectRow: View {
     let onRemove: () -> Void
 
     @State private var isHovered = false
+    @State private var confirmDelete = false
     @State private var isOn: Bool
 
     init(project: DockerComposeProject,
@@ -38,10 +39,27 @@ struct ComposeProjectRow: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .layoutPriority(-1)
 
-            if isHovered {
+            if confirmDelete {
+                Button {
+                    onRemove()
+                } label: {
+                    Text("Delete")
+                        .font(AppFont.micro)
+                        .foregroundStyle(.red)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                }
+                .buttonStyle(CapsuleButtonStyle(tint: .destructive))
+                .frame(height: 24)
+                .transition(.scale(scale: 0.85).combined(with: .opacity))
+            } else if isHovered {
                 HStack(spacing: 6) {
                     // Remove
-                    Button(action: onRemove) {
+                    Button {
+                        withAnimation(.spring(duration: 0.2)) {
+                            confirmDelete = true
+                        }
+                    } label: {
                         Image(systemName: "trash")
                             .font(.system(size: AppIcon.actionIcon, weight: .medium))
                             .foregroundStyle(.secondary)
@@ -49,6 +67,7 @@ struct ComposeProjectRow: View {
                             .padding(.vertical, 3)
                     }
                     .buttonStyle(CapsuleButtonStyle(tint: .neutral))
+                    .disabled(isLoading)
 
                     // Switch
                     Toggle("", isOn: $isOn)
@@ -80,6 +99,7 @@ struct ComposeProjectRow: View {
         .onHover { hovered in
             withAnimation(.easeInOut(duration: 0.15)) {
                 isHovered = hovered
+                if !hovered { confirmDelete = false }
             }
         }
         .onChange(of: project.overallStatus) { _, newStatus in

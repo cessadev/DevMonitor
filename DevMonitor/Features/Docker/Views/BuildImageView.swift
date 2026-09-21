@@ -34,7 +34,6 @@ struct BuildImageView: View {
                     .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
             )
             
-
             // Image name
             FormSection(title: "Image name") {
                 TextField(
