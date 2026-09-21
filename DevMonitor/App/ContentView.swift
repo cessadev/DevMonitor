@@ -52,7 +52,8 @@ struct ContentView: View {
                             lockedComposeProject: composeVM.lockedComposeProject,
                             activeComposeProjects: composeVM.activeComposeProjects,
                             onToggle: { container in await containersVM.toggle(container) },
-                            onDelete: { container in await containersVM.delete(container) }
+                            onDelete: { container in await containersVM.delete(container) },
+                            onOpenTerminal: { container in containersVM.openTerminal(for: container) }
                         )
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }

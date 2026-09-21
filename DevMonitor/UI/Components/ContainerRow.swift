@@ -6,6 +6,7 @@ struct ContainerRow: View {
     let isDeleteLocked: Bool
     let onToggle: () async -> Void
     let onDelete: () async -> Void
+    let onOpenTerminal: () -> Void
 
     @State private var isLoading = false
     @State private var isDeleting = false
@@ -17,12 +18,14 @@ struct ContainerRow: View {
          isLocked: Bool,
          isDeleteLocked: Bool,
          onToggle: @escaping () async -> Void,
-         onDelete: @escaping () async -> Void) {
+         onDelete: @escaping () async -> Void,
+         onOpenTerminal: @escaping () -> Void) {
         self.container      = container
         self.isLocked       = isLocked
         self.isDeleteLocked = isDeleteLocked
         self.onToggle       = onToggle
         self.onDelete       = onDelete
+        self.onOpenTerminal = onOpenTerminal
         self._isOn          = State(initialValue: container.isRunning)
     }
 
@@ -48,7 +51,7 @@ struct ContainerRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(-1)
 
-            // Trash icon
+            // Terminal + Trash icons
             if !isLocked && !isDeleteLocked && (isHovered || confirmDelete) {
                 if confirmDelete {
                     Button {
@@ -74,20 +77,40 @@ struct ContainerRow: View {
                     .buttonStyle(CapsuleButtonStyle(tint: .destructive))
                     .transition(.scale(scale: 0.85).combined(with: .opacity))
                 } else {
-                    Button {
-                        withAnimation(.spring(duration: 0.2)) {
-                            confirmDelete = true
+                    HStack(spacing: 6) {
+                        // Terminal
+                        if container.isRunning {
+                            Button {
+                                onOpenTerminal()
+                            } label: {
+                                Image("terminal-icon")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: AppIcon.terminalIcon, height: AppIcon.terminalIcon)
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 7)
+                                    .padding(.top, 3)
+                                    .padding(.bottom, 4)
+                            }
+                            .buttonStyle(CapsuleButtonStyle(tint: .neutral))
+                            .transition(.scale(scale: 0.85).combined(with: .opacity))
                         }
-                    } label: {
-                        Image(systemName: "trash")
-                            .font(AppFont.bodyMedium)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 7)
-                            .padding(.top, 3)
-                            .padding(.bottom, 4)
+
+                        Button {
+                            withAnimation(.spring(duration: 0.2)) {
+                                confirmDelete = true
+                            }
+                        } label: {
+                            Image(systemName: "trash")
+                                .font(AppFont.bodyMedium)
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 7)
+                                .padding(.top, 3)
+                                .padding(.bottom, 4)
+                        }
+                        .buttonStyle(CapsuleButtonStyle(tint: .neutral))
+                        .transition(.scale(scale: 0.85).combined(with: .opacity))
                     }
-                    .buttonStyle(CapsuleButtonStyle(tint: .neutral))
-                    .transition(.scale(scale: 0.85).combined(with: .opacity))
                 }
             }
 
