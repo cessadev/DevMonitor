@@ -8,36 +8,35 @@ struct BuildImageView: View {
         VStack(alignment: .leading, spacing: 10) {
 
             // Directory picker
-            FormSection(title: "Dockerfile Directory") {
-                HStack(spacing: 8) {
-                    Text(vm.contextPath.isEmpty ? "No directory selected" : vm.contextPath)
-                        .font(AppFont.action)
-                        .foregroundStyle(vm.contextPath.isEmpty ? .tertiary : .secondary)
-                        .lineLimit(1)
-                        .truncationMode(.head)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+            HStack(spacing: 8) {
+                Text(vm.contextPath.isEmpty ? "Dockerfile directory" : vm.contextPath)
+                    .font(AppFont.action)
+                    .foregroundStyle(vm.contextPath.isEmpty ? .tertiary : .secondary)
+                    .lineLimit(1)
+                    .truncationMode(.head)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-                    Button {
-                        Task { await vm.selectDirectory() }
-                    } label: {
-                        Text("Browse")
-                            .font(AppFont.action)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 5)
-                    }
-                    .buttonStyle(CapsuleButtonStyle())
+                Button {
+                    Task { await vm.selectDirectory() }
+                } label: {
+                    Text("Browse")
+                        .font(AppFont.action)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
                 }
-                .padding(.vertical, 6)
-                .padding(.horizontal, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(.white.opacity(0.30))
-                        .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
-                )
+                .buttonStyle(CapsuleButtonStyle())
             }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.white.opacity(0.30))
+                    .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
+            )
+            
 
             // Image name
-            FormSection(title: "Image Name") {
+            FormSection(title: "Image name") {
                 TextField(
                     "",
                     text: $vm.imageName,
@@ -62,6 +61,7 @@ struct BuildImageView: View {
                         .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
                 )
             }
+            
 
             // Error
             if let error = vm.formError {

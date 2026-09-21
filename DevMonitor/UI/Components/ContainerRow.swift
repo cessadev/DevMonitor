@@ -51,33 +51,33 @@ struct ContainerRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(-1)
 
-            // Terminal + Trash icons
-            if !isLocked && !isDeleteLocked && (isHovered || confirmDelete) {
-                if confirmDelete {
-                    Button {
-                        isDeleting = true
-                        Task {
-                            await onDelete()
-                            isDeleting    = false
-                            confirmDelete = false
+            // Trailing controls group
+            HStack(spacing: 6) {
+                if !isLocked && !isDeleteLocked && (isHovered || confirmDelete) {
+                    if confirmDelete {
+                        Button {
+                            isDeleting = true
+                            Task {
+                                await onDelete()
+                                isDeleting    = false
+                                confirmDelete = false
+                            }
+                        } label: {
+                            if isDeleting {
+                                ProgressView().controlSize(AppControl.switchControlSize)
+                                    .padding(.horizontal, 7)
+                                    .padding(.vertical, 3)
+                            } else {
+                                Text("Delete")
+                                    .font(AppFont.micro)
+                                    .foregroundStyle(.red)
+                                    .padding(.horizontal, 7)
+                                    .padding(.vertical, 3)
+                            }
                         }
-                    } label: {
-                        if isDeleting {
-                            ProgressView().controlSize(AppControl.switchControlSize)
-                                .padding(.horizontal, 7)
-                                .padding(.vertical, 3)
-                        } else {
-                            Text("Delete")
-                                .font(AppFont.micro)
-                                .foregroundStyle(.red)
-                                .padding(.horizontal, 7)
-                                .padding(.vertical, 3)
-                        }
-                    }
-                    .buttonStyle(CapsuleButtonStyle(tint: .destructive))
-                    .transition(.scale(scale: 0.85).combined(with: .opacity))
-                } else {
-                    HStack(spacing: 6) {
+                        .buttonStyle(CapsuleButtonStyle(tint: .destructive))
+                        .transition(.scale(scale: 0.85).combined(with: .opacity))
+                    } else {
                         // Terminal
                         if container.isRunning {
                             Button {
@@ -95,7 +95,7 @@ struct ContainerRow: View {
                             .buttonStyle(CapsuleButtonStyle(tint: .neutral))
                             .transition(.scale(scale: 0.85).combined(with: .opacity))
                         }
-
+                        // Trash
                         Button {
                             withAnimation(.spring(duration: 0.2)) {
                                 confirmDelete = true
@@ -112,24 +112,24 @@ struct ContainerRow: View {
                         .transition(.scale(scale: 0.85).combined(with: .opacity))
                     }
                 }
-            }
 
-            // Switch
-            Toggle("", isOn: $isOn)
-                .toggleStyle(.switch)
-                .controlSize(AppControl.switchControlSize)
-                .disabled(isLoading || isDeleting || isLocked)
-                .opacity(isLoading || isLocked ? 0.4 : 1.0)
-                .animation(.easeInOut(duration: 0.2), value: isLoading)
-                .animation(.easeInOut(duration: 0.2), value: isLocked)
-                .onChange(of: isOn) { _, _ in
-                    guard !isLocked else { return }
-                    isLoading = true
-                    Task {
-                        await onToggle()
-                        isLoading = false
+                // Switch
+                Toggle("", isOn: $isOn)
+                    .toggleStyle(.switch)
+                    .controlSize(AppControl.switchControlSize)
+                    .disabled(isLoading || isDeleting || isLocked)
+                    .opacity(isLoading || isLocked ? 0.4 : 1.0)
+                    .animation(.easeInOut(duration: 0.2), value: isLoading)
+                    .animation(.easeInOut(duration: 0.2), value: isLocked)
+                    .onChange(of: isOn) { _, _ in
+                        guard !isLocked else { return }
+                        isLoading = true
+                        Task {
+                            await onToggle()
+                            isLoading = false
+                        }
                     }
-                }
+            }
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 5)
