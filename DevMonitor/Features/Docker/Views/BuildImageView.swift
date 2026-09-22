@@ -35,32 +35,29 @@ struct BuildImageView: View {
             )
             
             // Image name
-            FormSection(title: "Image name") {
-                TextField(
-                    "",
-                    text: $vm.imageName,
-                    prompt: Text("e.g. my-app:latest").foregroundStyle(.tertiary)
-                )
-                .textFieldStyle(.plain)
-                .font(AppFont.body)
-                .disabled(vm.isBuilding)
-                .onSubmit {
-                    Task { await vm.build() }
-                }
-                .onChange(of: vm.imageName) {
-                    withAnimation(.easeOut(duration: 0.2)) {
-                        if vm.formError != nil { vm.formError = nil }
-                    }
-                }
-                .padding(.vertical, 6)
-                .padding(.horizontal, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(.white.opacity(0.30))
-                        .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
-                )
+            TextField(
+                "",
+                text: $vm.imageName,
+                prompt: Text("Image name").foregroundStyle(.tertiary)
+            )
+            .textFieldStyle(.plain)
+            .font(AppFont.body)
+            .disabled(vm.isBuilding)
+            .onSubmit {
+                Task { await vm.build() }
             }
-            
+            .onChange(of: vm.imageName) {
+                withAnimation(.easeOut(duration: 0.2)) {
+                    if vm.formError != nil { vm.formError = nil }
+                }
+            }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.white.opacity(0.30))
+                    .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
+            )
 
             // Error
             if let error = vm.formError {

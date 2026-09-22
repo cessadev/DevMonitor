@@ -90,7 +90,7 @@ struct ContainerRow: View {
                                     .foregroundStyle(.secondary)
                                     .padding(.horizontal, 7)
                                     .padding(.top, 3)
-                                    .padding(.bottom, 4)
+                                    .padding(.bottom, 3)
                             }
                             .buttonStyle(CapsuleButtonStyle(tint: .neutral))
                             .transition(.scale(scale: 0.85).combined(with: .opacity))
@@ -103,7 +103,7 @@ struct ContainerRow: View {
                                 }
                             } label: {
                                 Image(systemName: "trash")
-                                    .font(AppFont.bodyMedium)
+                                    .font(AppIcon.trashIcon)
                                     .foregroundStyle(.secondary)
                                     .padding(.horizontal, 7)
                                     .padding(.top, 3)

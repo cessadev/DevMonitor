@@ -10,9 +10,6 @@ enum AppFont {
     /// Primary row text — container name, image tag, service name
     static let body: Font          = .system(size: 14)
 
-    /// Primary row text with medium weight — icons, labels
-    static let bodyMedium: Font    = .system(size: 13, weight: .medium)
-
     /// Buttons, inputs, form actions
     static let action: Font        = .system(size: 13)
     
@@ -44,6 +41,9 @@ enum AppIcon {
 
     // Row SVG icons — docker, container, image, compose
     static let rowIcon: CGFloat     = 16
+    
+    // Trashs
+    static let trashIcon: Font      = .system(size: 13)
     
     // Action icons — trash, play, stop
     static let actionIcon: CGFloat  = 11
