@@ -12,21 +12,22 @@ struct ContainerRow: View {
     @State private var isDeleting = false
     @State private var isHovered = false
     @State private var confirmDelete = false
-    @State private var isOn: Bool
+    @State private var pendingIsOn: Bool? = nil
 
-    init(container: DockerContainer,
-         isLocked: Bool,
-         isDeleteLocked: Bool,
-         onToggle: @escaping () async -> Void,
-         onDelete: @escaping () async -> Void,
-         onOpenTerminal: @escaping () -> Void) {
-        self.container      = container
-        self.isLocked       = isLocked
-        self.isDeleteLocked = isDeleteLocked
-        self.onToggle       = onToggle
-        self.onDelete       = onDelete
-        self.onOpenTerminal = onOpenTerminal
-        self._isOn          = State(initialValue: container.isRunning)
+    private var runningBinding: Binding<Bool> {
+        Binding(
+            get: { pendingIsOn ?? container.isRunning },
+            set: { newValue in
+                guard !isLocked else { return }
+                pendingIsOn = newValue
+                isLoading = true
+                Task {
+                    await onToggle()
+                    isLoading = false
+                    pendingIsOn = nil
+                }
+            }
+        )
     }
 
     var body: some View {
@@ -116,21 +117,13 @@ struct ContainerRow: View {
                 }
 
                 // Switch
-                Toggle("", isOn: $isOn)
+                Toggle("", isOn: runningBinding)
                     .toggleStyle(.switch)
                     .controlSize(AppControl.switchControlSize)
                     .disabled(isLoading || isDeleting || isLocked)
                     .opacity(isLoading || isLocked ? 0.4 : 1.0)
                     .animation(.easeInOut(duration: 0.2), value: isLoading)
                     .animation(.easeInOut(duration: 0.2), value: isLocked)
-                    .onChange(of: isOn) { _, _ in
-                        guard !isLocked else { return }
-                        isLoading = true
-                        Task {
-                            await onToggle()
-                            isLoading = false
-                        }
-                    }
             }
         }
         .padding(.horizontal, 8)
@@ -140,9 +133,6 @@ struct ContainerRow: View {
                 isHovered = hovered
                 if !hovered && !isDeleting { confirmDelete = false }
             }
-        }
-        .onChange(of: container.isRunning) { _, newValue in
-            isOn = newValue
         }
     }
 }
