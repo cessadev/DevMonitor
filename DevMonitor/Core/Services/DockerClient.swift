@@ -225,30 +225,8 @@ class DockerClient {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             DispatchQueue.global(qos: .userInitiated).async {
                 do {
-                    guard FileManager.default.fileExists(atPath: self.socketPath) else {
-                        throw DockerError.socketNotFound
-                    }
-
-                    let fd = socket(AF_UNIX, SOCK_STREAM, 0)
-                    guard fd >= 0 else { throw DockerError.connectionFailed }
+                    let fd = try self.openDockerSocket()
                     defer { close(fd) }
-
-                    var addr        = sockaddr_un()
-                    addr.sun_family = sa_family_t(AF_UNIX)
-                    let pathBytes   = self.socketPath.utf8CString
-                    withUnsafeMutablePointer(to: &addr.sun_path) { ptr in
-                        pathBytes.withUnsafeBytes { src in
-                            UnsafeMutableRawPointer(ptr)
-                                .copyMemory(from: src.baseAddress!, byteCount: min(src.count, 104))
-                        }
-                    }
-
-                    let connectResult = withUnsafePointer(to: &addr) { ptr in
-                        ptr.withMemoryRebound(to: sockaddr.self, capacity: 1) {
-                            connect(fd, $0, socklen_t(MemoryLayout<sockaddr_un>.size))
-                        }
-                    }
-                    guard connectResult == 0 else { throw DockerError.connectionFailed }
 
                     var requestBytes = Array(request.utf8)
                     guard write(fd, &requestBytes, requestBytes.count) >= 0 else {
@@ -327,30 +305,8 @@ class DockerClient {
     }
 
     private func sendRequest(_ httpRequest: String) throws -> Data {
-        guard FileManager.default.fileExists(atPath: socketPath) else {
-            throw DockerError.socketNotFound
-        }
-
-        let fd = socket(AF_UNIX, SOCK_STREAM, 0)
-        guard fd >= 0 else { throw DockerError.connectionFailed }
+        let fd = try openDockerSocket()
         defer { close(fd) }
-
-        var addr        = sockaddr_un()
-        addr.sun_family = sa_family_t(AF_UNIX)
-        let pathBytes   = socketPath.utf8CString
-        withUnsafeMutablePointer(to: &addr.sun_path) { ptr in
-            pathBytes.withUnsafeBytes { src in
-                UnsafeMutableRawPointer(ptr)
-                    .copyMemory(from: src.baseAddress!, byteCount: min(src.count, 104))
-            }
-        }
-
-        let connectResult = withUnsafePointer(to: &addr) { ptr in
-            ptr.withMemoryRebound(to: sockaddr.self, capacity: 1) {
-                connect(fd, $0, socklen_t(MemoryLayout<sockaddr_un>.size))
-            }
-        }
-        guard connectResult == 0 else { throw DockerError.connectionFailed }
 
         var requestBytes = Array(httpRequest.utf8)
         guard write(fd, &requestBytes, requestBytes.count) >= 0 else {
@@ -367,5 +323,15 @@ class DockerClient {
 
         guard !response.isEmpty else { throw DockerError.emptyResponse }
         return response
+    }
+    
+    private func openDockerSocket() throws -> Int32 {
+        do {
+            return try UnixSocket.makeConnection(to: socketPath)
+        } catch UnixSocketError.notFound {
+            throw DockerError.socketNotFound
+        } catch {
+            throw DockerError.connectionFailed
+        }
     }
 }
