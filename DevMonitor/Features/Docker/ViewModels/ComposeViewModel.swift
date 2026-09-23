@@ -37,10 +37,13 @@ class ComposeViewModel {
         
         let updated: [DockerComposeProject] = await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
-                var result = snapshot
-                for index in result.indices {
-                    result[index].serviceStatuses = self.composeService.refreshStatus(for: result[index])
+                var result      = snapshot
+                let service     = self.composeService
+
+                DispatchQueue.concurrentPerform(iterations: result.count) { index in
+                    result[index].serviceStatuses = service.refreshStatus(for: result[index])
                 }
+
                 continuation.resume(returning: result)
             }
         }
