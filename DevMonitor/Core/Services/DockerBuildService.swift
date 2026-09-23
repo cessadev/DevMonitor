@@ -6,7 +6,7 @@ class DockerBuildService {
         let process = Process()
         let pipe    = Pipe()
 
-        process.executableURL  = URL(fileURLWithPath: "/usr/local/bin/docker")
+        process.executableURL  = URL(fileURLWithPath: DockerCLILocator.executablePath)
         process.arguments      = ["build", "-t", imageName, contextPath]
         process.standardOutput = pipe
         process.standardError  = pipe

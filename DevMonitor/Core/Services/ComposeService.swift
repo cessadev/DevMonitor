@@ -74,7 +74,7 @@ class ComposeService {
         let outPipe = Pipe()
         let errPipe = Pipe()
 
-        process.executableURL       = URL(fileURLWithPath: dockerPath)
+        process.executableURL       = URL(fileURLWithPath: DockerCLILocator.executablePath)
         process.arguments           = args
         process.currentDirectoryURL = URL(fileURLWithPath: workingDirectory)
         process.standardOutput      = outPipe

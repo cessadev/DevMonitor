@@ -39,6 +39,7 @@
 		DBD6B5D130570FA100C8E719 /* FormSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5D030570FA100C8E719 /* FormSection.swift */; };
 		DBD6B5D3305A324C00C8E719 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5D2305A324C00C8E719 /* DesignTokens.swift */; };
 		DBD6B5DB3061930D00C8E719 /* TerminalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5DA3061930D00C8E719 /* TerminalService.swift */; };
+		DBD6B5DD30647A6600C8E719 /* DockerCLILocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5DC30647A6600C8E719 /* DockerCLILocator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -75,6 +76,7 @@
 		DBD6B5D030570FA100C8E719 /* FormSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormSection.swift; sourceTree = "<group>"; };
 		DBD6B5D2305A324C00C8E719 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
 		DBD6B5DA3061930D00C8E719 /* TerminalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalService.swift; sourceTree = "<group>"; };
+		DBD6B5DC30647A6600C8E719 /* DockerCLILocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockerCLILocator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +129,7 @@
 		DBD6B4DB3042849900C8E719 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				DBD6B5DC30647A6600C8E719 /* DockerCLILocator.swift */,
 				DBD6B5DA3061930D00C8E719 /* TerminalService.swift */,
 				DBD6B5C63057095300C8E719 /* DockerBuildService.swift */,
 				DBD6B56C3046714D00C8E719 /* ComposeService.swift */,
@@ -332,6 +335,7 @@
 				DBD6B4FD3042894200C8E719 /* DevMonitorApp.swift in Sources */,
 				DBD6B50030428BC800C8E719 /* ContainerRow.swift in Sources */,
 				DBD6B50230428BC800C8E719 /* ServiceRow.swift in Sources */,
+				DBD6B5DD30647A6600C8E719 /* DockerCLILocator.swift in Sources */,
 				DBD6B5123042944500C8E719 /* ContainersViewModel.swift in Sources */,
 				DBD6B5133042944500C8E719 /* ContainersView.swift in Sources */,
 				DBD6B56B3046711700C8E719 /* DockerCompose.swift in Sources */,
