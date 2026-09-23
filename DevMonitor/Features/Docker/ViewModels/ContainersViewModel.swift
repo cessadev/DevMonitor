@@ -7,7 +7,8 @@ class ContainersViewModel {
     var containers: [DockerContainer] = []
     var error: String?
 
-    private let dockerClient = DockerClient.shared
+    private let dockerClient    = DockerClient.shared
+    private let terminalService = TerminalService()
 
     @MainActor
     func refresh() async {
@@ -89,5 +90,9 @@ class ContainersViewModel {
     private func containerNameExists(_ name: String) -> Bool {
         containers.map { $0.displayName.lowercased() }
                    .contains(name.trimmingCharacters(in: .whitespaces).lowercased())
+    }
+    
+    func openTerminal(for container: DockerContainer) {
+        terminalService.openShell(containerName: container.displayName)
     }
 }

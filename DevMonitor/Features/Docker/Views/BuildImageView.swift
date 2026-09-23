@@ -8,60 +8,56 @@ struct BuildImageView: View {
         VStack(alignment: .leading, spacing: 10) {
 
             // Directory picker
-            FormSection(title: "Dockerfile Directory") {
-                HStack(spacing: 8) {
-                    Text(vm.contextPath.isEmpty ? "No directory selected" : vm.contextPath)
+            HStack(spacing: 8) {
+                Text(vm.contextPath.isEmpty ? "Dockerfile directory" : vm.contextPath)
+                    .font(AppFont.action)
+                    .foregroundStyle(vm.contextPath.isEmpty ? .tertiary : .secondary)
+                    .lineLimit(1)
+                    .truncationMode(.head)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Button {
+                    Task { await vm.selectDirectory() }
+                } label: {
+                    Text("Browse")
                         .font(AppFont.action)
-                        .foregroundStyle(vm.contextPath.isEmpty ? .tertiary : .secondary)
-                        .lineLimit(1)
-                        .truncationMode(.head)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-
-                    Button {
-                        Task { await vm.selectDirectory() }
-                    } label: {
-                        Text("Browse")
-                            .font(AppFont.action)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 5)
-                    }
-                    .buttonStyle(CapsuleButtonStyle())
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
                 }
-                .padding(.vertical, 6)
-                .padding(.horizontal, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(.white.opacity(0.30))
-                        .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
-                )
+                .buttonStyle(CapsuleButtonStyle())
             }
-
+            .padding(.vertical, 6)
+            .padding(.horizontal, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.white.opacity(0.30))
+                    .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
+            )
+            
             // Image name
-            FormSection(title: "Image Name") {
-                TextField(
-                    "",
-                    text: $vm.imageName,
-                    prompt: Text("e.g. my-app:latest").foregroundStyle(.tertiary)
-                )
-                .textFieldStyle(.plain)
-                .font(AppFont.body)
-                .disabled(vm.isBuilding)
-                .onSubmit {
-                    Task { await vm.build() }
-                }
-                .onChange(of: vm.imageName) {
-                    withAnimation(.easeOut(duration: 0.2)) {
-                        if vm.formError != nil { vm.formError = nil }
-                    }
-                }
-                .padding(.vertical, 6)
-                .padding(.horizontal, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(.white.opacity(0.30))
-                        .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
-                )
+            TextField(
+                "",
+                text: $vm.imageName,
+                prompt: Text("Image name").foregroundStyle(.tertiary)
+            )
+            .textFieldStyle(.plain)
+            .font(AppFont.body)
+            .disabled(vm.isBuilding)
+            .onSubmit {
+                Task { await vm.build() }
             }
+            .onChange(of: vm.imageName) {
+                withAnimation(.easeOut(duration: 0.2)) {
+                    if vm.formError != nil { vm.formError = nil }
+                }
+            }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.white.opacity(0.30))
+                    .strokeBorder(.white.opacity(0.65), lineWidth: 0.5)
+            )
 
             // Error
             if let error = vm.formError {

@@ -38,6 +38,7 @@
 		DBD6B5CF30570B4300C8E719 /* BuildImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5CA305709BD00C8E719 /* BuildImageView.swift */; };
 		DBD6B5D130570FA100C8E719 /* FormSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5D030570FA100C8E719 /* FormSection.swift */; };
 		DBD6B5D3305A324C00C8E719 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5D2305A324C00C8E719 /* DesignTokens.swift */; };
+		DBD6B5DB3061930D00C8E719 /* TerminalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD6B5DA3061930D00C8E719 /* TerminalService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -73,6 +74,7 @@
 		DBD6B5CA305709BD00C8E719 /* BuildImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildImageView.swift; sourceTree = "<group>"; };
 		DBD6B5D030570FA100C8E719 /* FormSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormSection.swift; sourceTree = "<group>"; };
 		DBD6B5D2305A324C00C8E719 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
+		DBD6B5DA3061930D00C8E719 /* TerminalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +127,7 @@
 		DBD6B4DB3042849900C8E719 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				DBD6B5DA3061930D00C8E719 /* TerminalService.swift */,
 				DBD6B5C63057095300C8E719 /* DockerBuildService.swift */,
 				DBD6B56C3046714D00C8E719 /* ComposeService.swift */,
 				DBD6B4E8304285B300C8E719 /* DockerClient.swift */,
@@ -318,6 +321,7 @@
 				DBD6B5273043498600C8E719 /* ServicesView.swift in Sources */,
 				DBD6B5CC30570B4300C8E719 /* BuildViewModel.swift in Sources */,
 				DBD6B5CD30570B4300C8E719 /* DockerBuildService.swift in Sources */,
+				DBD6B5DB3061930D00C8E719 /* TerminalService.swift in Sources */,
 				DBD6B5D3305A324C00C8E719 /* DesignTokens.swift in Sources */,
 				DBD6B5D130570FA100C8E719 /* FormSection.swift in Sources */,
 				DBD6B5CF30570B4300C8E719 /* BuildImageView.swift in Sources */,

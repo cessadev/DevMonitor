@@ -73,7 +73,7 @@ struct ImageRow: View {
                                 }
                             } label: {
                                 Image(systemName: "trash")
-                                    .font(AppFont.bodyMedium)
+                                    .font(AppIcon.trashIcon)
                                     .foregroundStyle(.secondary)
                                     .padding(.horizontal, 7)
                                     .padding(.vertical, 3)

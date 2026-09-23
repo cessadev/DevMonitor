@@ -10,6 +10,7 @@ struct ServiceRow: View {
                 .scaledToFit()
                 .frame(width: AppIcon.rowIcon, height: AppIcon.rowIcon)
                 .foregroundStyle(.secondary)
+                .padding(.top, 1)
 
             Text(service.name)
                 .font(AppFont.title)

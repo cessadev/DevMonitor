@@ -7,6 +7,7 @@ struct ContainersView: View {
     let activeComposeProjects: Set<String>
     let onToggle: (DockerContainer) async -> Void
     let onDelete: (DockerContainer) async -> Void
+    let onOpenTerminal: (DockerContainer) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -36,7 +37,8 @@ struct ContainersView: View {
                         isLocked: isLocked,
                         isDeleteLocked: isDeleteLocked,
                         onToggle: { await onToggle(container) },
-                        onDelete: { await onDelete(container) }
+                        onDelete: { await onDelete(container) },
+                        onOpenTerminal: { onOpenTerminal(container) }
                     )
                 }
             }

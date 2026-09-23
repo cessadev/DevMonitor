@@ -222,6 +222,7 @@ struct CreateContainerView: View {
                                                 lineWidth: 0.5
                                             )
                                     )
+                                    .contentShape(Rectangle())
                             }
                             .buttonStyle(RestartPolicyButtonStyle())
                             .disabled(isCreating)

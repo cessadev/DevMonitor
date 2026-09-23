@@ -52,7 +52,8 @@ struct ContentView: View {
                             lockedComposeProject: composeVM.lockedComposeProject,
                             activeComposeProjects: composeVM.activeComposeProjects,
                             onToggle: { container in await containersVM.toggle(container) },
-                            onDelete: { container in await containersVM.delete(container) }
+                            onDelete: { container in await containersVM.delete(container) },
+                            onOpenTerminal: { container in containersVM.openTerminal(for: container) }
                         )
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
@@ -89,7 +90,7 @@ struct ContentView: View {
                     isPulling: imagesVM.isPulling,
                     pullProgress: imagesVM.pullProgress,
                     onHeaderTap: {
-                        withAnimation(.spring(duration: 0.3)) {
+                        withAnimation(.spring(duration: 0.35, bounce: 0.3)) {
                             imagesExpanded.toggle()
                             if !imagesExpanded {
                                 pullExpanded  = false
@@ -98,7 +99,9 @@ struct ContentView: View {
                         }
                     },
                     onPullHeaderTap: {
-                        pullExpanded.toggle()
+                        withAnimation(.spring(duration: 0.35, bounce: 0.3)) {
+                            pullExpanded.toggle()
+                        }
                     },
                     onPull: {
                         Task { await imagesVM.pull(name: pullImageName) }
@@ -108,9 +111,12 @@ struct ContentView: View {
                     },
                     buildExpanded: buildExpanded,
                     buildVM: buildVM,
+                    // Después
                     onBuildHeaderTap: {
-                        if buildExpanded { buildVM.reset() }
-                        buildExpanded.toggle()
+                        withAnimation(.spring(duration: 0.35, bounce: 0.3)) {
+                            if buildExpanded { buildVM.reset() }
+                            buildExpanded.toggle()
+                        }
                     },
                     onCreateContainer: { image, name, ports, envVars, restartPolicy in
                         return await containersVM.createContainer(
