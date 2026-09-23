@@ -87,15 +87,38 @@ class DockerClient {
         let containerName = name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? name
 
         // Build PortBindings dict: {"80/tcp": [{"HostPort": "8080"}]}
+        // Accepts "host:container", "host:container/udp" and "hostIP:host:container"
         var portBindingsDict: [String: Any] = [:]
         var exposedPorts: [String: Any]     = [:]
         for binding in portBindings where !binding.trimmingCharacters(in: .whitespaces).isEmpty {
-            let parts             = binding.components(separatedBy: ":")
-            guard parts.count     == 2 else { continue }
-            let hostPort          = parts[0].trimmingCharacters(in: .whitespaces)
-            let containerPort     = parts[1].trimmingCharacters(in: .whitespaces)
-            let key               = "\(containerPort)/tcp"
-            portBindingsDict[key] = [["HostPort": hostPort]]
+            let parts = binding.components(separatedBy: ":").map { $0.trimmingCharacters(in: .whitespaces) }
+            guard parts.count == 2 || parts.count == 3 else { continue }
+
+            let hostIP: String?
+            let hostPort: String
+            let containerPart: String
+            if parts.count == 3 {
+                hostIP        = parts[0]
+                hostPort      = parts[1]
+                containerPart = parts[2]
+            } else {
+                hostIP        = nil
+                hostPort      = parts[0]
+                containerPart = parts[1]
+            }
+
+            // containerPart may already carry a protocol suffix, e.g. "80/udp"
+            let containerProtoParts = containerPart.components(separatedBy: "/")
+            let containerPort       = containerProtoParts[0]
+            let proto               = containerProtoParts.count > 1
+                                     ? containerProtoParts[1].lowercased()
+                                     : "tcp"
+            let key = "\(containerPort)/\(proto)"
+
+            var hostBinding: [String: String] = ["HostPort": hostPort]
+            if let hostIP { hostBinding["HostIp"] = hostIP }
+
+            portBindingsDict[key] = [hostBinding]
             exposedPorts[key]     = [:]
         }
 
