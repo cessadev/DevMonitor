@@ -4,6 +4,8 @@ class DockerClient {
 
     static let shared = DockerClient()
     private let socketPath = "/var/run/docker.sock"
+    
+    private static let jsonDecoder = JSONDecoder()
 
     // Containers
     func fetchContainers() async throws -> [DockerContainer] {
@@ -31,7 +33,7 @@ class DockerClient {
         let body       = isChunked ? Self.decodeChunked(rawBody) : rawBody
 
         do {
-            return try JSONDecoder().decode([DockerContainer].self, from: body)
+            return try Self.jsonDecoder.decode([DockerContainer].self, from: body)
         } catch {
             let raw = String(data: body, encoding: .utf8) ?? "unreadable"
             throw DockerError.decodingFailed(String(raw.prefix(300)))
@@ -198,7 +200,7 @@ class DockerClient {
         let body       = isChunked ? Self.decodeChunked(rawBody) : rawBody
 
         do {
-            return try JSONDecoder().decode([DockerImage].self, from: body)
+            return try Self.jsonDecoder.decode([DockerImage].self, from: body)
         } catch {
             let raw = String(data: body, encoding: .utf8) ?? "unreadable"
             throw DockerError.decodingFailed(String(raw.prefix(300)))
