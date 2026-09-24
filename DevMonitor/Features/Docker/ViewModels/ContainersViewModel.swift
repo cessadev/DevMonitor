@@ -88,8 +88,8 @@ class ContainersViewModel {
     }
     
     private func containerNameExists(_ name: String) -> Bool {
-        containers.map { $0.displayName.lowercased() }
-                   .contains(name.trimmingCharacters(in: .whitespaces).lowercased())
+        let target = name.trimmingCharacters(in: .whitespaces).lowercased()
+        return containers.contains { $0.displayName.lowercased() == target }
     }
     
     func openTerminal(for container: DockerContainer) {
