@@ -49,9 +49,10 @@ class ComposeViewModel {
         }
         
         // Merge back on main thread
+        let statusesByPath = Dictionary(updated.map { ($0.filePath, $0.serviceStatuses) }, uniquingKeysWith: { _, latest in latest })
         for index in projects.indices {
-            if let refreshed = updated.first(where: { $0.filePath == projects[index].filePath }) {
-                projects[index].serviceStatuses = refreshed.serviceStatuses
+            if let statuses = statusesByPath[projects[index].filePath] {
+                projects[index].serviceStatuses = statuses
             }
         }
     }
