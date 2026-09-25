@@ -9,19 +9,23 @@ struct ComposeProjectRow: View {
 
     @State private var isHovered = false
     @State private var confirmDelete = false
-    @State private var isOn: Bool
+    @State private var pendingIsOn: Bool? = nil
 
-    init(project: DockerComposeProject,
-         isLoading: Bool,
-         onUp: @escaping () async -> Void,
-         onDown: @escaping () async -> Void,
-         onRemove: @escaping () -> Void) {
-        self.project   = project
-        self.isLoading = isLoading
-        self.onUp      = onUp
-        self.onDown    = onDown
-        self.onRemove  = onRemove
-        self._isOn     = State(initialValue: project.overallStatus == .running)
+    private var runningBinding: Binding<Bool> {
+        Binding(
+            get: { pendingIsOn ?? (project.overallStatus == .running) },
+            set: { newValue in
+                pendingIsOn = newValue
+                Task {
+                    if newValue {
+                        await onUp()
+                    } else {
+                        await onDown()
+                    }
+                    pendingIsOn = nil
+                }
+            }
+        )
     }
 
     var body: some View {
@@ -73,21 +77,12 @@ struct ComposeProjectRow: View {
                     }
 
                     // Switch
-                    Toggle("", isOn: $isOn)
+                    Toggle("", isOn: runningBinding)
                         .toggleStyle(.switch)
                         .controlSize(AppControl.switchControlSize)
                         .disabled(isLoading)
                         .opacity(isLoading ? 0.4 : 1.0)
                         .animation(.easeInOut(duration: 0.2), value: isLoading)
-                        .onChange(of: isOn) { _, newValue in
-                            Task {
-                                if newValue {
-                                    await onUp()
-                                } else {
-                                    await onDown()
-                                }
-                            }
-                        }
                 }
                 .frame(height: 24)
                 .transition(.scale(scale: 0.85).combined(with: .opacity))
@@ -104,9 +99,6 @@ struct ComposeProjectRow: View {
                 isHovered = hovered
                 if !hovered { confirmDelete = false }
             }
-        }
-        .onChange(of: project.overallStatus) { _, newStatus in
-            isOn = newStatus == .running
         }
     }
 }

@@ -13,6 +13,8 @@ class BuildViewModel {
     var buildSuccess = false
 
     private let buildService = DockerBuildService()
+    
+    private static let maxDisplayedOutputLength = 8_000
 
     @MainActor
     func selectDirectory() {
@@ -68,6 +70,9 @@ class BuildViewModel {
                             contextPath: self.contextPath
                         ) { output in
                             self.buildOutput += output
+                            if self.buildOutput.count > Self.maxDisplayedOutputLength {
+                                self.buildOutput = String(self.buildOutput.suffix(Self.maxDisplayedOutputLength))
+                            }
                         }
                         continuation.resume()
                     } catch {

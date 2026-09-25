@@ -74,7 +74,7 @@ class ComposeService {
         let outPipe = Pipe()
         let errPipe = Pipe()
 
-        process.executableURL       = URL(fileURLWithPath: dockerPath)
+        process.executableURL       = URL(fileURLWithPath: DockerCLILocator.executablePath)
         process.arguments           = args
         process.currentDirectoryURL = URL(fileURLWithPath: workingDirectory)
         process.standardOutput      = outPipe
@@ -87,16 +87,33 @@ class ComposeService {
         ]
 
         try process.run()
+
+        var outputData = Data()
+        var errorData  = Data()
+
+        let outputDone = DispatchSemaphore(value: 0)
+        DispatchQueue.global(qos: .userInitiated).async {
+            outputData = outPipe.fileHandleForReading.readDataToEndOfFile()
+            outputDone.signal()
+        }
+
+        let errorDone = DispatchSemaphore(value: 0)
+        DispatchQueue.global(qos: .userInitiated).async {
+            errorData = errPipe.fileHandleForReading.readDataToEndOfFile()
+            errorDone.signal()
+        }
+
         process.waitUntilExit()
+        outputDone.wait()
+        errorDone.wait()
 
         // If exit code is non-zero, surface the stderr message
         if process.terminationStatus != 0 {
-            let errData = errPipe.fileHandleForReading.readDataToEndOfFile()
-            let errMsg  = String(data: errData, encoding: .utf8) ?? "Unknown error"
+            let errMsg = String(data: errorData, encoding: .utf8) ?? "Unknown error"
             throw ComposeError.commandFailed(errMsg.trimmingCharacters(in: .whitespacesAndNewlines))
         }
 
-        return outPipe.fileHandleForReading.readDataToEndOfFile()
+        return outputData
     }
 
     private func runComposeOutput(args: [String], workingDirectory: String) -> String? {
