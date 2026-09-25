@@ -34,6 +34,7 @@ class BuildViewModel {
         }
     }
 
+    @MainActor
     func build() async {
         guard !imageName.trimmingCharacters(in: .whitespaces).isEmpty else {
             withAnimation(.easeOut(duration: 0.2)) {
@@ -62,34 +63,23 @@ class BuildViewModel {
         buildSuccess = false
 
         do {
-            try await withCheckedThrowingContinuation { continuation in
-                DispatchQueue.global(qos: .userInitiated).async {
-                    do {
-                        try self.buildService.build(
-                            imageName: self.imageName,
-                            contextPath: self.contextPath
-                        ) { output in
-                            self.buildOutput += output
-                            if self.buildOutput.count > Self.maxDisplayedOutputLength {
-                                self.buildOutput = String(self.buildOutput.suffix(Self.maxDisplayedOutputLength))
-                            }
-                        }
-                        continuation.resume()
-                    } catch {
-                        continuation.resume(throwing: error)
+            try await Task.detached(priority: .userInitiated) {
+                try await self.buildService.build(
+                    imageName: self.imageName,
+                    contextPath: self.contextPath
+                ) { output in
+                    self.buildOutput += output
+                    if self.buildOutput.count > Self.maxDisplayedOutputLength {
+                        self.buildOutput = String(self.buildOutput.suffix(Self.maxDisplayedOutputLength))
                     }
                 }
-            }
-            await MainActor.run {
-                isBuilding   = false
-                buildSuccess = true
-            }
+            }.value
+            isBuilding   = false
+            buildSuccess = true
         } catch {
-            await MainActor.run {
-                isBuilding = false
-                withAnimation(.easeOut(duration: 0.2)) {
-                    formError = error.localizedDescription
-                }
+            isBuilding = false
+            withAnimation(.easeOut(duration: 0.2)) {
+                formError = error.localizedDescription
             }
         }
     }

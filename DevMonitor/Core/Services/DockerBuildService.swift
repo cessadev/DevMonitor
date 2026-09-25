@@ -2,7 +2,7 @@ import Foundation
 
 class DockerBuildService {
 
-    func build(imageName: String, contextPath: String, onOutput: @escaping (String) -> Void) throws {
+    func build(imageName: String, contextPath: String, onOutput: @escaping @MainActor (String) -> Void) throws {
         let process = Process()
         let pipe    = Pipe()
 
@@ -11,7 +11,6 @@ class DockerBuildService {
         process.standardOutput = pipe
         process.standardError  = pipe
 
-        // Inject PATH
         var env     = ProcessInfo.processInfo.environment
         env["PATH"] = [
             "/usr/local/bin",
@@ -35,7 +34,7 @@ class DockerBuildService {
             let text      = pendingOutput
             pendingOutput = ""
             lastFlush     = Date()
-            DispatchQueue.main.async { onOutput(text) }
+            Task { @MainActor in onOutput(text) }
         }
 
         pipe.fileHandleForReading.readabilityHandler = { handle in
@@ -54,14 +53,14 @@ class DockerBuildService {
         try process.run()
         process.waitUntilExit()
         pipe.fileHandleForReading.readabilityHandler = nil
-        
+
         throttleQueue.sync { flushPendingOutput() }
 
         if process.terminationStatus != 0 {
             throw DockerError.requestFailed("Build exited with code \(process.terminationStatus)")
         }
     }
-
+    
     func dockerfileExists(at path: String) -> Bool {
         let url = URL(fileURLWithPath: path).appendingPathComponent("Dockerfile")
         return FileManager.default.fileExists(atPath: url.path)
