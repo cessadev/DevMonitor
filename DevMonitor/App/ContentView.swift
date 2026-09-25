@@ -16,7 +16,7 @@ struct ContentView: View {
     @AppStorage("pullExpanded")   private var pullExpanded   = false
     @AppStorage("buildExpanded") private var buildExpanded   = false
     
-    private var timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
+    private static let timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
     var body: some View {
         ZStack {
@@ -214,7 +214,7 @@ struct ContentView: View {
             buildVM.reset()
             NSApp.keyWindow?.makeFirstResponder(nil)
         }
-        .onReceive(timer) { _ in
+        .onReceive(Self.timer) { _ in
             guard !isComposeBusy else { return }
             refresh()
         }
