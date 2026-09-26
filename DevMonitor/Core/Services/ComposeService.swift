@@ -28,44 +28,31 @@ class ComposeService {
             return [:]
         }
 
-        var statuses: [String: DockerComposeProject.ComposeServiceStatus] = [:]
         let trimmed = output.trimmingCharacters(in: .whitespacesAndNewlines)
+        let decoder = JSONDecoder()
+        let entries: [ComposeServiceEntry]
 
         // Try JSON array first (Docker Compose v2.21+)
         if trimmed.hasPrefix("["),
-           let data   = trimmed.data(using: .utf8),
-           let array  = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
-            for item in array {
-                if let service = item["Service"] as? String,
-                   let state   = item["State"] as? String {
-                    statuses[service] = state == "running" ? .running : .stopped
+           let data       = trimmed.data(using: .utf8),
+           let rawEntries = try? decoder.decode([FailableDecodable<ComposeServiceEntry>].self, from: data) {
+            entries = rawEntries.compactMap(\.value)
+        } else {
+            // Fallback: one JSON object per line (older versions)
+            entries = trimmed
+                .components(separatedBy: "\n")
+                .filter { $0.hasPrefix("{") }
+                .compactMap { line in
+                    guard let data = line.data(using: .utf8) else { return nil }
+                    return try? decoder.decode(ComposeServiceEntry.self, from: data)
                 }
-            }
-            return statuses
         }
 
-        // Fallback: one JSON object per line (older versions)
-        let lines = trimmed.components(separatedBy: "\n").filter { $0.hasPrefix("{") }
-        for line in lines {
-            guard let data    = line.data(using: .utf8),
-                  let json    = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let service = json["Service"] as? String,
-                  let state   = json["State"] as? String else { continue }
-            statuses[service] = state == "running" ? .running : .stopped
+        var statuses: [String: DockerComposeProject.ComposeServiceStatus] = [:]
+        for entry in entries {
+            statuses[entry.service] = entry.state == "running" ? .running : .stopped
         }
-
         return statuses
-    }
-
-    private var dockerPath: String {
-        let candidates = [
-            "/usr/local/bin/docker",
-            "/opt/homebrew/bin/docker",
-            "/usr/bin/docker",
-        ]
-        return candidates.first {
-            FileManager.default.fileExists(atPath: $0)
-        } ?? "/usr/local/bin/docker"
     }
 
     @discardableResult
@@ -115,12 +102,39 @@ class ComposeService {
 
         return outputData
     }
+    
+    private var dockerPath: String {
+        let candidates = [
+            "/usr/local/bin/docker",
+            "/opt/homebrew/bin/docker",
+            "/usr/bin/docker",
+        ]
+        return candidates.first {
+            FileManager.default.fileExists(atPath: $0)
+        } ?? "/usr/local/bin/docker"
+    }
 
     private func runComposeOutput(args: [String], workingDirectory: String) -> String? {
         guard let data = try? runCompose(args: args, workingDirectory: workingDirectory) else {
             return nil
         }
         return String(data: data, encoding: .utf8)
+    }
+    
+    private struct ComposeServiceEntry: Decodable {
+        let service: String
+        let state: String
+        enum CodingKeys: String, CodingKey {
+            case service = "Service"
+            case state   = "State"
+        }
+    }
+
+    private struct FailableDecodable<Wrapped: Decodable>: Decodable {
+        let value: Wrapped?
+        init(from decoder: Decoder) throws {
+            value = try? Wrapped(from: decoder)
+        }
     }
 }
 
