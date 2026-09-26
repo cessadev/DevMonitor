@@ -40,7 +40,7 @@ class ImagesViewModel {
                 self?.pullProgress = message
             }
             pullProgress = "Done"
-            try? await Task.sleep(nanoseconds: 800_000_000)
+            try? await Task.sleep(nanoseconds: DockerSettleDelay.pullDoneMessageDuration)
             pullProgress = ""
             isPulling    = false
             pullSuccess  = true
@@ -56,7 +56,7 @@ class ImagesViewModel {
     func delete(_ image: DockerImage) async {
         do {
             try await dockerClient.deleteImage(id: image.id)
-            try? await Task.sleep(nanoseconds: 400_000_000)
+            try? await Task.sleep(nanoseconds: DockerSettleDelay.listMutation)
             await refresh()
         } catch {
             self.error = error.localizedDescription

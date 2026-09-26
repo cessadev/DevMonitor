@@ -75,7 +75,7 @@ class ComposeViewModel {
                 continuation.resume()
             }
         }
-        try? await Task.sleep(nanoseconds: 1_500_000_000)
+        try? await Task.sleep(nanoseconds: DockerSettleDelay.composeUp)
 
         NSApp.setActivationPolicy(.accessory)
         await refresh()
@@ -97,7 +97,7 @@ class ComposeViewModel {
                 continuation.resume()
             }
         }
-        try? await Task.sleep(nanoseconds: 2_500_000_000)
+        try? await Task.sleep(nanoseconds: DockerSettleDelay.composeDown)
 
         await refresh()
         isLoadingProjectId = nil

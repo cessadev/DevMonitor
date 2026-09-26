@@ -111,7 +111,6 @@ struct ContentView: View {
                     },
                     buildExpanded: buildExpanded,
                     buildVM: buildVM,
-                    // Después
                     onBuildHeaderTap: {
                         withAnimation(.spring(duration: 0.35, bounce: 0.3)) {
                             if buildExpanded { buildVM.reset() }
